@@ -1,0 +1,53 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'JuckAClock'
+  ClientHeight = 67
+  ClientWidth = 210
+  Fill.Color = claBlack
+  Fill.Kind = Solid
+  Position = ScreenCenter
+  FormStyle = StayOnTop
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object loContent: TLayout
+    Align = Contents
+    HitTest = True
+    Size.Width = 210.000000000000000000
+    Size.Height = 67.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    OnClick = loContentClick
+    object TimeLayout: TLayout
+      Align = Client
+      Size.Width = 210.000000000000000000
+      Size.Height = 67.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object TimeText: TText
+        Align = Contents
+        HitTest = False
+        Margins.Left = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 67.000000000000000000
+        Size.PlatformDefault = False
+        Stretch = True
+        Text = '12:34:55'
+        TextSettings.Font.Size = 24.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.FontColor = claWhite
+      end
+    end
+  end
+  object ColorsPopupMenu: TPopupMenu
+    Left = 6
+    Top = 3
+  end
+end

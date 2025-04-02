@@ -1,0 +1,171 @@
+unit TimeThreadUnit;
+
+interface
+
+uses
+    System.Classes
+  , System.SysUtils
+  , System.SyncObjs
+
+  , FMX.Controls
+  , FMX.Forms
+  , ThreadFactoryUnit
+  ;
+
+type
+  TTimeKind = (tkTime = 0 , tkTimer = 1);
+
+  TTimeThread = class(TThreadExt)
+  strict private
+    FCriticalSection: TCriticalSection;
+    FForm: TForm;
+    FOutputControl: TControl;
+    FExecProc: TProc;
+
+    procedure OnTerminateHandler(Sender: TObject);
+
+    procedure SetOutputControl(const AOutputControl: TControl);
+    function GetOutputControl: TControl;
+
+    procedure ExecTime;
+    procedure ExecTimer;
+  protected
+    procedure Execute; reintroduce;
+    // override; // специально не перегружаем, чтобы выполнился на стороне родиельского класса
+  public
+    constructor Create(
+      const ARegProc: TRegProc;
+      const AUnRegProc: TUnRegProc;
+      const ATimeKind: TTimeKind;
+      const AForm: TForm;
+      const AOutputControl: TControl);
+    destructor Destroy; override;
+
+    property OutputControl: TControl read GetOutputControl write SetOutputControl;
+  end;
+
+implementation
+
+uses
+    FMX.ControlToolsUnit
+  , TimeCalcUnit
+  ;
+
+{ TTimeThread }
+
+procedure TTimeThread.OnTerminateHandler(Sender: TObject);
+begin
+  OutputControl := nil;
+  FForm.Close;
+end;
+
+procedure TTimeThread.SetOutputControl(const AOutputControl: TControl);
+begin
+  FCriticalSection.Enter;
+  try
+    FOutputControl := AOutputControl;
+  finally
+    FCriticalSection.Leave;
+  end;
+end;
+
+function TTimeThread.GetOutputControl: TControl;
+begin
+  FCriticalSection.Enter;
+  try
+    Result := FOutputControl;
+  finally
+    FCriticalSection.Leave;
+  end;
+end;
+
+constructor TTimeThread.Create(
+  const ARegProc: TRegProc;
+  const AUnRegProc: TUnRegProc;
+  const ATimeKind: TTimeKind;
+  const AForm: TForm;
+  const AOutputControl: TControl);
+begin
+  if not TControlTools.HasProperty(AOutputControl, 'Text') then
+    raise Exception.Create('Output control does not have a "text" property');
+
+  FCriticalSection := TCriticalSection.Create;
+
+  FForm := AForm;
+  FOutputControl := AOutputControl;
+
+  FExecProc := ExecTime;
+  if ATimeKind = tkTimer then
+    FExecProc := ExecTimer;
+
+  OnTerminate := OnTerminateHandler;
+
+  FreeOnTerminate := true;
+
+  inherited Create(
+    'TTimeThread',
+    ARegProc,
+    AUnRegProc,
+    Self.Execute);
+end;
+
+destructor TTimeThread.Destroy;
+begin
+  if Assigned(FCriticalSection) then
+    FreeAndNil(FCriticalSection);
+
+  inherited;
+end;
+
+procedure TTimeThread.Execute;
+begin
+  FExecProc;
+end;
+
+procedure TTimeThread.ExecTime;
+var
+  TimeString: String;
+begin
+  while not Terminated do
+  begin
+    TimeString := TimeToStr(TTime(Now));
+    if Assigned(OutputControl) then
+      Synchronize(
+        procedure
+        begin
+          TControlTools.SetTextProperty(OutputControl, TimeString);
+        end);
+
+    Sleep(100);
+  end;
+end;
+
+procedure TTimeThread.ExecTimer;
+var
+  TimeString: String;
+  CountdownTimeString: String;
+  CountdownTime: TTime;
+  FinishTimeString: String;
+  FinishTime: TTime;
+begin
+  CountdownTimeString := '00:30';
+  CountdownTime := StrToTime(CountdownTimeString);
+  FinishTime := TTimeCalc.CalcTime(Now, CountdownTime, true);
+  FinishTimeString := TimeToStr(FinishTime);
+
+  while not Terminated do
+  begin
+    TimeString := TimeToStr(TTime(Now));
+    if Assigned(OutputControl) then
+      Synchronize(
+        procedure
+        begin
+          TControlTools.SetTextProperty(OutputControl, TimeString);
+        end);
+
+    Sleep(100);
+  end;
+end;
+
+
+end.
