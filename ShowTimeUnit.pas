@@ -1,4 +1,4 @@
-unit ShowTimeUnit;
+﻿unit ShowTimeUnit;
 
 interface
 

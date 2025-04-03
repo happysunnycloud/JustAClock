@@ -1,4 +1,4 @@
-unit ElectronicBoardFrameUnit;
+﻿unit ElectronicBoardFrameUnit;
 
 interface
 

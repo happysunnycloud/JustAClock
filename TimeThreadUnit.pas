@@ -1,4 +1,4 @@
-unit TimeThreadUnit;
+п»їunit TimeThreadUnit;
 
 interface
 
@@ -30,8 +30,10 @@ type
     procedure ExecTime;
     procedure ExecTimer;
   protected
-    procedure Execute; reintroduce;
-    // override; // специально не перегружаем, чтобы выполнился на стороне родиельского класса
+    // РЎРїРµС†РёР°Р»СЊРЅРѕ РЅРµ РїРµСЂРµРіСЂСѓР¶Р°РµРј Execute,
+    // С‡С‚РѕР±С‹ РІС‹РїРѕР»РЅРёР»СЃСЏ РЅР° СЃС‚РѕСЂРѕРЅРµ СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ РєР»Р°СЃСЃР°
+    // Р’ СЂРѕРґРёС‚РµР»Рµ Р»СЋРІСЏС‚СЃСЏ РёСЃРєР»СЋС‡РµРЅРёСЏ
+    procedure Execute(const AThread: TThreadExt); reintroduce; // override;
   public
     constructor Create(
       const ARegProc: TRegProc;
@@ -56,7 +58,7 @@ uses
 procedure TTimeThread.OnTerminateHandler(Sender: TObject);
 begin
   OutputControl := nil;
-  FForm.Close;
+//  FForm.Close;
 end;
 
 procedure TTimeThread.SetOutputControl(const AOutputControl: TControl);
@@ -117,7 +119,7 @@ begin
   inherited;
 end;
 
-procedure TTimeThread.Execute;
+procedure TTimeThread.Execute(const AThread: TThreadExt);
 begin
   FExecProc;
 end;
@@ -155,7 +157,7 @@ begin
 
   while not Terminated do
   begin
-    TimeString := TimeToStr(TTime(Now));
+    TimeString := FormatDateTime('hh:nn:ss', TTimeCalc.CalcTime(FinishTime, Now, false));
     if Assigned(OutputControl) then
       Synchronize(
         procedure

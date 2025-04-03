@@ -1,4 +1,4 @@
-unit JustAClockUnit;
+﻿unit JustAClockUnit;
 
 interface
 
@@ -27,10 +27,9 @@ type
     TimeLayout: TLayout;
     ColorsPopupMenu: TPopupMenu;
     procedure FormCreate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure loContentClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   strict private
     FBorderFrame: TBorderFrame;
     FTrayPopupMenu: TCraftPopupMenu;
@@ -50,8 +49,12 @@ type
     procedure MenuColorItemClickHandler(Sender: TObject);
     procedure MenuStandardItemClickHandler(Sender: TObject);
     procedure MenuCountDownItemClickHandler(Sender: TObject);
+    procedure MenuTimeItemClickHandler(Sender: TObject);
 
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
+
+    procedure RunTime;
+    procedure RunTimer;
   private
     { Private declarations }
     procedure OpenElectronicBoard(const AColorIdent: String);
@@ -110,20 +113,6 @@ end;
 
 { TMainForm }
 
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Action := TCloseAction.caFree;
-end;
-
-procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  FTimeThread.Terminate;
-  FTimeThread := nil;
-
-  OnCloseQuery := nil;
-  CanClose := false;
-end;
-
 procedure TMainForm.OnCloseTrayItemHandler;
 begin
   if Assigned(MainForm) then
@@ -147,12 +136,18 @@ begin
   ShowWindow(ApplicationHWND, SW_HIDE);
 end;
 
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  FTimeThread := nil;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 const
   SCALE_VALUE =1;
 var
   MenuItem: TMenuItem;
   ElectronicBoardColorName: String;
+  Electronic: TMenuItem;
   i: Integer;
 begin
   ReportMemoryLeaksOnShutdown := true;
@@ -165,14 +160,18 @@ begin
     'Blue',
     'Violet');
 
+  Electronic := TMenuItem.Create(ColorsPopupMenu);
+  Electronic.Text := 'Electronic';
+  ColorsPopupMenu.AddObject(Electronic);
+
   for i := 0 to Pred(Length(FElectronicBoardColorArray)) do
   begin
     ElectronicBoardColorName := FElectronicBoardColorArray[i];
-    MenuItem := TMenuItem.Create(ColorsPopupMenu);
+    MenuItem := TMenuItem.Create(Electronic);
     MenuItem.Text := ElectronicBoardColorName;
     MenuItem.Tag := i;
     MenuItem.OnClick := MenuColorItemClickHandler;
-    ColorsPopupMenu.AddObject(MenuItem);
+    Electronic.AddObject(MenuItem);
   end;
   MenuItem := TMenuItem.Create(ColorsPopupMenu);
   MenuItem.Text := '-';
@@ -180,7 +179,7 @@ begin
   ColorsPopupMenu.AddObject(MenuItem);
 
   MenuItem := TMenuItem.Create(ColorsPopupMenu);
-  MenuItem.Text := 'Standatd';
+  MenuItem.Text := 'Text';
   MenuItem.OnClick := MenuStandardItemClickHandler;
   ColorsPopupMenu.AddObject(MenuItem);
 
@@ -192,6 +191,16 @@ begin
   MenuItem := TMenuItem.Create(ColorsPopupMenu);
   MenuItem.Text := 'Countdown 30 minutes';
   MenuItem.OnClick := MenuCountDownItemClickHandler;
+  ColorsPopupMenu.AddObject(MenuItem);
+
+  MenuItem := TMenuItem.Create(ColorsPopupMenu);
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  ColorsPopupMenu.AddObject(MenuItem);
+
+  MenuItem := TMenuItem.Create(ColorsPopupMenu);
+  MenuItem.Text := 'Time';
+  MenuItem.OnClick := MenuTimeItemClickHandler;
   ColorsPopupMenu.AddObject(MenuItem);
 
   FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
@@ -220,15 +229,9 @@ begin
 //  FTimeThread := TTimeThread.Create(TTimeKind.tkTime, Self, TimeText);
 //  ThreadFactory.RegisterThread(FTimeThread);
 
-  ThreadFactory.CreateRegistredThread(
-    procedure (
-      const ARegProc: TRegProc;
-      const AUnRegProc: TUnRegProc)
-    begin
-       FTimeThread := TTimeThread.Create(ARegProc, AUnRegProc, TTimeKind.tkTime, Self, TimeText);
-    end);
-
   FElectronicBoardFrame := nil;
+
+  RunTime;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -309,7 +312,54 @@ end;
 
 procedure TMainForm.MenuCountDownItemClickHandler(Sender: TObject);
 begin
+  RunTimer;
+end;
 
+procedure TMainForm.MenuTimeItemClickHandler(Sender: TObject);
+begin
+  RunTime;
+end;
+
+procedure TMainForm.RunTime;
+var
+  OutputControl: TControl;
+begin
+  OutputControl := TimeText;
+  if Assigned(FElectronicBoardFrame) then
+    OutputControl := FElectronicBoardFrame.TimeVoidEdit;
+
+  if Assigned(FTimeThread) then
+    FTimeThread.Terminate;
+
+  ThreadFactory.CreateRegistredThread(
+    procedure (
+      const ARegProc: TRegProc;
+      const AUnRegProc: TUnRegProc)
+    begin
+      FTimeThread :=
+        TTimeThread.Create(ARegProc, AUnRegProc, TTimeKind.tkTime, Self, OutputControl);
+    end);
+end;
+
+procedure TMainForm.RunTimer;
+var
+  OutputControl: TControl;
+begin
+  OutputControl := TimeText;
+  if Assigned(FElectronicBoardFrame) then
+    OutputControl := FElectronicBoardFrame.TimeVoidEdit;
+
+  if Assigned(FTimeThread) then
+    FTimeThread.Terminate;
+
+  ThreadFactory.CreateRegistredThread(
+    procedure (
+      const ARegProc: TRegProc;
+      const AUnRegProc: TUnRegProc)
+    begin
+      FTimeThread :=
+        TTimeThread.Create(ARegProc, AUnRegProc, TTimeKind.tkTimer, Self, OutputControl);
+    end);
 end;
 
 end.
