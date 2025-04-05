@@ -30,6 +30,5 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TSetTimerForm, SetTimerForm);
   Application.Run;
 end.

@@ -6,10 +6,10 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, NumScrollUnit,
   BorderFrameUnit, FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls,
-  FMX.Objects, FMX.Effects;
+  FMX.Objects, FMX.Effects, FMX.FormExtUnit;
 
 type
-  TSetTimerForm = class(TForm)
+  TSetTimerForm = class(TFormExt)
     HoursNumScrollFrame: TNumScrollFrame;
     loContent: TLayout;
     MinutesNumScrollFrame: TNumScrollFrame;
