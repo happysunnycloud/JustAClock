@@ -8,7 +8,7 @@ uses
   , System.SyncObjs
 
   , FMX.Controls
-  , FMX.Forms
+  , FMX.FormExtUnit
   , ThreadFactoryUnit
   ;
 
@@ -18,9 +18,10 @@ type
   TTimeThread = class(TThreadExt)
   strict private
     FCriticalSection: TCriticalSection;
-    FForm: TForm;
+    FForm: TFormExt;
     FOutputControl: TControl;
     FExecProc: TProc;
+    FTimerTime: TTime;
 
     procedure OnTerminateHandler(Sender: TObject);
 
@@ -38,8 +39,9 @@ type
     constructor Create(
       const ARegProc: TRegProc;
       const AUnRegProc: TUnRegProc;
+      const ATimerTime: TTime;
       const ATimeKind: TTimeKind;
-      const AForm: TForm;
+      const AForm: TFormExt;
       const AOutputControl: TControl);
     destructor Destroy; override;
 
@@ -51,6 +53,7 @@ implementation
 uses
     FMX.ControlToolsUnit
   , TimeCalcUnit
+  , JustAClockUnit
   ;
 
 { TTimeThread }
@@ -84,8 +87,9 @@ end;
 constructor TTimeThread.Create(
   const ARegProc: TRegProc;
   const AUnRegProc: TUnRegProc;
+  const ATimerTime: TTime;
   const ATimeKind: TTimeKind;
-  const AForm: TForm;
+  const AForm: TFormExt;
   const AOutputControl: TControl);
 begin
   if not TControlTools.HasProperty(AOutputControl, 'Text') then
@@ -99,6 +103,8 @@ begin
   FExecProc := ExecTime;
   if ATimeKind = tkTimer then
     FExecProc := ExecTimer;
+
+  FTimerTime := ATimerTime;
 
   OnTerminate := OnTerminateHandler;
 
@@ -150,7 +156,7 @@ var
   FinishTimeString: String;
   FinishTime: TTime;
 begin
-  CountdownTimeString := '00:30';
+  CountdownTimeString := TimeToStr(FTimerTime);
   CountdownTime := StrToTime(CountdownTimeString);
   FinishTime := TTimeCalc.CalcTime(Now, CountdownTime, true);
   FinishTimeString := TimeToStr(FinishTime);
@@ -165,9 +171,20 @@ begin
           TControlTools.SetTextProperty(OutputControl, TimeString);
         end);
 
+    if TimeString = '00:00:00' then
+    begin
+      TMainForm(FForm).StartSignal;
+
+      Break;
+    end;
+
     Sleep(100);
   end;
-end;
 
+  while not Terminated do
+  begin
+    Sleep(1000);
+  end;
+end;
 
 end.

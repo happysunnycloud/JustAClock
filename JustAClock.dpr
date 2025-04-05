@@ -21,12 +21,15 @@ uses
   FMX.FormExtUnit in '..\DevelopmentsCollection\FMX.FormExtUnit.pas',
   ThreadFactoryUnit in '..\DevelopmentsCollection\ThreadFactoryUnit.pas',
   ThreadRegistryUnit in '..\DevelopmentsCollection\ThreadRegistryUnit.pas',
-  ParamsExtUnit in '..\DevelopmentsCollection\ParamsExtUnit.pas';
+  ParamsExtUnit in '..\DevelopmentsCollection\ParamsExtUnit.pas',
+  NumScrollUnit in 'Frames\NumScrollUnit.pas' {NumScrollFrame: TFrame},
+  SetTimerFormUnit in 'SetTimerFormUnit.pas' {SetTimerForm};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TSetTimerForm, SetTimerForm);
   Application.Run;
 end.
