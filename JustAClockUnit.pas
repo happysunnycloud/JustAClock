@@ -153,7 +153,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 const
-  SCALE_VALUE =1;
+  SCALE_VALUE = 1;
 var
   MenuItem: TMenuItem;
   ElectronicBoardColorName: String;
@@ -172,7 +172,6 @@ begin
     'White',
     'Blue',
     'Violet');
-
 
   { ColorsPopupMenu }
 
@@ -415,6 +414,9 @@ begin
           procedure
           begin
             SignalRectangle.Visible := true;
+            ShowWindow(ApplicationHwnd, SW_SHOW);
+            Self.Show;
+            //SetForegroundWindow(ApplicationHwnd);
           end);
         Sleep(400);
 
