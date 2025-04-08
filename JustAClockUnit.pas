@@ -52,7 +52,7 @@ type
     procedure MenuColorItemClickHandler(Sender: TObject);
     procedure MenuStandardItemClickHandler(Sender: TObject);
     procedure MenuCountDownItemClickHandler(Sender: TObject);
-    procedure MenuTimeItemClickHandler(Sender: TObject);
+    procedure MenuCancelTimerItemClickHandler(Sender: TObject);
 
     procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
 
@@ -212,7 +212,7 @@ begin
 
   MenuItem := TMenuItem.Create(ToolsPopupMenu);
   MenuItem.Text := 'Cancel';
-  MenuItem.OnClick := MenuTimeItemClickHandler;
+  MenuItem.OnClick := MenuCancelTimerItemClickHandler;
   ToolsPopupMenu.AddObject(MenuItem);
 
   FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
@@ -342,7 +342,7 @@ begin
   SetTimerForm.ShowModal;
 end;
 
-procedure TMainForm.MenuTimeItemClickHandler(Sender: TObject);
+procedure TMainForm.MenuCancelTimerItemClickHandler(Sender: TObject);
 begin
   StopSignal;
 
@@ -414,7 +414,7 @@ begin
           procedure
           begin
             SignalRectangle.Visible := true;
-            ShowWindow(ApplicationHwnd, SW_SHOW);
+            //ShowWindow(ApplicationHwnd, SW_SHOW);
             Self.Show;
             //SetForegroundWindow(ApplicationHwnd);
           end);
