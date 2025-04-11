@@ -136,7 +136,7 @@ var
 begin
   while not Terminated do
   begin
-    TimeString := TimeToStr(TTime(Now));
+    TimeString := FormatDateTime('hh:nn:ss', Now);
     if Assigned(OutputControl) then
       Synchronize(
         procedure
