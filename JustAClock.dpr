@@ -23,7 +23,9 @@ uses
   ThreadRegistryUnit in '..\DevelopmentsCollection\ThreadRegistryUnit.pas',
   ParamsExtUnit in '..\DevelopmentsCollection\ParamsExtUnit.pas',
   NumScrollUnit in 'Frames\NumScrollUnit.pas' {NumScrollFrame: TFrame},
-  SetTimerFormUnit in 'SetTimerFormUnit.pas' {SetTimerForm};
+  SetTimerFormUnit in 'SetTimerFormUnit.pas' {SetTimerForm},
+  ThreadFactoryRegistryUnit in '..\DevelopmentsCollection\ThreadFactoryRegistryUnit.pas',
+  ObjectRegistryUnit in '..\DevelopmentsCollection\ObjectRegistryUnit.pas';
 
 {$R *.res}
 
