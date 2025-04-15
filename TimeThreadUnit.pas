@@ -37,8 +37,7 @@ type
     procedure Execute(const AThread: TThreadExt); reintroduce; // override;
   public
     constructor Create(
-      const ARegProc: TRegProc;
-      const AUnRegProc: TUnRegProc;
+      const AThreadFactory: TThreadFactory;
       const ATimerTime: TTime;
       const ATimeKind: TTimeKind;
       const AForm: TFormExt;
@@ -85,8 +84,7 @@ begin
 end;
 
 constructor TTimeThread.Create(
-  const ARegProc: TRegProc;
-  const AUnRegProc: TUnRegProc;
+  const AThreadFactory: TThreadFactory;
   const ATimerTime: TTime;
   const ATimeKind: TTimeKind;
   const AForm: TFormExt;
@@ -111,9 +109,8 @@ begin
   FreeOnTerminate := true;
 
   inherited Create(
+    AThreadFactory,
     'TTimeThread',
-    ARegProc,
-    AUnRegProc,
     Self.Execute);
 end;
 

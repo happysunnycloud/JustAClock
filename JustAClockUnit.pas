@@ -362,18 +362,30 @@ begin
 
   ThreadFactory.CreateRegistredThread(
     procedure (
-      const ARegProc: TRegProc;
-      const AUnRegProc: TUnRegProc)
+      const AThreadFactory: TThreadFactory)
     begin
       FTimeThread :=
         TTimeThread.Create(
-          ARegProc,
-          AUnRegProc,
+          AThreadFactory,
           StrToTime('00:00'),
           TTimeKind.tkTime,
           Self,
           OutputControl);
     end);
+//  ThreadFactory.CreateRegistredThread(
+//    procedure (
+//      const ARegProc: TRegProc;
+//      const AUnRegProc: TUnRegProc)
+//    begin
+//      FTimeThread :=
+//        TTimeThread.Create(
+//          ARegProc,
+//          AUnRegProc,
+//          StrToTime('00:00'),
+//          TTimeKind.tkTime,
+//          Self,
+//          OutputControl);
+//    end);
 end;
 
 procedure TMainForm.RunTimer(const ATimerTime: TTime);
@@ -389,18 +401,31 @@ begin
 
   ThreadFactory.CreateRegistredThread(
     procedure (
-      const ARegProc: TRegProc;
-      const AUnRegProc: TUnRegProc)
+      const AThreadFactory: TThreadFactory)
     begin
       FTimeThread :=
         TTimeThread.Create(
-          ARegProc,
-          AUnRegProc,
+          AThreadFactory,
           ATimerTime,
           TTimeKind.tkTimer,
           Self,
           OutputControl);
     end);
+
+//  ThreadFactory.CreateRegistredThread(
+//    procedure (
+//      const ARegProc: TRegProc;
+//      const AUnRegProc: TUnRegProc)
+//    begin
+//      FTimeThread :=
+//        TTimeThread.Create(
+//          ARegProc,
+//          AUnRegProc,
+//          ATimerTime,
+//          TTimeKind.tkTimer,
+//          Self,
+//          OutputControl);
+//    end);
 end;
 
 procedure TMainForm.StartSignal;
