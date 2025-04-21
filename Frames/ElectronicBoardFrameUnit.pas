@@ -12,15 +12,10 @@ type
     BackgroundLayout: TLayout;
     BackgroundRectangle: TRectangle;
     DigitsLayout: TLayout;
-    HDelimiterLayout: TLayout;
-    MinutesLayout: TLayout;
-    HoursLayout: TLayout;
     HHImage: TImage;
     MHImage: TImage;
     HLImage: TImage;
     MLImage: TImage;
-    SDelimiterLayout: TLayout;
-    SecondsLayout: TLayout;
     SLImage: TImage;
     SHImage: TImage;
     HDelimImage: TImage;

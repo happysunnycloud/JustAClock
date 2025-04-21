@@ -25,7 +25,8 @@ uses
   NumScrollUnit in 'Frames\NumScrollUnit.pas' {NumScrollFrame: TFrame},
   SetTimerFormUnit in 'SetTimerFormUnit.pas' {SetTimerForm},
   ThreadFactoryRegistryUnit in '..\DevelopmentsCollection\ThreadFactoryRegistryUnit.pas',
-  ObjectRegistryUnit in '..\DevelopmentsCollection\ObjectRegistryUnit.pas';
+  ObjectRegistryUnit in '..\DevelopmentsCollection\ObjectRegistryUnit.pas',
+  FMX.ImageToolsUnit in '..\DevelopmentsCollection\FMX.ImageToolsUnit.pas';
 
 {$R *.res}
 

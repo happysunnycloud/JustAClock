@@ -33,6 +33,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure loContentMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
+    procedure FormResize(Sender: TObject);
   strict private
     FBorderFrame: TBorderFrame;
     FTrayPopupMenu: TCraftPopupMenu;
@@ -226,7 +227,7 @@ begin
       'Just a clock',
       Trunc(loContent.Width),
       Trunc(loContent.Height),
-      $FF2A001A,
+      $FF49FFEC,
       $FF2A001A,
       TAlphaColorRec.Lime,
       TAlphaColorRec.Lime);
@@ -252,6 +253,35 @@ begin
     FTrayPopupMenu.Free;
 
   CloseElectronicBoard;
+end;
+
+procedure TMainForm.FormResize(Sender: TObject);
+  procedure _Align(const AControl: TControl; const AWidth: Single);
+  begin
+//    AControl.Align := TAlignLayout.None;
+    AControl.Width := AWidth;
+    AControl.Align := TAlignLayout.Left;
+  end;
+var
+  W: Single;
+begin
+  if not Assigned(FElectronicBoardFrame) then
+    Exit;
+
+  FElectronicBoardFrame.DigitsLayout.Align := TAlignLayout.None;
+  FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.5;
+  FElectronicBoardFrame.DigitsLayout.Width := Self.Width * 0.9;
+  FElectronicBoardFrame.DigitsLayout.Align := TAlignLayout.Center;
+
+  W := Round(FElectronicBoardFrame.DigitsLayout.Width / 8);
+  _Align(FElectronicBoardFrame.HHImage, W);
+  _Align(FElectronicBoardFrame.HLImage, W);
+  _Align(FElectronicBoardFrame.HDelimImage, W);
+  _Align(FElectronicBoardFrame.MHImage, W);
+  _Align(FElectronicBoardFrame.MLImage, W);
+  _Align(FElectronicBoardFrame.SDelimImage, W);
+  _Align(FElectronicBoardFrame.SHImage, W);
+  _Align(FElectronicBoardFrame.SLImage, W);
 end;
 
 procedure TMainForm.loContentMouseUp(Sender: TObject; Button: TMouseButton;
@@ -309,6 +339,7 @@ begin
   FElectronicBoardFrame.TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
 
   loContent.BringToFront;
+  Self.Resize;
 end;
 
 procedure TMainForm.CloseElectronicBoard;
