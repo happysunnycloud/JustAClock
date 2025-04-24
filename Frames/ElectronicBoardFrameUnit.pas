@@ -21,6 +21,11 @@ type
     HDelimImage: TImage;
     SDelimImage: TImage;
     TimeVoidEdit: TEdit;
+    HoursLayout: TLayout;
+    MinutesLayout: TLayout;
+    SecondsLayout: TLayout;
+    HoursDelimLayout: TLayout;
+    SecondsDelimLayout: TLayout;
   private
     { Private declarations }
   public

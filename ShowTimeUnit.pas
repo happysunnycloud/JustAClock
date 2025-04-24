@@ -7,6 +7,7 @@ uses
   , FMX.Objects
   , FMX.Graphics
   , FilePackerUnit
+  , CommonUnit
   ;
 
 type
@@ -35,7 +36,8 @@ type
       const AML: TImage;
       const ASDelim: TImage;
       const ASH: TImage;
-      const ASL: TImage);
+      const ASL: TImage;
+      const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
     class procedure UnInit;
 
     class procedure ShowTime(const ATime: String);
@@ -59,15 +61,22 @@ class procedure TShowTime.Init(
   const AML: TImage;
   const ASDelim: TImage;
   const ASH: TImage;
-  const ASL: TImage);
+  const ASL: TImage;
+  const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
 var
   i: Integer;
   BitMap: TBitMap;
   ImageFile: TFilePacker;
   MemoryStream: TMemoryStream;
+  OrientationPrefix: String;
 begin
   if not FileExists(AImageFileName) then
     raise Exception.CreateFmt('File "%s" not exists', [AImageFileName]);
+
+  OrientationPrefix := '';
+  if AOrientation = okVertical then
+    OrientationPrefix := VERTICAL_ORIENTATION_IDENT;
+
 
   FHH := AHH;
   FHL := AHL;
@@ -99,11 +108,11 @@ begin
 
     TImageExtractor.ExtractToBitmap(
       ImageFile,
-      AColorIdent + '\' + 'Delimiter.png',
+      AColorIdent + '\' + OrientationPrefix + 'Delimiter.png',
       FHDelim.Bitmap);
     TImageExtractor.ExtractToBitmap(
       ImageFile,
-      AColorIdent + '\' + 'Delimiter.png',
+      AColorIdent + '\' + OrientationPrefix + 'Delimiter.png',
       FSDelim.Bitmap);
   finally
     FreeAndNil(ImageFile);

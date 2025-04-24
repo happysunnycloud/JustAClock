@@ -26,7 +26,9 @@ uses
   SetTimerFormUnit in 'SetTimerFormUnit.pas' {SetTimerForm},
   ThreadFactoryRegistryUnit in '..\DevelopmentsCollection\ThreadFactoryRegistryUnit.pas',
   ObjectRegistryUnit in '..\DevelopmentsCollection\ObjectRegistryUnit.pas',
-  FMX.ImageToolsUnit in '..\DevelopmentsCollection\FMX.ImageToolsUnit.pas';
+  FMX.ImageToolsUnit in '..\DevelopmentsCollection\FMX.ImageToolsUnit.pas',
+  VerticalElectronicBoardFrameUnit in 'Frames\VerticalElectronicBoardFrameUnit.pas' {VeticalElectronicBoardFrame: TFrame},
+  CommonUnit in 'CommonUnit.pas';
 
 {$R *.res}
 

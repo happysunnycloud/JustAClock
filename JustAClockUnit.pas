@@ -9,7 +9,8 @@ uses
   FMX.Craft.PopupMenu.Win,
   TimeThreadUnit,
   ElectronicBoardFrameUnit, FMX.Menus,
-  FMX.FormExtUnit
+  FMX.FormExtUnit,
+  CommonUnit
   ;
 
 type
@@ -25,7 +26,7 @@ type
     TimeText: TText;
     loContent: TLayout;
     TimeLayout: TLayout;
-    ColorsPopupMenu: TPopupMenu;
+    SettingsPopupMenu: TPopupMenu;
     SignalRectangle: TRectangle;
     ToolsPopupMenu: TPopupMenu;
     procedure FormCreate(Sender: TObject);
@@ -55,6 +56,9 @@ type
     procedure MenuCountDownItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
 
+    procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
+    procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
+
     procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
 
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
@@ -63,7 +67,9 @@ type
     procedure RunTimer(const ATimerTime: TTime);
   private
     { Private declarations }
-    procedure OpenElectronicBoard(const AColorIdent: String);
+    procedure OpenElectronicBoard(
+      const AColorIdent: String;
+      const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
     procedure CloseElectronicBoard;
   public
     procedure StartSignal;
@@ -89,6 +95,7 @@ uses
   , ThreadFactoryUnit
   , NumScrollUnit
   , SetTimerFormUnit
+  , VerticalElectronicBoardFrameUnit
   ;
 
 { TElectronicBoardColorArrayHelper }
@@ -159,9 +166,16 @@ var
   MenuItem: TMenuItem;
   ElectronicBoardColorName: String;
   Electronic: TMenuItem;
+  Orientation: TMenuItem;
+  Colors: TMenuItem;
+  ColorIdent: String;
+  Boards: TMenuItem;
   i: Integer;
 begin
   ReportMemoryLeaksOnShutdown := true;
+
+  TState.Orientation := okHorizontal;
+  TState.Board := bkText;
 
   SetTimerForm := nil;
   SignalRectangle.Visible := false;
@@ -174,30 +188,59 @@ begin
     'Blue',
     'Violet');
 
-  { ColorsPopupMenu }
+  { SettingsPopupMenu }
 
-  Electronic := TMenuItem.Create(ColorsPopupMenu);
-  Electronic.Text := 'Electronic';
-  ColorsPopupMenu.AddObject(Electronic);
+  Boards := TMenuItem.Create(SettingsPopupMenu);
+  Boards.Text := 'Boards';
+  SettingsPopupMenu.AddObject(Boards);
 
-  for i := 0 to Pred(Length(FElectronicBoardColorArray)) do
-  begin
-    ElectronicBoardColorName := FElectronicBoardColorArray[i];
-    MenuItem := TMenuItem.Create(Electronic);
-    MenuItem.Text := ElectronicBoardColorName;
-    MenuItem.Tag := i;
-    MenuItem.OnClick := MenuColorItemClickHandler;
-    Electronic.AddObject(MenuItem);
-  end;
-  MenuItem := TMenuItem.Create(ColorsPopupMenu);
-  MenuItem.Text := '-';
-  MenuItem.Tag := -1;
-  ColorsPopupMenu.AddObject(MenuItem);
-
-  MenuItem := TMenuItem.Create(ColorsPopupMenu);
+  MenuItem := TMenuItem.Create(Boards);
   MenuItem.Text := 'Text';
   MenuItem.OnClick := MenuStandardItemClickHandler;
-  ColorsPopupMenu.AddObject(MenuItem);
+  Boards.AddObject(MenuItem);
+
+  MenuItem := TMenuItem.Create(Boards);
+  MenuItem.Text := 'Electronic';
+  MenuItem.OnClick := MenuColorItemClickHandler;
+  Boards.AddObject(MenuItem);
+
+  MenuItem := TMenuItem.Create(SettingsPopupMenu);
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  SettingsPopupMenu.AddObject(MenuItem);
+
+  Colors := TMenuItem.Create(SettingsPopupMenu);
+  Colors.Text := 'Colors';
+  SettingsPopupMenu.AddObject(Colors);
+  for i := 0 to Pred(Length(FElectronicBoardColorArray)) do
+  begin
+    ColorIdent := FElectronicBoardColorArray[i];
+    MenuItem := TMenuItem.Create(Colors);
+    MenuItem.Text := ColorIdent;
+    MenuItem.Tag := i;
+    MenuItem.OnClick := MenuColorItemClickHandler;
+    Colors.AddObject(MenuItem);
+  end;
+  MenuItem := TMenuItem.Create(SettingsPopupMenu);
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  SettingsPopupMenu.AddObject(MenuItem);
+
+  Orientation := TMenuItem.Create(SettingsPopupMenu);
+  Orientation.Text := 'Orientation';
+  SettingsPopupMenu.AddObject(Orientation);
+
+  MenuItem := TMenuItem.Create(Orientation);
+  MenuItem.Text := 'Horizontal';
+  MenuItem.Tag := 0;
+  MenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
+  Orientation.AddObject(MenuItem);
+
+  MenuItem := TMenuItem.Create(Orientation);
+  MenuItem.Text := 'Vertical';
+  MenuItem.Tag := 0;
+  MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
+  Orientation.AddObject(MenuItem);
 
   { ToolsPopupMenu }
 
@@ -227,10 +270,13 @@ begin
       'Just a clock',
       Trunc(loContent.Width),
       Trunc(loContent.Height),
-      $FF49FFEC,
+      $FF8D003A,
       $FF2A001A,
       TAlphaColorRec.Lime,
-      TAlphaColorRec.Lime);
+      $FFADADAD);
+
+  FBorderFrame.MinWidth := 300;
+  FBorderFrame.MinHeight := 100;
 
   FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
   FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
@@ -238,9 +284,6 @@ begin
   FTrayPopupMenu := TCraftPopupMenu.Create('>>', 1000);
   FTrayPopupMenu.MenuItems.AddItem('Close', 'Close', true, OnCloseTrayItemHandler);
   FTrayPopupMenu.BuildMenu;
-
-//  FTimeThread := TTimeThread.Create(TTimeKind.tkTime, Self, TimeText);
-//  ThreadFactory.RegisterThread(FTimeThread);
 
   FElectronicBoardFrame := nil;
 
@@ -256,32 +299,86 @@ begin
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
-  procedure _Align(const AControl: TControl; const AWidth: Single);
+  procedure _HorizontalAlign(const AControl: TControl; const AWidth: Single);
   begin
-//    AControl.Align := TAlignLayout.None;
     AControl.Width := AWidth;
     AControl.Align := TAlignLayout.Left;
   end;
 var
   W: Single;
+  H0: Single;
+  H1: Single;
 begin
   if not Assigned(FElectronicBoardFrame) then
     Exit;
 
-  FElectronicBoardFrame.DigitsLayout.Align := TAlignLayout.None;
-  FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.5;
-  FElectronicBoardFrame.DigitsLayout.Width := Self.Width * 0.9;
-  FElectronicBoardFrame.DigitsLayout.Align := TAlignLayout.Center;
+  if FElectronicBoardFrame is TVerticalElectronicBoardFrame then
+  begin
+    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.None;
+    FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.75;
+    FElectronicBoardFrame.DigitsLayout.Width  := Self.Width * 0.65;
+    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.Center;
 
-  W := Round(FElectronicBoardFrame.DigitsLayout.Width / 8);
-  _Align(FElectronicBoardFrame.HHImage, W);
-  _Align(FElectronicBoardFrame.HLImage, W);
-  _Align(FElectronicBoardFrame.HDelimImage, W);
-  _Align(FElectronicBoardFrame.MHImage, W);
-  _Align(FElectronicBoardFrame.MLImage, W);
-  _Align(FElectronicBoardFrame.SDelimImage, W);
-  _Align(FElectronicBoardFrame.SHImage, W);
-  _Align(FElectronicBoardFrame.SLImage, W);
+    W  := FElectronicBoardFrame.DigitsLayout.Width / 2;
+    H0 := FElectronicBoardFrame.DigitsLayout.Height / 4;
+    H1 := FElectronicBoardFrame.DigitsLayout.Height / 8;
+
+    FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.None;
+    FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.None;
+    FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.None;
+    FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.None;
+    FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.None;
+
+    FElectronicBoardFrame.HoursLayout.Height        := H0;
+    FElectronicBoardFrame.HoursDelimLayout.Height   := H1;
+    FElectronicBoardFrame.MinutesLayout.Height      := H0;
+    FElectronicBoardFrame.SecondsDelimLayout.Height := H1;
+    FElectronicBoardFrame.SecondsLayout.Height      := H0;
+
+    FElectronicBoardFrame.HHImage.Width     := W;
+    FElectronicBoardFrame.HLImage.Width     := W;
+    FElectronicBoardFrame.HDelimImage.Width := W;
+    FElectronicBoardFrame.MHImage.Width     := W;
+    FElectronicBoardFrame.MLImage.Width     := W;
+    FElectronicBoardFrame.SDelimImage.Width := W;
+    FElectronicBoardFrame.SHImage.Width     := W;
+    FElectronicBoardFrame.SLImage.Width     := W;
+
+    FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.Bottom;
+    FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.Bottom;
+    FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.Bottom;
+    FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.Bottom;
+    FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.Bottom;
+
+    FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.Top;
+    FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.Top;
+    FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.Top;
+    FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.Top;
+    FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.Bottom;
+  end
+  else
+  if FElectronicBoardFrame is TElectronicBoardFrame then
+  begin
+    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.None;
+    FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.45;
+    FElectronicBoardFrame.DigitsLayout.Width  := Self.Width * 0.85;
+    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.Center;
+
+    W := FElectronicBoardFrame.DigitsLayout.Width / 8;
+    _HorizontalAlign(FElectronicBoardFrame.HoursLayout, W * 2);
+    _HorizontalAlign(FElectronicBoardFrame.HHImage, W);
+    _HorizontalAlign(FElectronicBoardFrame.HLImage, W);
+    _HorizontalAlign(FElectronicBoardFrame.HoursDelimLayout , W);
+    _HorizontalAlign(FElectronicBoardFrame.HDelimImage, W);
+    _HorizontalAlign(FElectronicBoardFrame.MinutesLayout, W * 2);
+    _HorizontalAlign(FElectronicBoardFrame.MHImage, W);
+    _HorizontalAlign(FElectronicBoardFrame.MLImage, W);
+    _HorizontalAlign(FElectronicBoardFrame.SecondsDelimLayout, W);
+    _HorizontalAlign(FElectronicBoardFrame.SDelimImage, W);
+    _HorizontalAlign(FElectronicBoardFrame.SecondsLayout, W * 2);
+    _HorizontalAlign(FElectronicBoardFrame.SHImage, W);
+    _HorizontalAlign(FElectronicBoardFrame.SLImage, W);
+  end;
 end;
 
 procedure TMainForm.loContentMouseUp(Sender: TObject; Button: TMouseButton;
@@ -292,7 +389,7 @@ begin
   GetCursorPos(MousePoint);
   if Button = TMouseButton.mbLeft then
   begin
-    ColorsPopupMenu.Popup(MousePoint.X, MousePoint.Y);
+    SettingsPopupMenu.Popup(MousePoint.X, MousePoint.Y);
   end
   else
   if Button = TMouseButton.mbRight then
@@ -309,21 +406,39 @@ begin
   TShowTime.ShowTime(Time);
 end;
 
-procedure TMainForm.OpenElectronicBoard(const AColorIdent: String);
+procedure TMainForm.OpenElectronicBoard(
+  const AColorIdent: String;
+  const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
 begin
   if Assigned(FElectronicBoardFrame) then
     CloseElectronicBoard;
 
-  FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
+  TState.ColorIdent := AColorIdent;
+
+  TState.Orientation := AOrientation;
+  if TState.Orientation = okHorizontal then
+  begin
+    FBorderFrame.MinWidth := 300;
+    FBorderFrame.MinHeight := 100;
+
+    FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
+  end
+  else
+  if TState.Orientation = okVertical then
+  begin
+    FBorderFrame.MinWidth := 100;
+    FBorderFrame.MinHeight := 300;
+
+    FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
+  end;
+
   TShowTime.Init(
     {$IFDEF DEBUG}
     '..\..\Arts\Digits.pck',
-    //'..\..\Arts\' + AColorIdent + '.pck',
     {$ELSE}
     'Digits.pck',
-    //AColorIdent + '.pck',
     {$ENDIF}
-    AColorIdent,
+    TState.ColorIdent,
     FElectronicBoardFrame.HHImage,
     FElectronicBoardFrame.HLImage,
     FElectronicBoardFrame.HDelimImage,
@@ -331,7 +446,8 @@ begin
     FElectronicBoardFrame.MLImage,
     FElectronicBoardFrame.SDelimImage,
     FElectronicBoardFrame.SHImage,
-    FElectronicBoardFrame.SLImage);
+    FElectronicBoardFrame.SLImage,
+    AOrientation);
 
   FElectronicBoardFrame.Parent := TimeText;
   FElectronicBoardFrame.HitTest := false;
@@ -356,7 +472,7 @@ var
   MenuItem: TMenuItem;
 begin
   MenuItem := TMenuItem(Sender);
-  OpenElectronicBoard(FElectronicBoardColorArray[MenuItem.Tag]);
+  OpenElectronicBoard(FElectronicBoardColorArray[MenuItem.Tag], TState.Orientation);
 end;
 
 procedure TMainForm.MenuStandardItemClickHandler(Sender: TObject);
@@ -379,6 +495,23 @@ begin
 
   RunTime;
 end;
+
+procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
+var
+  MenuItem: TMenuItem;
+begin
+  MenuItem := TMenuItem(Sender);
+  OpenElectronicBoard(TState.ColorIdent , okVertical);
+end;
+
+procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
+var
+  MenuItem: TMenuItem;
+begin
+  MenuItem := TMenuItem(Sender);
+  OpenElectronicBoard(TState.ColorIdent, okHorizontal);
+end;
+
 
 procedure TMainForm.RunTime;
 var
@@ -403,20 +536,6 @@ begin
           Self,
           OutputControl);
     end);
-//  ThreadFactory.CreateRegistredThread(
-//    procedure (
-//      const ARegProc: TRegProc;
-//      const AUnRegProc: TUnRegProc)
-//    begin
-//      FTimeThread :=
-//        TTimeThread.Create(
-//          ARegProc,
-//          AUnRegProc,
-//          StrToTime('00:00'),
-//          TTimeKind.tkTime,
-//          Self,
-//          OutputControl);
-//    end);
 end;
 
 procedure TMainForm.RunTimer(const ATimerTime: TTime);
@@ -442,21 +561,6 @@ begin
           Self,
           OutputControl);
     end);
-
-//  ThreadFactory.CreateRegistredThread(
-//    procedure (
-//      const ARegProc: TRegProc;
-//      const AUnRegProc: TUnRegProc)
-//    begin
-//      FTimeThread :=
-//        TTimeThread.Create(
-//          ARegProc,
-//          AUnRegProc,
-//          ATimerTime,
-//          TTimeKind.tkTimer,
-//          Self,
-//          OutputControl);
-//    end);
 end;
 
 procedure TMainForm.StartSignal;

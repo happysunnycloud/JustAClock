@@ -16,7 +16,7 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnResize = FormResize
   DesignerMasterStyle = 0
-  object ColorsPopupMenu: TPopupMenu
+  object SettingsPopupMenu: TPopupMenu
     Left = 6
     Top = 3
   end
