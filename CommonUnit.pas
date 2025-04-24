@@ -6,6 +6,11 @@ const
   VERTICAL_ORIENTATION_IDENT = 'Vertical';
   HORIZONTAL_ORIENTATION_IDENT = 'Horizontal';
 
+  VERTICAL_MIN_WIDTH = 120;
+  VERTICAL_MIN_HEIGHT = 320;
+
+  HORIZONTAL_MIN_WIDTH = 300;
+  HORIZONTAL_MIN_HEIGHT = 120;
 type
   TOrientationKind = (okHorizontal = 0, okVertical = 1);
   TBoardKind = (bkText = 0, bkElectronic = 1);

@@ -164,8 +164,6 @@ const
   SCALE_VALUE = 1;
 var
   MenuItem: TMenuItem;
-  ElectronicBoardColorName: String;
-  Electronic: TMenuItem;
   Orientation: TMenuItem;
   Colors: TMenuItem;
   ColorIdent: String;
@@ -275,8 +273,8 @@ begin
       TAlphaColorRec.Lime,
       $FFADADAD);
 
-  FBorderFrame.MinWidth := 300;
-  FBorderFrame.MinHeight := 100;
+  FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
+  FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
 
   FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
   FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
@@ -418,16 +416,16 @@ begin
   TState.Orientation := AOrientation;
   if TState.Orientation = okHorizontal then
   begin
-    FBorderFrame.MinWidth := 300;
-    FBorderFrame.MinHeight := 100;
+    FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
+    FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
 
     FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
   end
   else
   if TState.Orientation = okVertical then
   begin
-    FBorderFrame.MinWidth := 100;
-    FBorderFrame.MinHeight := 300;
+    FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
+    FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
 
     FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
   end;
@@ -497,21 +495,14 @@ begin
 end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
-var
-  MenuItem: TMenuItem;
 begin
-  MenuItem := TMenuItem(Sender);
   OpenElectronicBoard(TState.ColorIdent , okVertical);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
-var
-  MenuItem: TMenuItem;
 begin
-  MenuItem := TMenuItem(Sender);
   OpenElectronicBoard(TState.ColorIdent, okHorizontal);
 end;
-
 
 procedure TMainForm.RunTime;
 var
