@@ -1,0 +1,192 @@
+object VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
+  Align = Client
+  Size.Width = 84.000000000000000000
+  Size.Height = 258.000000000000000000
+  Size.PlatformDefault = False
+  object TimeVoidEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Align = Client
+    TabOrder = 1
+    Opacity = 0.000000000000000000
+    Size.Width = 222.000000000000000000
+    Size.Height = 74.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+  end
+  object BackgroundLayout: TLayout
+    Align = Contents
+    Size.Width = 84.000000000000000000
+    Size.Height = 258.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object BackgroundRectangle: TRectangle
+      Align = Contents
+      Fill.Color = claBlack
+      HitTest = False
+      Size.Width = 84.000000000000000000
+      Size.Height = 258.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Kind = None
+      Stroke.Thickness = 0.000000000000000000
+    end
+    object DigitsLayout: TLayout
+      Align = Center
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Margins.Left = 10.000000000000000000
+      Margins.Top = 10.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Margins.Bottom = 10.000000000000000000
+      Size.Width = 58.000000000000000000
+      Size.Height = 237.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object HoursLayout: TLayout
+        Align = Top
+        Anchors = [akLeft, akTop, akRight, akBottom]
+        Size.Width = 58.000000000000000000
+        Size.Height = 57.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object HHImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Left
+          HitTest = False
+          Size.Width = 30.000000000000000000
+          Size.Height = 57.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+        object HLImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Right
+          HitTest = False
+          Position.X = 28.000000000000000000
+          Size.Width = 30.000000000000000000
+          Size.Height = 57.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+      end
+      object MinutesLayout: TLayout
+        Align = Top
+        Position.Y = 87.000000000000000000
+        Size.Width = 58.000000000000000000
+        Size.Height = 60.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object MHImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Left
+          HitTest = False
+          Size.Width = 30.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+        object MLImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Right
+          HitTest = False
+          Position.X = 28.000000000000000000
+          Size.Width = 30.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+      end
+      object SecondsLayout: TLayout
+        Align = Top
+        Position.Y = 177.000000000000000000
+        Size.Width = 58.000000000000000000
+        Size.Height = 60.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        object SHImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Left
+          HitTest = False
+          Size.Width = 30.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+        object SLImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Right
+          HitTest = False
+          Position.X = 28.000000000000000000
+          Size.Width = 30.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+      end
+      object HoursDelimLayout: TLayout
+        Align = Top
+        Position.Y = 57.000000000000000000
+        Size.Width = 58.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        object HDelimImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Top
+          HitTest = False
+          Size.Width = 58.000000000000000000
+          Size.Height = 30.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+      end
+      object SecondsDelimLayout: TLayout
+        Align = Top
+        Position.Y = 147.000000000000000000
+        Size.Width = 58.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        object SDelimImage: TImage
+          MultiResBitmap.Height = 415
+          MultiResBitmap.Width = 226
+          MultiResBitmap = <
+            item
+            end>
+          Align = Client
+          HitTest = False
+          Size.Width = 58.000000000000000000
+          Size.Height = 30.000000000000000000
+          Size.PlatformDefault = False
+          WrapMode = Stretch
+        end
+      end
+    end
+  end
+end
