@@ -1,0 +1,67 @@
+inherited VerticalTextBoardFrame: TVerticalTextBoardFrame
+  Size.Width = 80.000000000000000000
+  Size.Height = 261.000000000000000000
+  inherited BackgroundLayout: TLayout
+    Size.Width = 80.000000000000000000
+    Size.Height = 261.000000000000000000
+    inherited BackgroundRectangle: TRectangle
+      Size.Width = 80.000000000000000000
+      Size.Height = 261.000000000000000000
+      inherited TextTimeLayout: TLayout
+        Size.Width = 60.000000000000000000
+        Size.Height = 241.000000000000000000
+        inherited TextHoursDelimLayout: TLayout
+          Align = Top
+          Position.Y = 60.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 30.000000000000000000
+          inherited HDelimText: TText
+            Size.Width = 60.000000000000000000
+            Size.Height = 30.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+        end
+        inherited TextHoursLayout: TLayout
+          Align = Top
+          inherited HHText: TText
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+          inherited HLText: TText
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+        end
+        inherited TextMinutesLayout: TLayout
+          Align = Top
+          Position.Y = 90.000000000000000000
+          inherited MHText: TText
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+          inherited MLText: TText
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+        end
+        inherited TextSecondsDelimLayout: TLayout
+          Align = Top
+          Position.Y = 150.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 30.000000000000000000
+          inherited SDelimText: TText
+            Size.Width = 60.000000000000000000
+            Size.Height = 30.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+        end
+        inherited TextSecondsLayout: TLayout
+          Align = Top
+          Position.Y = 180.000000000000000000
+          inherited SHText: TText
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+          inherited SLText: TText
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+          end
+        end
+      end
+    end
+  end
+end

@@ -1,0 +1,164 @@
+object TextBoardFrame: TTextBoardFrame
+  HitTest = False
+  Size.Width = 260.000000000000000000
+  Size.Height = 80.000000000000000000
+  Size.PlatformDefault = False
+  object BackgroundLayout: TLayout
+    Align = Contents
+    Size.Width = 260.000000000000000000
+    Size.Height = 80.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object BackgroundRectangle: TRectangle
+      Align = Contents
+      Fill.Color = claBlack
+      HitTest = False
+      Size.Width = 260.000000000000000000
+      Size.Height = 80.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Kind = None
+      Stroke.Thickness = 0.000000000000000000
+      object TextTimeLayout: TLayout
+        Align = Client
+        Margins.Left = 10.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 240.000000000000000000
+        Size.Height = 60.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object TextHoursDelimLayout: TLayout
+          Align = Left
+          Position.X = 60.000000000000000000
+          Size.Width = 30.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          object HDelimText: TText
+            Align = Contents
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextHoursLayout: TLayout
+          Align = Left
+          Size.Width = 60.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          object HHText: TText
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+          object HLText: TText
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextMinutesLayout: TLayout
+          Align = Left
+          Position.X = 90.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 3
+          object MHText: TText
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+          object MLText: TText
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextSecondsDelimLayout: TLayout
+          Align = Left
+          Position.X = 150.000000000000000000
+          Size.Width = 30.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 4
+          object SDelimText: TText
+            Align = Contents
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextSecondsLayout: TLayout
+          Align = Left
+          Position.X = 180.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 60.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 5
+          object SHText: TText
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+          object SLText: TText
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 60.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+      end
+    end
+  end
+end
