@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   Caption = 'JuckAClock'
   ClientHeight = 85
-  ClientWidth = 239
+  ClientWidth = 230
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
@@ -23,17 +23,166 @@ object MainForm: TMainForm
   object loContent: TLayout
     Align = Contents
     HitTest = True
-    Size.Width = 239.000000000000000000
+    Size.Width = 230.000000000000000000
     Size.Height = 85.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     OnMouseUp = loContentMouseUp
     object TimeLayout: TLayout
       Align = Client
-      Size.Width = 239.000000000000000000
+      Size.Width = 230.000000000000000000
       Size.Height = 85.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
+      object TextTimeLayout: TLayout
+        Align = Client
+        Margins.Left = 10.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 210.000000000000000000
+        Size.Height = 65.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object TextHoursLayout: TLayout
+          Align = Left
+          Size.Width = 60.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          object HHText: TText
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = '0'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+          object HLText: TText
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = '1'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextHoursDelimLayout: TLayout
+          Align = Left
+          Position.X = 60.000000000000000000
+          Size.Width = 15.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          object HDelimText: TText
+            Align = Contents
+            HitTest = False
+            Size.Width = 15.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = ':'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextMinutesLayout: TLayout
+          Align = Left
+          Position.X = 75.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 3
+          object MHText: TText
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = '2'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+          object MLText: TText
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = '3'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextSecondsDelimLayout: TLayout
+          Align = Left
+          Position.X = 135.000000000000000000
+          Size.Width = 15.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 4
+          object SDelimText: TText
+            Align = Contents
+            HitTest = False
+            Size.Width = 15.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = ':'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+        object TextSecondsLayout: TLayout
+          Align = Left
+          Position.X = 150.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 5
+          object SHText: TText
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = '4'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+          object SLText: TText
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 65.000000000000000000
+            Size.PlatformDefault = False
+            Stretch = True
+            Text = '5'
+            TextSettings.Font.Size = 40.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+          end
+        end
+      end
       object TimeText: TText
         Align = Contents
         HitTest = False
@@ -41,7 +190,7 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Size.Width = 219.000000000000000000
+        Size.Width = 240.000000000000000000
         Size.Height = 65.000000000000000000
         Size.PlatformDefault = False
         Stretch = True
@@ -49,20 +198,29 @@ object MainForm: TMainForm
         TextSettings.Font.Size = 24.000000000000000000
         TextSettings.Font.StyleExt = {00070000000000000004000000}
         TextSettings.FontColor = claWhite
+        Visible = False
       end
-      object SignalRectangle: TRectangle
-        Align = Client
-        Fill.Kind = None
-        HitTest = False
-        Size.Width = 239.000000000000000000
-        Size.Height = 85.000000000000000000
-        Size.PlatformDefault = False
-        Stroke.Color = claWhite
-        Stroke.Thickness = 4.000000000000000000
-      end
+    end
+    object SignalRectangle: TRectangle
+      Align = Client
+      Fill.Kind = None
+      HitTest = False
+      Size.Width = 230.000000000000000000
+      Size.Height = 85.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = claWhite
+      Stroke.Thickness = 4.000000000000000000
     end
   end
   object ToolsPopupMenu: TPopupMenu
-    Left = 210
+    Left = 36
+    Top = 2
+  end
+  object TimeVoidEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 3
+    Position.X = 166.000000000000000000
+    Position.Y = 8.000000000000000000
+    Visible = False
   end
 end

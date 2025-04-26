@@ -28,7 +28,10 @@ uses
   ObjectRegistryUnit in '..\DevelopmentsCollection\ObjectRegistryUnit.pas',
   FMX.ImageToolsUnit in '..\DevelopmentsCollection\FMX.ImageToolsUnit.pas',
   VerticalElectronicBoardFrameUnit in 'Frames\VerticalElectronicBoardFrameUnit.pas' {VeticalElectronicBoardFrame: TFrame},
-  CommonUnit in 'CommonUnit.pas';
+  CommonUnit in 'CommonUnit.pas',
+  ShowTextTimeUnit in 'ShowTextTimeUnit.pas',
+  TextBoardFrameUnit in 'Frames\TextBoardFrameUnit.pas' {TextBoardFrame: TFrame},
+  VerticalTextBoardFrameUnit in 'Frames\VerticalTextBoardFrameUnit.pas' {VerticalTextBoardFrame: TFrame};
 
 {$R *.res}
 

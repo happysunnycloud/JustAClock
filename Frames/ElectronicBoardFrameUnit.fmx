@@ -1,6 +1,6 @@
 object ElectronicBoardFrame: TElectronicBoardFrame
   Align = Client
-  Size.Width = 255.000000000000000000
+  Size.Width = 260.000000000000000000
   Size.Height = 77.000000000000000000
   Size.PlatformDefault = False
   object TimeVoidEdit: TEdit
@@ -15,7 +15,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
   end
   object BackgroundLayout: TLayout
     Align = Contents
-    Size.Width = 255.000000000000000000
+    Size.Width = 260.000000000000000000
     Size.Height = 77.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
@@ -23,166 +23,166 @@ object ElectronicBoardFrame: TElectronicBoardFrame
       Align = Contents
       Fill.Color = claBlack
       HitTest = False
-      Size.Width = 255.000000000000000000
+      Size.Width = 260.000000000000000000
       Size.Height = 77.000000000000000000
       Size.PlatformDefault = False
       Stroke.Kind = None
       Stroke.Thickness = 0.000000000000000000
-    end
-    object DigitsLayout: TLayout
-      Align = Center
-      Margins.Left = 10.000000000000000000
-      Margins.Top = 10.000000000000000000
-      Margins.Right = 10.000000000000000000
-      Margins.Bottom = 10.000000000000000000
-      Size.Width = 240.000000000000000000
-      Size.Height = 60.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 0
-      object HoursLayout: TLayout
-        Align = Left
-        Size.Width = 60.000000000000000000
-        Size.Height = 60.000000000000000000
+      object DigitsLayout: TLayout
+        Align = Client
+        Margins.Left = 10.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 240.000000000000000000
+        Size.Height = 57.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        object HHImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
+        object HoursLayout: TLayout
           Align = Left
-          HitTest = False
-          Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 57.000000000000000000
           Size.PlatformDefault = False
-          WrapMode = Stretch
+          TabOrder = 0
+          object HHImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
+          object HLImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
         end
-        object HLImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
+        object MinutesLayout: TLayout
           Align = Left
-          HitTest = False
-          Position.X = 30.000000000000000000
-          Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
+          Position.X = 90.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 57.000000000000000000
           Size.PlatformDefault = False
-          WrapMode = Stretch
+          TabOrder = 1
+          object MHImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
+          object MLImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
         end
-      end
-      object MinutesLayout: TLayout
-        Align = Left
-        Position.X = 90.000000000000000000
-        Size.Width = 60.000000000000000000
-        Size.Height = 60.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 1
-        object MHImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
+        object SecondsLayout: TLayout
           Align = Left
-          HitTest = False
-          Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
+          Position.X = 180.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 57.000000000000000000
           Size.PlatformDefault = False
-          WrapMode = Stretch
+          TabOrder = 2
+          object SHImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
+          object SLImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Position.X = 30.000000000000000000
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
         end
-        object MLImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
+        object HoursDelimLayout: TLayout
           Align = Left
-          HitTest = False
-          Position.X = 30.000000000000000000
+          Position.X = 60.000000000000000000
           Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Height = 57.000000000000000000
           Size.PlatformDefault = False
-          WrapMode = Stretch
+          TabOrder = 3
+          object HDelimImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
         end
-      end
-      object SecondsLayout: TLayout
-        Align = Left
-        Position.X = 180.000000000000000000
-        Size.Width = 60.000000000000000000
-        Size.Height = 60.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 2
-        object SHImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
+        object SecondsDelimLayout: TLayout
           Align = Left
-          HitTest = False
+          Position.X = 150.000000000000000000
           Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Height = 57.000000000000000000
           Size.PlatformDefault = False
-          WrapMode = Stretch
-        end
-        object SLImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
-          Align = Left
-          HitTest = False
-          Position.X = 30.000000000000000000
-          Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
-          Size.PlatformDefault = False
-          WrapMode = Stretch
-        end
-      end
-      object HoursDelimLayout: TLayout
-        Align = Left
-        Position.X = 60.000000000000000000
-        Size.Width = 30.000000000000000000
-        Size.Height = 60.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 3
-        object HDelimImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
-          Align = Left
-          HitTest = False
-          Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
-          Size.PlatformDefault = False
-          WrapMode = Stretch
-        end
-      end
-      object SecondsDelimLayout: TLayout
-        Align = Left
-        Position.X = 150.000000000000000000
-        Size.Width = 30.000000000000000000
-        Size.Height = 60.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 4
-        object SDelimImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          MultiResBitmap = <
-            item
-            end>
-          Align = Left
-          HitTest = False
-          Size.Width = 30.000000000000000000
-          Size.Height = 60.000000000000000000
-          Size.PlatformDefault = False
-          WrapMode = Stretch
+          TabOrder = 4
+          object SDelimImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            MultiResBitmap = <
+              item
+              end>
+            Align = Left
+            HitTest = False
+            Size.Width = 30.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            WrapMode = Stretch
+          end
         end
       end
     end

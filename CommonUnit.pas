@@ -21,12 +21,18 @@ type
       FColorIdent: String;
       FOrientation: TOrientationKind;
       FBoard: TBoardKind;
+    class procedure SetBoard(const ABoard: TBoardKind); static;
   public
     class property ColorIdent: String read FColorIdent write FColorIdent;
     class property Orientation: TOrientationKind read FOrientation write FOrientation;
-    class property Board: TBoardKind read FBoard write FBoard;
+    class property Board: TBoardKind read FBoard write SetBoard;
   end;
 
 implementation
+
+class procedure TState.SetBoard(const ABoard: TBoardKind);
+begin
+  FBoard := ABoard;
+end;
 
 end.

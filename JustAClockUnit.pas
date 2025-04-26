@@ -1,5 +1,5 @@
 ﻿unit JustAClockUnit;
-
+{ 85 * 230 }
 interface
 
 uses
@@ -10,7 +10,8 @@ uses
   TimeThreadUnit,
   ElectronicBoardFrameUnit, FMX.Menus,
   FMX.FormExtUnit,
-  CommonUnit
+  CommonUnit, FMX.Controls.Presentation, FMX.Edit,
+  TextBoardFrameUnit
   ;
 
 type
@@ -29,6 +30,21 @@ type
     SettingsPopupMenu: TPopupMenu;
     SignalRectangle: TRectangle;
     ToolsPopupMenu: TPopupMenu;
+    TextTimeLayout: TLayout;
+    TextHoursLayout: TLayout;
+    TextHoursDelimLayout: TLayout;
+    TextMinutesLayout: TLayout;
+    TextSecondsDelimLayout: TLayout;
+    TextSecondsLayout: TLayout;
+    HHText: TText;
+    HLText: TText;
+    HDelimText: TText;
+    MHText: TText;
+    MLText: TText;
+    SDelimText: TText;
+    SHText: TText;
+    SLText: TText;
+    TimeVoidEdit: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -41,6 +57,7 @@ type
     FTimeThread: TTimeThread;
 
     FElectronicBoardFrame: TElectronicBoardFrame;
+    FTextBoardFrame: TTextBoardFrame;
     FCurrentElectronicBoardColor: String;
     FElectronicBoardColorArray: TElectronicBoardColorArray;
 
@@ -68,6 +85,7 @@ type
   private
     { Private declarations }
     procedure OpenElectronicBoard(
+      const ABoard: TBoardKind;
       const AColorIdent: String;
       const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
     procedure CloseElectronicBoard;
@@ -91,11 +109,12 @@ uses
   , FMX.Craft.PopupMenu.Structures
   , FMX.Craft.PopupMenu.Thread.Win
   , ShowTimeUnit
-  , FMX.Edit
+  , ShowTextTimeUnit
   , ThreadFactoryUnit
   , NumScrollUnit
   , SetTimerFormUnit
   , VerticalElectronicBoardFrameUnit
+  , VerticalTextBoardFrameUnit
   ;
 
 { TElectronicBoardColorArrayHelper }
@@ -173,7 +192,6 @@ begin
   ReportMemoryLeaksOnShutdown := true;
 
   TState.Orientation := okHorizontal;
-  TState.Board := bkText;
 
   SetTimerForm := nil;
   SignalRectangle.Visible := false;
@@ -286,10 +304,14 @@ begin
   FElectronicBoardFrame := nil;
 
   RunTime;
+
+  OpenElectronicBoard(bkText, TState.ColorIdent, TState.Orientation);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  TShowTextTime.UnInit;
+
   if Assigned(FTrayPopupMenu) then
     FTrayPopupMenu.Free;
 
@@ -303,79 +325,164 @@ procedure TMainForm.FormResize(Sender: TObject);
     AControl.Align := TAlignLayout.Left;
   end;
 var
-  W: Single;
+  W0: Single;
+  W1: Single;
   H0: Single;
   H1: Single;
 begin
-  if not Assigned(FElectronicBoardFrame) then
-    Exit;
-
-  if FElectronicBoardFrame is TVerticalElectronicBoardFrame then
+  if Assigned(FTextBoardFrame) then
   begin
-    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.None;
-    FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.75;
-    FElectronicBoardFrame.DigitsLayout.Width  := Self.Width * 0.65;
-    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.Center;
+    if FTextBoardFrame is TVerticalTextBoardFrame then
+    begin
+      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.None;
+      FTextBoardFrame.TextTimeLayout.Height := Self.Height * 0.75;
+      FTextBoardFrame.TextTimeLayout.Width  := Self.Width * 0.65;
+      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.Center;
 
-    W  := FElectronicBoardFrame.DigitsLayout.Width / 2;
-    H0 := FElectronicBoardFrame.DigitsLayout.Height / 4;
-    H1 := FElectronicBoardFrame.DigitsLayout.Height / 8;
+      W0 := FTextBoardFrame.TextTimeLayout.Width / 2;
+      H0 := FTextBoardFrame.TextTimeLayout.Height / 4;
+      H1 := FTextBoardFrame.TextTimeLayout.Height / 8;
 
-    FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.None;
-    FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.None;
-    FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.None;
-    FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.None;
-    FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.None;
+      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.None;
+      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.None;
+      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.None;
+      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.None;
+      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.None;
 
-    FElectronicBoardFrame.HoursLayout.Height        := H0;
-    FElectronicBoardFrame.HoursDelimLayout.Height   := H1;
-    FElectronicBoardFrame.MinutesLayout.Height      := H0;
-    FElectronicBoardFrame.SecondsDelimLayout.Height := H1;
-    FElectronicBoardFrame.SecondsLayout.Height      := H0;
+      FTextBoardFrame.TextHoursLayout.Height        := H0;
+      FTextBoardFrame.TextHoursDelimLayout.Height   := H1;
+      FTextBoardFrame.TextMinutesLayout.Height      := H0;
+      FTextBoardFrame.TextSecondsDelimLayout.Height := H1;
+      FTextBoardFrame.TextSecondsLayout.Height      := H0;
 
-    FElectronicBoardFrame.HHImage.Width     := W;
-    FElectronicBoardFrame.HLImage.Width     := W;
-    FElectronicBoardFrame.HDelimImage.Width := W;
-    FElectronicBoardFrame.MHImage.Width     := W;
-    FElectronicBoardFrame.MLImage.Width     := W;
-    FElectronicBoardFrame.SDelimImage.Width := W;
-    FElectronicBoardFrame.SHImage.Width     := W;
-    FElectronicBoardFrame.SLImage.Width     := W;
+      FTextBoardFrame.HHText.Width     := W0;
+      FTextBoardFrame.HLText.Width     := W0;
+      FTextBoardFrame.HDelimText.Width := W0;
+      FTextBoardFrame.MHText.Width     := W0;
+      FTextBoardFrame.MLText.Width     := W0;
+      FTextBoardFrame.SDelimText.Width := W0;
+      FTextBoardFrame.SHText.Width     := W0;
+      FTextBoardFrame.SLText.Width     := W0;
 
-    FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.Bottom;
-    FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.Bottom;
-    FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.Bottom;
-    FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.Bottom;
-    FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.Bottom;
+      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.Bottom;
+      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.Bottom;
+      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.Bottom;
+      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.Bottom;
+      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.Bottom;
 
-    FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.Top;
-    FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.Top;
-    FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.Top;
-    FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.Top;
-    FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.Bottom;
+      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.Top;
+      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.Top;
+      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.Top;
+      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.Top;
+      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.Bottom;
+    end
+    else
+    if FTextBoardFrame is TTextBoardFrame then
+    begin
+      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.None;
+      FTextBoardFrame.TextTimeLayout.Height := Self.Height * 0.6;
+      FTextBoardFrame.TextTimeLayout.Width  := Self.Width * 0.85;
+      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.Center;
+
+      FTextBoardFrame.TextHoursLayout.Align := TAlignLayout.Right;
+      FTextBoardFrame.TextHoursDelimLayout.Align := TAlignLayout.Right;
+      FTextBoardFrame.TextMinutesLayout.Align := TAlignLayout.Right;
+      FTextBoardFrame.TextSecondsDelimLayout.Align := TAlignLayout.Right;
+      FTextBoardFrame.TextSecondsLayout.Align := TAlignLayout.Right;
+
+      W0 := FTextBoardFrame.TextTimeLayout.Width / 3.5;
+      W1 := FTextBoardFrame.TextTimeLayout.Width / 14;
+      _HorizontalAlign(FTextBoardFrame.TextHoursLayout, W0);
+      _HorizontalAlign(FTextBoardFrame.HHText, W0 / 2);
+      _HorizontalAlign(FTextBoardFrame.HLText, W0 / 2);
+      _HorizontalAlign(FTextBoardFrame.TextHoursDelimLayout , W1);
+      _HorizontalAlign(FTextBoardFrame.HDelimText, W1);
+      _HorizontalAlign(FTextBoardFrame.TextMinutesLayout, W0);
+      _HorizontalAlign(FTextBoardFrame.MHText, W0 / 2);
+      _HorizontalAlign(FTextBoardFrame.MLText, W0 / 2);
+      _HorizontalAlign(FTextBoardFrame.TextSecondsDelimLayout, W1);
+      _HorizontalAlign(FTextBoardFrame.SDelimText, W1);
+      _HorizontalAlign(FTextBoardFrame.TextSecondsLayout, W0);
+      _HorizontalAlign(FTextBoardFrame.SHText, W0 / 2);
+      _HorizontalAlign(FTextBoardFrame.SLText, W0 / 2);
+
+      FTextBoardFrame.TextHoursLayout.Align := TAlignLayout.Left;
+      FTextBoardFrame.TextHoursDelimLayout.Align := TAlignLayout.Left;
+      FTextBoardFrame.TextMinutesLayout.Align := TAlignLayout.Left;
+      FTextBoardFrame.TextSecondsDelimLayout.Align := TAlignLayout.Left;
+      FTextBoardFrame.TextSecondsLayout.Align := TAlignLayout.Left;
+    end;
   end
   else
-  if FElectronicBoardFrame is TElectronicBoardFrame then
+  if Assigned(FElectronicBoardFrame) then
   begin
-    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.None;
-    FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.45;
-    FElectronicBoardFrame.DigitsLayout.Width  := Self.Width * 0.85;
-    FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.Center;
+    if FElectronicBoardFrame is TVerticalElectronicBoardFrame then
+    begin
+      FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.None;
+      FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.75;
+      FElectronicBoardFrame.DigitsLayout.Width  := Self.Width * 0.65;
+      FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.Center;
 
-    W := FElectronicBoardFrame.DigitsLayout.Width / 8;
-    _HorizontalAlign(FElectronicBoardFrame.HoursLayout, W * 2);
-    _HorizontalAlign(FElectronicBoardFrame.HHImage, W);
-    _HorizontalAlign(FElectronicBoardFrame.HLImage, W);
-    _HorizontalAlign(FElectronicBoardFrame.HoursDelimLayout , W);
-    _HorizontalAlign(FElectronicBoardFrame.HDelimImage, W);
-    _HorizontalAlign(FElectronicBoardFrame.MinutesLayout, W * 2);
-    _HorizontalAlign(FElectronicBoardFrame.MHImage, W);
-    _HorizontalAlign(FElectronicBoardFrame.MLImage, W);
-    _HorizontalAlign(FElectronicBoardFrame.SecondsDelimLayout, W);
-    _HorizontalAlign(FElectronicBoardFrame.SDelimImage, W);
-    _HorizontalAlign(FElectronicBoardFrame.SecondsLayout, W * 2);
-    _HorizontalAlign(FElectronicBoardFrame.SHImage, W);
-    _HorizontalAlign(FElectronicBoardFrame.SLImage, W);
+      W0  := FElectronicBoardFrame.DigitsLayout.Width / 2;
+      H0 := FElectronicBoardFrame.DigitsLayout.Height / 4;
+      H1 := FElectronicBoardFrame.DigitsLayout.Height / 8;
+
+      FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.None;
+      FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.None;
+      FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.None;
+      FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.None;
+      FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.None;
+
+      FElectronicBoardFrame.HoursLayout.Height        := H0;
+      FElectronicBoardFrame.HoursDelimLayout.Height   := H1;
+      FElectronicBoardFrame.MinutesLayout.Height      := H0;
+      FElectronicBoardFrame.SecondsDelimLayout.Height := H1;
+      FElectronicBoardFrame.SecondsLayout.Height      := H0;
+
+      FElectronicBoardFrame.HHImage.Width     := W0;
+      FElectronicBoardFrame.HLImage.Width     := W0;
+      FElectronicBoardFrame.HDelimImage.Width := W0;
+      FElectronicBoardFrame.MHImage.Width     := W0;
+      FElectronicBoardFrame.MLImage.Width     := W0;
+      FElectronicBoardFrame.SDelimImage.Width := W0;
+      FElectronicBoardFrame.SHImage.Width     := W0;
+      FElectronicBoardFrame.SLImage.Width     := W0;
+
+      FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.Bottom;
+      FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.Bottom;
+      FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.Bottom;
+      FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.Bottom;
+      FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.Bottom;
+
+      FElectronicBoardFrame.HoursLayout.Align         := TAlignLayout.Top;
+      FElectronicBoardFrame.HoursDelimLayout.Align    := TAlignLayout.Top;
+      FElectronicBoardFrame.MinutesLayout.Align       := TAlignLayout.Top;
+      FElectronicBoardFrame.SecondsDelimLayout.Align  := TAlignLayout.Top;
+      FElectronicBoardFrame.SecondsLayout.Align       := TAlignLayout.Bottom;
+    end
+    else
+    if FElectronicBoardFrame is TElectronicBoardFrame then
+    begin
+      FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.None;
+      FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.45;
+      FElectronicBoardFrame.DigitsLayout.Width  := Self.Width * 0.85;
+      FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.Center;
+
+      W0 := FElectronicBoardFrame.DigitsLayout.Width / 8;
+      _HorizontalAlign(FElectronicBoardFrame.HoursLayout, W0 * 2);
+      _HorizontalAlign(FElectronicBoardFrame.HHImage, W0);
+      _HorizontalAlign(FElectronicBoardFrame.HLImage, W0);
+      _HorizontalAlign(FElectronicBoardFrame.HoursDelimLayout , W0);
+      _HorizontalAlign(FElectronicBoardFrame.HDelimImage, W0);
+      _HorizontalAlign(FElectronicBoardFrame.MinutesLayout, W0 * 2);
+      _HorizontalAlign(FElectronicBoardFrame.MHImage, W0);
+      _HorizontalAlign(FElectronicBoardFrame.MLImage, W0);
+      _HorizontalAlign(FElectronicBoardFrame.SecondsDelimLayout, W0);
+      _HorizontalAlign(FElectronicBoardFrame.SDelimImage, W0);
+      _HorizontalAlign(FElectronicBoardFrame.SecondsLayout, W0 * 2);
+      _HorizontalAlign(FElectronicBoardFrame.SHImage, W0);
+      _HorizontalAlign(FElectronicBoardFrame.SLImage, W0);
+    end;
   end;
 end;
 
@@ -401,68 +508,126 @@ var
   Time: String;
 begin
   Time := Trim(TEdit(Sender).Text);
-  TShowTime.ShowTime(Time);
+  if TState.Board = bkText then
+    TShowTextTime.ShowTextTime(Time)
+  else
+    TShowTime.ShowTime(Time);
 end;
 
 procedure TMainForm.OpenElectronicBoard(
+  const ABoard: TBoardKind;
   const AColorIdent: String;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
 begin
-  if Assigned(FElectronicBoardFrame) then
-    CloseElectronicBoard;
+  TimeVoidEdit.OnChange := nil;
+  if Assigned(FTimeThread) then
+    FTimeThread.OutputControl := nil;
 
+  CloseElectronicBoard;
+
+  TState.Board := ABoard;
   TState.ColorIdent := AColorIdent;
-
   TState.Orientation := AOrientation;
-  if TState.Orientation = okHorizontal then
-  begin
-    FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
-    FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
 
-    FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
+  if TState.Board = bkElectronic then
+  begin
+    if TState.Orientation = okHorizontal then
+    begin
+      FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
+      FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
+
+      FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
+    end
+    else
+    if TState.Orientation = okVertical then
+    begin
+      FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
+      FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
+
+      FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
+    end;
+
+    TShowTime.Init(
+      {$IFDEF DEBUG}
+      '..\..\Arts\Digits.pck',
+      {$ELSE}
+      'Digits.pck',
+      {$ENDIF}
+      TState.ColorIdent,
+      FElectronicBoardFrame.HHImage,
+      FElectronicBoardFrame.HLImage,
+      FElectronicBoardFrame.HDelimImage,
+      FElectronicBoardFrame.MHImage,
+      FElectronicBoardFrame.MLImage,
+      FElectronicBoardFrame.SDelimImage,
+      FElectronicBoardFrame.SHImage,
+      FElectronicBoardFrame.SLImage,
+      AOrientation);
+
+    FElectronicBoardFrame.Parent := TimeLayout;
+    FElectronicBoardFrame.Align := TAlignLayout.Contents;
+    FElectronicBoardFrame.HitTest := false;
   end
   else
-  if TState.Orientation = okVertical then
+  if TState.Board = bkText then
   begin
-    FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
-    FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
+    if TState.Orientation = okHorizontal then
+    begin
+      FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
+      FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
 
-    FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
+      FTextBoardFrame := TTextBoardFrame.Create(nil);
+    end
+    else
+    if TState.Orientation = okVertical then
+    begin
+      FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
+      FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
+
+      FTextBoardFrame := TVerticalTextBoardFrame.Create(nil);
+    end;
+
+    TShowTextTime.Init(
+      TState.ColorIdent,
+      FTextBoardFrame.HHText,
+      FTextBoardFrame.HLText,
+      FTextBoardFrame.HDelimText,
+      FTextBoardFrame.MHText,
+      FTextBoardFrame.MLText,
+      FTextBoardFrame.SDelimText,
+      FTextBoardFrame.SHText,
+      FTextBoardFrame.SLText,
+      TState.Orientation);
+
+    FTextBoardFrame.Parent := TimeLayout;
+    FTextBoardFrame.Align := TAlignLayout.Contents;
+    FTextBoardFrame.HitTest := false;
   end;
 
-  TShowTime.Init(
-    {$IFDEF DEBUG}
-    '..\..\Arts\Digits.pck',
-    {$ELSE}
-    'Digits.pck',
-    {$ENDIF}
-    TState.ColorIdent,
-    FElectronicBoardFrame.HHImage,
-    FElectronicBoardFrame.HLImage,
-    FElectronicBoardFrame.HDelimImage,
-    FElectronicBoardFrame.MHImage,
-    FElectronicBoardFrame.MLImage,
-    FElectronicBoardFrame.SDelimImage,
-    FElectronicBoardFrame.SHImage,
-    FElectronicBoardFrame.SLImage,
-    AOrientation);
+  FTimeThread.OutputControl := TimeVoidEdit;
+  TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
 
-  FElectronicBoardFrame.Parent := TimeText;
-  FElectronicBoardFrame.HitTest := false;
-  FTimeThread.OutputControl := FElectronicBoardFrame.TimeVoidEdit;
-  FElectronicBoardFrame.TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
-
-  loContent.BringToFront;
   Self.Resize;
 end;
 
 procedure TMainForm.CloseElectronicBoard;
 begin
+  TimeVoidEdit.OnChange := nil;
   if Assigned(FTimeThread) then
-    FTimeThread.OutputControl := TimeText;
+    FTimeThread.OutputControl := nil;
+
   TShowTime.UnInit;
+  TShowTextTime.UnInit;
+
   if Assigned(FElectronicBoardFrame) then
+  begin
     FreeAndNil(FElectronicBoardFrame);
+  end;
+
+  if Assigned(FTextBoardFrame) then
+  begin
+    FreeAndNil(FTextBoardFrame);
+  end
 end;
 
 procedure TMainForm.MenuColorItemClickHandler(Sender: TObject);
@@ -470,12 +635,12 @@ var
   MenuItem: TMenuItem;
 begin
   MenuItem := TMenuItem(Sender);
-  OpenElectronicBoard(FElectronicBoardColorArray[MenuItem.Tag], TState.Orientation);
+  OpenElectronicBoard(bkElectronic, FElectronicBoardColorArray[MenuItem.Tag], TState.Orientation);
 end;
 
 procedure TMainForm.MenuStandardItemClickHandler(Sender: TObject);
 begin
-  CloseElectronicBoard;
+  OpenElectronicBoard(bkText, TState.ColorIdent, TState.Orientation);
 end;
 
 procedure TMainForm.MenuCountDownItemClickHandler(Sender: TObject);
@@ -496,21 +661,21 @@ end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
 begin
-  OpenElectronicBoard(TState.ColorIdent , okVertical);
+  OpenElectronicBoard(TState.Board, TState.ColorIdent, okVertical);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
 begin
-  OpenElectronicBoard(TState.ColorIdent, okHorizontal);
+  OpenElectronicBoard(TState.Board, TState.ColorIdent, okHorizontal);
 end;
 
 procedure TMainForm.RunTime;
 var
   OutputControl: TControl;
 begin
-  OutputControl := TimeText;
-  if Assigned(FElectronicBoardFrame) then
-    OutputControl := FElectronicBoardFrame.TimeVoidEdit;
+  OutputControl := TimeVoidEdit;
+//  if Assigned(FElectronicBoardFrame) then
+//    OutputControl := FElectronicBoardFrame.TimeVoidEdit;
 
   if Assigned(FTimeThread) then
     FTimeThread.Terminate;
@@ -522,7 +687,7 @@ begin
       FTimeThread :=
         TTimeThread.Create(
           AThreadFactory,
-          StrToTime('00:00'),
+          StrToTime('00:00:00'),
           TTimeKind.tkTime,
           Self,
           OutputControl);
@@ -533,7 +698,7 @@ procedure TMainForm.RunTimer(const ATimerTime: TTime);
 var
   OutputControl: TControl;
 begin
-  OutputControl := TimeText;
+  OutputControl := TimeVoidEdit; //TimeText;
   if Assigned(FElectronicBoardFrame) then
     OutputControl := FElectronicBoardFrame.TimeVoidEdit;
 

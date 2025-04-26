@@ -67,7 +67,6 @@ var
   i: Integer;
   BitMap: TBitMap;
   ImageFile: TFilePacker;
-  MemoryStream: TMemoryStream;
   OrientationPrefix: String;
 begin
   if not FileExists(AImageFileName) then
@@ -76,7 +75,6 @@ begin
   OrientationPrefix := '';
   if AOrientation = okVertical then
     OrientationPrefix := VERTICAL_ORIENTATION_IDENT;
-
 
   FHH := AHH;
   FHL := AHL;
@@ -94,26 +92,20 @@ begin
     for i := 0 to 9 do
     begin
       BitMap := TBitMap.Create;
-      MemoryStream := TMemoryStream.Create;
-      try
-        TImageExtractor.ExtractToBitmap(
-          ImageFile,
-          AColorIdent + '\' + i.ToString + '.png',
-          BitMap);
-        FBitmapList.Add(BitMap);
-      finally
-        FreeAndNil(MemoryStream);
-      end;
+
+      TImageExtractor.ExtractToBitmap(
+        ImageFile,
+        AColorIdent + '\' + i.ToString + '.png',
+        BitMap);
+      FBitmapList.Add(BitMap);
     end;
 
+    BitMap := TBitMap.Create;
     TImageExtractor.ExtractToBitmap(
       ImageFile,
       AColorIdent + '\' + OrientationPrefix + 'Delimiter.png',
-      FHDelim.Bitmap);
-    TImageExtractor.ExtractToBitmap(
-      ImageFile,
-      AColorIdent + '\' + OrientationPrefix + 'Delimiter.png',
-      FSDelim.Bitmap);
+      BitMap);
+    FBitmapList.Add(BitMap);
   finally
     FreeAndNil(ImageFile);
   end;
@@ -162,8 +154,10 @@ begin
 
   FHH.Bitmap.Assign(FBitmapList[_GetDigit(Time, 1)]);
   FHL.Bitmap.Assign(FBitmapList[_GetDigit(Time, 2)]);
+  FHDelim.Bitmap.Assign(FBitmapList[10]);
   FMH.Bitmap.Assign(FBitmapList[_GetDigit(Time, 4)]);
   FML.Bitmap.Assign(FBitmapList[_GetDigit(Time, 5)]);
+  FSDelim.Bitmap.Assign(FBitmapList[10]);
   FSH.Bitmap.Assign(FBitmapList[_GetDigit(Time, 7)]);
   FSL.Bitmap.Assign(FBitmapList[_GetDigit(Time, 8)]);
 end;
