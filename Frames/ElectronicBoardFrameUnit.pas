@@ -20,7 +20,6 @@ type
     SHImage: TImage;
     HDelimImage: TImage;
     SDelimImage: TImage;
-    TimeVoidEdit: TEdit;
     HoursLayout: TLayout;
     MinutesLayout: TLayout;
     SecondsLayout: TLayout;

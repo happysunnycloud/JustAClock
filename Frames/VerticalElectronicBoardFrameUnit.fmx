@@ -7,78 +7,78 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
     inherited BackgroundRectangle: TRectangle
       Size.Width = 80.000000000000000000
       Size.Height = 261.000000000000000000
-    end
-    inherited DigitsLayout: TLayout
-      Size.Width = 60.000000000000000000
-      Size.Height = 241.000000000000000000
-      inherited HoursLayout: TLayout
-        Align = Top
-        Size.Height = 60.000000000000000000
-        inherited HHImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Size.Height = 60.000000000000000000
-        end
-        inherited HLImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Size.Height = 60.000000000000000000
-        end
-      end
-      inherited MinutesLayout: TLayout
-        Align = Top
-        Position.Y = 90.000000000000000000
-        Size.Height = 60.000000000000000000
-        inherited MHImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Size.Height = 60.000000000000000000
-        end
-        inherited MLImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Size.Height = 60.000000000000000000
-        end
-      end
-      inherited SecondsLayout: TLayout
-        Align = Top
-        Position.Y = 180.000000000000000000
-        Size.Height = 60.000000000000000000
-        inherited SHImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Size.Height = 60.000000000000000000
-        end
-        inherited SLImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Size.Height = 60.000000000000000000
-        end
-      end
-      inherited HoursDelimLayout: TLayout
-        Align = Top
-        Position.Y = 60.000000000000000000
+      inherited DigitsLayout: TLayout
         Size.Width = 60.000000000000000000
-        Size.Height = 30.000000000000000000
-        inherited HDelimImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Align = Client
+        Size.Height = 241.000000000000000000
+        inherited HoursLayout: TLayout
+          Align = Top
+          Size.Height = 60.000000000000000000
+          inherited HHImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Size.Height = 60.000000000000000000
+          end
+          inherited HLImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Size.Height = 60.000000000000000000
+          end
+        end
+        inherited MinutesLayout: TLayout
+          Align = Top
+          Position.Y = 90.000000000000000000
+          Size.Height = 60.000000000000000000
+          inherited MHImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Size.Height = 60.000000000000000000
+          end
+          inherited MLImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Size.Height = 60.000000000000000000
+          end
+        end
+        inherited SecondsLayout: TLayout
+          Align = Top
+          Position.Y = 180.000000000000000000
+          Size.Height = 60.000000000000000000
+          inherited SHImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Size.Height = 60.000000000000000000
+          end
+          inherited SLImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Size.Height = 60.000000000000000000
+          end
+        end
+        inherited HoursDelimLayout: TLayout
+          Align = Top
+          Position.Y = 60.000000000000000000
           Size.Width = 60.000000000000000000
           Size.Height = 30.000000000000000000
+          inherited HDelimImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Align = Client
+            Size.Width = 60.000000000000000000
+            Size.Height = 30.000000000000000000
+          end
         end
-      end
-      inherited SecondsDelimLayout: TLayout
-        Align = Top
-        Position.Y = 150.000000000000000000
-        Size.Width = 60.000000000000000000
-        Size.Height = 30.000000000000000000
-        inherited SDelimImage: TImage
-          MultiResBitmap.Height = 415
-          MultiResBitmap.Width = 226
-          Align = Client
+        inherited SecondsDelimLayout: TLayout
+          Align = Top
+          Position.Y = 150.000000000000000000
           Size.Width = 60.000000000000000000
           Size.Height = 30.000000000000000000
+          inherited SDelimImage: TImage
+            MultiResBitmap.Height = 415
+            MultiResBitmap.Width = 226
+            Align = Client
+            Size.Width = 60.000000000000000000
+            Size.Height = 30.000000000000000000
+          end
         end
       end
     end

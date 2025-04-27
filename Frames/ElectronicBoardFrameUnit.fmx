@@ -3,16 +3,6 @@ object ElectronicBoardFrame: TElectronicBoardFrame
   Size.Width = 260.000000000000000000
   Size.Height = 77.000000000000000000
   Size.PlatformDefault = False
-  object TimeVoidEdit: TEdit
-    Touch.InteractiveGestures = [LongTap, DoubleTap]
-    Align = Client
-    TabOrder = 1
-    Opacity = 0.000000000000000000
-    Size.Width = 222.000000000000000000
-    Size.Height = 74.000000000000000000
-    Size.PlatformDefault = False
-    Visible = False
-  end
   object BackgroundLayout: TLayout
     Align = Contents
     Size.Width = 260.000000000000000000

@@ -82,6 +82,22 @@ type
 
     procedure RunTime;
     procedure RunTimer(const ATimerTime: TTime);
+
+    procedure ResizeVerticalBoardFrame(
+      const ADigitsLayout: TLayout;
+      const AHoursLayout: TLayout;
+      const AHoursDelimLayout: TLayout;
+      const AMinutesLayout: TLayout;
+      const ASecondsDelimLayout: TLayout;
+      const ASecondsLayout: TLayout;
+      const AHHControl: TControl;
+      const AHLControl: TControl;
+      const AHDelimControl: TControl;
+      const AMHControl: TControl;
+      const AMLControl: TControl;
+      const ASDelimControl: TControl;
+      const ASHControl: TControl;
+      const ASLControl: TControl);
   private
     { Private declarations }
     procedure OpenElectronicBoard(
@@ -334,47 +350,63 @@ begin
   begin
     if FTextBoardFrame is TVerticalTextBoardFrame then
     begin
-      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.None;
-      FTextBoardFrame.TextTimeLayout.Height := Self.Height * 0.75;
-      FTextBoardFrame.TextTimeLayout.Width  := Self.Width * 0.65;
-      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.Center;
+      ResizeVerticalBoardFrame(
+        FTextBoardFrame.TextTimeLayout,
+        FTextBoardFrame.TextHoursLayout,
+        FTextBoardFrame.TextHoursDelimLayout,
+        FTextBoardFrame.TextMinutesLayout,
+        FTextBoardFrame.TextSecondsDelimLayout,
+        FTextBoardFrame.TextSecondsLayout,
+        FTextBoardFrame.HHText,
+        FTextBoardFrame.HLText,
+        FTextBoardFrame.HDelimText,
+        FTextBoardFrame.MHText,
+        FTextBoardFrame.MLText,
+        FTextBoardFrame.SDelimText,
+        FTextBoardFrame.SHText,
+        FTextBoardFrame.SLText);
 
-      W0 := FTextBoardFrame.TextTimeLayout.Width / 2;
-      H0 := FTextBoardFrame.TextTimeLayout.Height / 4;
-      H1 := FTextBoardFrame.TextTimeLayout.Height / 8;
-
-      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.None;
-      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.None;
-      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.None;
-      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.None;
-      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.None;
-
-      FTextBoardFrame.TextHoursLayout.Height        := H0;
-      FTextBoardFrame.TextHoursDelimLayout.Height   := H1;
-      FTextBoardFrame.TextMinutesLayout.Height      := H0;
-      FTextBoardFrame.TextSecondsDelimLayout.Height := H1;
-      FTextBoardFrame.TextSecondsLayout.Height      := H0;
-
-      FTextBoardFrame.HHText.Width     := W0;
-      FTextBoardFrame.HLText.Width     := W0;
-      FTextBoardFrame.HDelimText.Width := W0;
-      FTextBoardFrame.MHText.Width     := W0;
-      FTextBoardFrame.MLText.Width     := W0;
-      FTextBoardFrame.SDelimText.Width := W0;
-      FTextBoardFrame.SHText.Width     := W0;
-      FTextBoardFrame.SLText.Width     := W0;
-
-      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.Bottom;
-      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.Bottom;
-      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.Bottom;
-      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.Bottom;
-      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.Bottom;
-
-      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.Top;
-      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.Top;
-      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.Top;
-      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.Top;
-      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.Bottom;
+//      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.None;
+//      FTextBoardFrame.TextTimeLayout.Height := Self.Height * 0.75;
+//      FTextBoardFrame.TextTimeLayout.Width  := Self.Width * 0.65;
+//      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.Center;
+//
+//      W0 := FTextBoardFrame.TextTimeLayout.Width / 2;
+//      H0 := FTextBoardFrame.TextTimeLayout.Height / 4;
+//      H1 := FTextBoardFrame.TextTimeLayout.Height / 8;
+//
+//      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.None;
+//      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.None;
+//      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.None;
+//      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.None;
+//      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.None;
+//
+//      FTextBoardFrame.TextHoursLayout.Height        := H0;
+//      FTextBoardFrame.TextHoursDelimLayout.Height   := H1;
+//      FTextBoardFrame.TextMinutesLayout.Height      := H0;
+//      FTextBoardFrame.TextSecondsDelimLayout.Height := H1;
+//      FTextBoardFrame.TextSecondsLayout.Height      := H0;
+//
+//      FTextBoardFrame.HHText.Width     := W0;
+//      FTextBoardFrame.HLText.Width     := W0;
+//      FTextBoardFrame.HDelimText.Width := W0;
+//      FTextBoardFrame.MHText.Width     := W0;
+//      FTextBoardFrame.MLText.Width     := W0;
+//      FTextBoardFrame.SDelimText.Width := W0;
+//      FTextBoardFrame.SHText.Width     := W0;
+//      FTextBoardFrame.SLText.Width     := W0;
+//
+//      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.Bottom;
+//      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.Bottom;
+//      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.Bottom;
+//      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.Bottom;
+//      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.Bottom;
+//
+//      FTextBoardFrame.TextHoursLayout.Align         := TAlignLayout.Top;
+//      FTextBoardFrame.TextHoursDelimLayout.Align    := TAlignLayout.Top;
+//      FTextBoardFrame.TextMinutesLayout.Align       := TAlignLayout.Top;
+//      FTextBoardFrame.TextSecondsDelimLayout.Align  := TAlignLayout.Top;
+//      FTextBoardFrame.TextSecondsLayout.Align       := TAlignLayout.Bottom;
     end
     else
     if FTextBoardFrame is TTextBoardFrame then
@@ -700,7 +732,7 @@ var
 begin
   OutputControl := TimeVoidEdit; //TimeText;
   if Assigned(FElectronicBoardFrame) then
-    OutputControl := FElectronicBoardFrame.TimeVoidEdit;
+    OutputControl := TimeVoidEdit;
 
   if Assigned(FTimeThread) then
     FTimeThread.Terminate;
@@ -771,6 +803,96 @@ begin
   SetTimerForm.Close;
 
   RunTimer(TimerTime);
+end;
+
+procedure TMainForm.ResizeVerticalBoardFrame(
+  const ADigitsLayout: TLayout;
+  const AHoursLayout: TLayout;
+  const AHoursDelimLayout: TLayout;
+  const AMinutesLayout: TLayout;
+  const ASecondsDelimLayout: TLayout;
+  const ASecondsLayout: TLayout;
+  const AHHControl: TControl;
+  const AHLControl: TControl;
+  const AHDelimControl: TControl;
+  const AMHControl: TControl;
+  const AMLControl: TControl;
+  const ASDelimControl: TControl;
+  const ASHControl: TControl;
+  const ASLControl: TControl);
+var
+  W0: Single;
+  H0: Single;
+  H1: Single;
+begin
+  ADigitsLayout.Align  := TAlignLayout.None;
+  ADigitsLayout.Height := Self.Height * 0.85;
+  ADigitsLayout.Width  := Self.Width * 0.6;
+  ADigitsLayout.Align  := TAlignLayout.Center;
+
+  W0 := ADigitsLayout.Width / 2;
+  H0 := ADigitsLayout.Height / 4;
+  H1 := ADigitsLayout.Height / 8;
+
+  AHoursLayout.Align         := TAlignLayout.None;
+  AHoursDelimLayout.Align    := TAlignLayout.None;
+  AMinutesLayout.Align       := TAlignLayout.None;
+  ASecondsDelimLayout.Align  := TAlignLayout.None;
+  ASecondsLayout.Align       := TAlignLayout.None;
+
+  AHoursLayout.Height        := H0;
+  AHoursDelimLayout.Height   := H1;
+  AMinutesLayout.Height      := H0;
+  ASecondsDelimLayout.Height := H1;
+  ASecondsLayout.Height      := H0;
+
+  ASecondsLayout.Align       := TAlignLayout.Bottom;
+  ASecondsDelimLayout.Align  := TAlignLayout.Bottom;
+  AMinutesLayout.Align       := TAlignLayout.Bottom;
+  AHoursDelimLayout.Align    := TAlignLayout.Bottom;
+  AHoursLayout.Align         := TAlignLayout.Bottom;
+
+  AHoursLayout.Align         := TAlignLayout.Top;
+  AHoursDelimLayout.Align    := TAlignLayout.Top;
+  AMinutesLayout.Align       := TAlignLayout.Top;
+  ASecondsDelimLayout.Align  := TAlignLayout.Top;
+  ASecondsLayout.Align       := TAlignLayout.Top;
+
+//  AHHControl.Align         := TAlignLayout.None;
+//  AHLControl.Align         := TAlignLayout.None;
+//  AHDelimControl.Align     := TAlignLayout.None;
+//  AMHControl.Align         := TAlignLayout.None;
+//  AMLControl.Align         := TAlignLayout.None;
+//  ASDelimControl.Align     := TAlignLayout.None;
+//  ASHControl.Align         := TAlignLayout.None;
+//  ASLControl.Align         := TAlignLayout.None;
+
+  AHHControl.Width     := W0;
+  AHLControl.Width     := W0;
+  AHDelimControl.Width := W0;
+  AMHControl.Width     := W0;
+  AMLControl.Width     := W0;
+  ASDelimControl.Width := W0;
+  ASHControl.Width     := W0;
+  ASLControl.Width     := W0;
+
+//  AHHControl.Align         := TAlignLayout.Right;
+//  AHLControl.Align         := TAlignLayout.Right;
+//  AHDelimControl.Align     := TAlignLayout.Right;
+//  AMHControl.Align         := TAlignLayout.Right;
+//  AMLControl.Align         := TAlignLayout.Right;
+//  ASDelimControl.Align     := TAlignLayout.Right;
+//  ASHControl.Align         := TAlignLayout.Right;
+//  ASLControl.Align         := TAlignLayout.Right;
+//
+//  AHHControl.Align         := TAlignLayout.Left;
+//  AHLControl.Align         := TAlignLayout.Left;
+//  AHDelimControl.Align     := TAlignLayout.Left;
+//  AMHControl.Align         := TAlignLayout.Left;
+//  AMLControl.Align         := TAlignLayout.Left;
+//  ASDelimControl.Align     := TAlignLayout.Left;
+//  ASHControl.Align         := TAlignLayout.Left;
+//  ASLControl.Align         := TAlignLayout.Left;
 end;
 
 end.

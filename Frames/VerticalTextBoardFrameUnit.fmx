@@ -16,6 +16,7 @@ inherited VerticalTextBoardFrame: TVerticalTextBoardFrame
           Size.Width = 60.000000000000000000
           Size.Height = 30.000000000000000000
           inherited HDelimText: TText
+            Anchors = [akLeft, akTop, akBottom]
             Size.Width = 60.000000000000000000
             Size.Height = 30.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
