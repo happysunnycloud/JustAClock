@@ -101,6 +101,26 @@ type
       const ASDelimControl: TControl;
       const ASHControl: TControl;
       const ASLControl: TControl);
+
+    procedure ResizeHorizontalBoardFrame(
+      const WidthCorrector: Single;
+      const HeightCorrector: Single;
+      const WidthDigitsCorrector: Single;
+      const WidthDelimiterCorrector: Single;
+      const ADigitsLayout: TLayout;
+      const AHoursLayout: TLayout;
+      const AHoursDelimLayout: TLayout;
+      const AMinutesLayout: TLayout;
+      const ASecondsDelimLayout: TLayout;
+      const ASecondsLayout: TLayout;
+      const AHHControl: TControl;
+      const AHLControl: TControl;
+      const AHDelimControl: TControl;
+      const AMHControl: TControl;
+      const AMLControl: TControl;
+      const ASDelimControl: TControl;
+      const ASHControl: TControl;
+      const ASLControl: TControl);
   private
     { Private declarations }
     procedure OpenElectronicBoard(
@@ -339,16 +359,6 @@ begin
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
-  procedure _HorizontalAlign(const AControl: TControl; const AWidth: Single);
-  begin
-    AControl.Width := AWidth;
-    AControl.Align := TAlignLayout.Left;
-  end;
-var
-  W0: Single;
-  W1: Single;
-  H0: Single;
-  H1: Single;
 begin
   if Assigned(FTextBoardFrame) then
   begin
@@ -375,38 +385,25 @@ begin
     else
     if FTextBoardFrame is TTextBoardFrame then
     begin
-      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.None;
-      FTextBoardFrame.TextTimeLayout.Height := Self.Height * 0.6;
-      FTextBoardFrame.TextTimeLayout.Width  := Self.Width * 0.85;
-      FTextBoardFrame.TextTimeLayout.Align  := TAlignLayout.Center;
-
-      FTextBoardFrame.TextHoursLayout.Align := TAlignLayout.Right;
-      FTextBoardFrame.TextHoursDelimLayout.Align := TAlignLayout.Right;
-      FTextBoardFrame.TextMinutesLayout.Align := TAlignLayout.Right;
-      FTextBoardFrame.TextSecondsDelimLayout.Align := TAlignLayout.Right;
-      FTextBoardFrame.TextSecondsLayout.Align := TAlignLayout.Right;
-
-      W0 := FTextBoardFrame.TextTimeLayout.Width / 3.5;
-      W1 := FTextBoardFrame.TextTimeLayout.Width / 14;
-      _HorizontalAlign(FTextBoardFrame.TextHoursLayout, W0);
-      _HorizontalAlign(FTextBoardFrame.HHText, W0 / 2);
-      _HorizontalAlign(FTextBoardFrame.HLText, W0 / 2);
-      _HorizontalAlign(FTextBoardFrame.TextHoursDelimLayout , W1);
-      _HorizontalAlign(FTextBoardFrame.HDelimText, W1);
-      _HorizontalAlign(FTextBoardFrame.TextMinutesLayout, W0);
-      _HorizontalAlign(FTextBoardFrame.MHText, W0 / 2);
-      _HorizontalAlign(FTextBoardFrame.MLText, W0 / 2);
-      _HorizontalAlign(FTextBoardFrame.TextSecondsDelimLayout, W1);
-      _HorizontalAlign(FTextBoardFrame.SDelimText, W1);
-      _HorizontalAlign(FTextBoardFrame.TextSecondsLayout, W0);
-      _HorizontalAlign(FTextBoardFrame.SHText, W0 / 2);
-      _HorizontalAlign(FTextBoardFrame.SLText, W0 / 2);
-
-      FTextBoardFrame.TextHoursLayout.Align := TAlignLayout.Left;
-      FTextBoardFrame.TextHoursDelimLayout.Align := TAlignLayout.Left;
-      FTextBoardFrame.TextMinutesLayout.Align := TAlignLayout.Left;
-      FTextBoardFrame.TextSecondsDelimLayout.Align := TAlignLayout.Left;
-      FTextBoardFrame.TextSecondsLayout.Align := TAlignLayout.Left;
+      ResizeHorizontalBoardFrame(
+        0.85,
+        0.6,
+        3.5,
+        14,
+        FTextBoardFrame.TextTimeLayout,
+        FTextBoardFrame.TextHoursLayout,
+        FTextBoardFrame.TextHoursDelimLayout,
+        FTextBoardFrame.TextMinutesLayout,
+        FTextBoardFrame.TextSecondsDelimLayout,
+        FTextBoardFrame.TextSecondsLayout,
+        FTextBoardFrame.HHText,
+        FTextBoardFrame.HLText,
+        FTextBoardFrame.HDelimText,
+        FTextBoardFrame.MHText,
+        FTextBoardFrame.MLText,
+        FTextBoardFrame.SDelimText,
+        FTextBoardFrame.SHText,
+        FTextBoardFrame.SLText);
     end;
   end
   else
@@ -435,25 +432,25 @@ begin
     else
     if FElectronicBoardFrame is TElectronicBoardFrame then
     begin
-      FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.None;
-      FElectronicBoardFrame.DigitsLayout.Height := Self.Height * 0.45;
-      FElectronicBoardFrame.DigitsLayout.Width  := Self.Width * 0.85;
-      FElectronicBoardFrame.DigitsLayout.Align  := TAlignLayout.Center;
-
-      W0 := FElectronicBoardFrame.DigitsLayout.Width / 8;
-      _HorizontalAlign(FElectronicBoardFrame.HoursLayout, W0 * 2);
-      _HorizontalAlign(FElectronicBoardFrame.HHImage, W0);
-      _HorizontalAlign(FElectronicBoardFrame.HLImage, W0);
-      _HorizontalAlign(FElectronicBoardFrame.HoursDelimLayout , W0);
-      _HorizontalAlign(FElectronicBoardFrame.HDelimImage, W0);
-      _HorizontalAlign(FElectronicBoardFrame.MinutesLayout, W0 * 2);
-      _HorizontalAlign(FElectronicBoardFrame.MHImage, W0);
-      _HorizontalAlign(FElectronicBoardFrame.MLImage, W0);
-      _HorizontalAlign(FElectronicBoardFrame.SecondsDelimLayout, W0);
-      _HorizontalAlign(FElectronicBoardFrame.SDelimImage, W0);
-      _HorizontalAlign(FElectronicBoardFrame.SecondsLayout, W0 * 2);
-      _HorizontalAlign(FElectronicBoardFrame.SHImage, W0);
-      _HorizontalAlign(FElectronicBoardFrame.SLImage, W0);
+      ResizeHorizontalBoardFrame(
+        0.85,
+        0.45,
+        4,
+        8,
+        FElectronicBoardFrame.DigitsLayout,
+        FElectronicBoardFrame.HoursLayout,
+        FElectronicBoardFrame.HoursDelimLayout,
+        FElectronicBoardFrame.MinutesLayout,
+        FElectronicBoardFrame.SecondsDelimLayout,
+        FElectronicBoardFrame.SecondsLayout,
+        FElectronicBoardFrame.HHImage,
+        FElectronicBoardFrame.HLImage,
+        FElectronicBoardFrame.HDelimImage,
+        FElectronicBoardFrame.MHImage,
+        FElectronicBoardFrame.MLImage,
+        FElectronicBoardFrame.SDelimImage,
+        FElectronicBoardFrame.SHImage,
+        FElectronicBoardFrame.SLImage);
     end;
   end;
 end;
@@ -817,5 +814,71 @@ begin
   ASHControl.Width     := W0;
   ASLControl.Width     := W0;
 end;
+
+procedure TMainForm.ResizeHorizontalBoardFrame(
+  const WidthCorrector: Single;
+  const HeightCorrector: Single;
+  const WidthDigitsCorrector: Single;
+  const WidthDelimiterCorrector: Single;
+  const ADigitsLayout: TLayout;
+  const AHoursLayout: TLayout;
+  const AHoursDelimLayout: TLayout;
+  const AMinutesLayout: TLayout;
+  const ASecondsDelimLayout: TLayout;
+  const ASecondsLayout: TLayout;
+  const AHHControl: TControl;
+  const AHLControl: TControl;
+  const AHDelimControl: TControl;
+  const AMHControl: TControl;
+  const AMLControl: TControl;
+  const ASDelimControl: TControl;
+  const ASHControl: TControl;
+  const ASLControl: TControl);
+
+  procedure _HorizontalAlign(const AControl: TControl; const AWidth: Single);
+  begin
+    AControl.Width := AWidth;
+    AControl.Align := TAlignLayout.Left;
+  end;
+
+var
+  W0: Single;
+  W1: Single;
+begin
+  ADigitsLayout.Align  := TAlignLayout.None;
+  ADigitsLayout.Width  := Self.Width * WidthCorrector;
+  ADigitsLayout.Height := Self.Height * HeightCorrector;
+  ADigitsLayout.Align  := TAlignLayout.Center;
+
+  W0 := ADigitsLayout.Width / WidthDigitsCorrector;
+  W1 := ADigitsLayout.Width / WidthDelimiterCorrector;
+
+  AHoursLayout.Align := TAlignLayout.Right;
+  AHoursDelimLayout.Align := TAlignLayout.Right;
+  AMinutesLayout.Align := TAlignLayout.Right;
+  ASecondsDelimLayout.Align := TAlignLayout.Right;
+  ASecondsLayout.Align := TAlignLayout.Right;
+
+  _HorizontalAlign(AHoursLayout, W0);
+  _HorizontalAlign(AHHControl, W0 / 2);
+  _HorizontalAlign(AHLControl, W0 / 2);
+  _HorizontalAlign(AHoursDelimLayout , W1);
+  _HorizontalAlign(AHDelimControl, W1);
+  _HorizontalAlign(AMinutesLayout, W0);
+  _HorizontalAlign(AMHControl, W0 / 2);
+  _HorizontalAlign(AMLControl, W0 / 2);
+  _HorizontalAlign(ASecondsDelimLayout, W1);
+  _HorizontalAlign(ASDelimControl, W1);
+  _HorizontalAlign(ASecondsLayout, W0);
+  _HorizontalAlign(ASHControl, W0 / 2);
+  _HorizontalAlign(ASLControl, W0 / 2);
+
+  AHoursLayout.Align := TAlignLayout.Left;
+  AHoursDelimLayout.Align := TAlignLayout.Left;
+  AMinutesLayout.Align := TAlignLayout.Left;
+  ASecondsDelimLayout.Align := TAlignLayout.Left;
+  ASecondsLayout.Align := TAlignLayout.Left;
+end;
+
 
 end.
