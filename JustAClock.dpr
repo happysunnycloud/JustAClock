@@ -11,7 +11,6 @@ uses
   FMX.Craft.PopupMenu.Structures in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Structures.pas',
   FMX.Craft.PopupMenu.Thread.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Thread.Win.pas',
   CustomThreadUnit in '..\DevelopmentsCollection\CustomThreadUnit.pas',
-  FMX.ControlToolsUnit in '..\DevelopmentsCollection\FMX.ControlToolsUnit.pas',
   ElectronicBoardFrameUnit in 'Frames\ElectronicBoardFrameUnit.pas' {ElectronicBoardFrame: TFrame},
   ShowTimeUnit in 'ShowTimeUnit.pas',
   FileToolsUnit in '..\DevelopmentsCollection\FileToolsUnit.pas',
@@ -31,7 +30,8 @@ uses
   CommonUnit in 'CommonUnit.pas',
   ShowTextTimeUnit in 'ShowTextTimeUnit.pas',
   TextBoardFrameUnit in 'Frames\TextBoardFrameUnit.pas' {TextBoardFrame: TFrame},
-  VerticalTextBoardFrameUnit in 'Frames\VerticalTextBoardFrameUnit.pas' {VerticalTextBoardFrame: TFrame};
+  VerticalTextBoardFrameUnit in 'Frames\VerticalTextBoardFrameUnit.pas' {VerticalTextBoardFrame: TFrame},
+  FMX.ControlToolsUnit in '..\DevelopmentsCollection\FMX.ControlToolsUnit.pas';
 
 {$R *.res}
 

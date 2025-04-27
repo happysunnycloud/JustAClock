@@ -1,4 +1,4 @@
-unit ShowTextTimeUnit;
+﻿unit ShowTextTimeUnit;
 
 interface
 
@@ -51,6 +51,7 @@ uses
     System.SysUtils
   , System.Classes
   , FMX.ImageExtractorUnit
+  , System.UITypes
   ;
 
 class procedure TShowTextTime.Init(
@@ -64,11 +65,32 @@ class procedure TShowTextTime.Init(
   const ASH: TText;
   const ASL: TText;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
-var
-  i: Integer;
-  BitMap: TBitMap;
-  ImageFile: TFilePacker;
-  MemoryStream: TMemoryStream;
+
+  procedure _SetColor(const AColorIdent: String; const AText: TText);
+  var
+    Color: TAlphaColor;
+  begin
+    Color := $FB00FF1C;
+    if AColorIdent = 'Green' then
+      Color := $FB00FF1C
+    else
+    if AColorIdent = 'Red' then
+      Color := $FFCE0000
+    else
+    if AColorIdent = 'Orange' then
+      Color := $FBFF8C00
+    else
+    if AColorIdent = 'White' then
+      Color := $FFFFFFFF
+    else
+    if AColorIdent = 'Blue' then
+      Color := $FF00A7FF
+    else
+    if AColorIdent = 'Violet' then
+      Color := $FF8600FF;
+
+    AText.TextSettings.FontColor := Color;
+  end;
 begin
   FDelimiter := HORIZONTAL_DELIMITER;
   if AOrientation = okVertical then
@@ -82,6 +104,15 @@ begin
   FSDelim := ASDelim;
   FSH := ASH;
   FSL := ASL;
+
+  _SetColor(AColorIdent, FHH);
+  _SetColor(AColorIdent, FHL);
+  _SetColor(AColorIdent, FHDelim);
+  _SetColor(AColorIdent, FMH);
+  _SetColor(AColorIdent, FML);
+  _SetColor(AColorIdent, FSDelim);
+  _SetColor(AColorIdent, FSH);
+  _SetColor(AColorIdent, FSL);
 end;
 
 class procedure TShowTextTime.UnInit;
