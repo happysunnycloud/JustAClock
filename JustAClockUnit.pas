@@ -74,6 +74,7 @@ type
     procedure MenuCountDownItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
     procedure MenuSetCustomColorItemClickHandler(Sender: TObject);
+    procedure MenuGetCustomColorItemClickHandler(Sender: TObject);
 
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
@@ -227,6 +228,8 @@ var
   MenuItem: TMenuItem;
   Orientation: TMenuItem;
   Colors: TMenuItem;
+  CustomColors: TMenuItem;
+  SetCustomColors: TMenuItem;
   ColorIdent: String;
   Boards: TMenuItem;
   i: Integer;
@@ -277,17 +280,39 @@ begin
     MenuItem.OnClick := MenuColorItemClickHandler;
     Colors.AddObject(MenuItem);
   end;
-  MenuItem := TMenuItem.Create(Colors);
+
+  CustomColors := TMenuItem.Create(SettingsPopupMenu);
+  CustomColors.Text := 'Custom color';
+  CustomColors.Tag := 0;
+  SettingsPopupMenu.AddObject(CustomColors);
+
+  for i := 0 to 3 do
+  begin
+    MenuItem := TMenuItem.Create(CustomColors);
+    MenuItem.Text := 'Custom color ' + (i + 1).ToString;
+    MenuItem.Tag := i;
+    MenuItem.OnClick := MenuGetCustomColorItemClickHandler;
+    CustomColors.AddObject(MenuItem);
+  end;
+
+  MenuItem := TMenuItem.Create(CustomColors);
   MenuItem.Text := '-';
   MenuItem.Tag := -1;
-  MenuItem.OnClick := SetCustomColorOkButtonClickHandler;
-  Colors.AddObject(MenuItem);
+  CustomColors.AddObject(MenuItem);
 
-  MenuItem := TMenuItem.Create(Colors);
-  MenuItem.Text := 'Custom color';
-  MenuItem.Tag := 0;
-  MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
-  Colors.AddObject(MenuItem);
+  SetCustomColors := TMenuItem.Create(CustomColors);
+  SetCustomColors.Text := 'Set';
+  SetCustomColors.Tag := 0;
+  CustomColors.AddObject(SetCustomColors);
+
+  for i := 0 to 3 do
+  begin
+    MenuItem := TMenuItem.Create(SetCustomColors);
+    MenuItem.Text := 'Set custom color ' + (i + 1).ToString;
+    MenuItem.Tag := i;
+    MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
+    SetCustomColors.AddObject(MenuItem);
+  end;
 
   MenuItem := TMenuItem.Create(SettingsPopupMenu);
   MenuItem.Text := '-';
@@ -357,11 +382,7 @@ begin
 
   RunTime;
 
-  TState.Orientation := okHorizontal;
-  TState.ColorIdent := FElectronicBoardColorArray[0];
-  TState.Color := ColorByIdent(TState.ColorIdent);
-
-  OpenBoard(bkText, ColorByIdent(TState.ColorIdent), TState.Orientation);
+  OpenBoard(TState.Board, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -653,11 +674,31 @@ begin
 end;
 
 procedure TMainForm.MenuSetCustomColorItemClickHandler(Sender: TObject);
+var
+  CustomColorNumber: Byte;
 begin
+  CustomColorNumber := TMenuItem(Sender).Tag;
   SetCustomColorForm := TSetCustomColorForm.Create(Self);
+  SetCustomColorForm.Tag := CustomColorNumber;
   SetCustomColorForm.Color := TState.Color;
   SetCustomColorForm.OkButtonRectangle.OnClick := SetCustomColorOkButtonClickHandler;
   SetCustomColorForm.ShowModal;
+end;
+
+procedure TMainForm.MenuGetCustomColorItemClickHandler(Sender: TObject);
+var
+  CustomColorNumber: Byte;
+begin
+  CustomColorNumber := TMenuItem(Sender).Tag;
+  case CustomColorNumber of
+    0: TState.Color := TState.CustomColor0;
+    1: TState.Color := TState.CustomColor1;
+    2: TState.Color := TState.CustomColor2;
+    3: TState.Color := TState.CustomColor3;
+  end;
+
+  CloseBoard;
+  OpenBoard(TState.Board, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
@@ -775,9 +816,21 @@ begin
 end;
 
 procedure TMainForm.SetCustomColorOkButtonClickHandler(Sender: TObject);
+var
+  CustomColorNumber: Byte;
+  Color: TAlphaColor;
 begin
-  TState.Color := SetCustomColorForm.Color;
+  CustomColorNumber := SetCustomColorForm.Tag;
+  Color := SetCustomColorForm.Color;
+  case CustomColorNumber of
+    0: TState.CustomColor0 := Color;
+    1: TState.CustomColor1 := Color;
+    2: TState.CustomColor2 := Color;
+    3: TState.CustomColor3 := Color;
+  end;
   SetCustomColorForm.Close;
+
+  TState.Color := Color;
 
   CloseBoard;
   OpenBoard(TState.Board, TState.Color, TState.Orientation);

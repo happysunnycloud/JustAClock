@@ -32,7 +32,8 @@ uses
   TextBoardFrameUnit in 'Frames\TextBoardFrameUnit.pas' {TextBoardFrame: TFrame},
   VerticalTextBoardFrameUnit in 'Frames\VerticalTextBoardFrameUnit.pas' {VerticalTextBoardFrame: TFrame},
   FMX.ControlToolsUnit in '..\DevelopmentsCollection\FMX.ControlToolsUnit.pas',
-  SetCustomColorUnit in 'SetCustomColorUnit.pas' {SetCustomColorForm};
+  SetCustomColorUnit in 'SetCustomColorUnit.pas' {SetCustomColorForm},
+  FileStreamToolsUnit in '..\DevelopmentsCollection\FileStreamToolsUnit.pas';
 
 {$R *.res}
 
