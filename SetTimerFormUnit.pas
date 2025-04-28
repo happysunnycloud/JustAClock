@@ -13,7 +13,7 @@ type
     HoursNumScrollFrame: TNumScrollFrame;
     loContent: TLayout;
     MinutesNumScrollFrame: TNumScrollFrame;
-    OkButton: TRectangle;
+    OkButtonRectangle: TRectangle;
     Text1: TText;
     TopLayout: TLayout;
     Text2: TText;
@@ -21,8 +21,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure OkButtonMouseEnter(Sender: TObject);
-    procedure OkButtonMouseLeave(Sender: TObject);
+    procedure OkButtonRectangleMouseEnter(Sender: TObject);
+    procedure OkButtonRectangleMouseLeave(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FBorderFrame: TBorderFrame;
   public
@@ -41,14 +42,19 @@ begin
   Close;
 end;
 
-procedure TSetTimerForm.OkButtonMouseEnter(Sender: TObject);
+procedure TSetTimerForm.OkButtonRectangleMouseEnter(Sender: TObject);
 begin
-  OkButton.Fill.Color := $FF4F4F4F;
+  OkButtonRectangle.Fill.Color := $FF4F4F4F;
 end;
 
-procedure TSetTimerForm.OkButtonMouseLeave(Sender: TObject);
+procedure TSetTimerForm.OkButtonRectangleMouseLeave(Sender: TObject);
 begin
-  OkButton.Fill.Color := $00000000;
+  OkButtonRectangle.Fill.Color := $00000000;
+end;
+
+procedure TSetTimerForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := TCloseAction.caFree;
 end;
 
 procedure TSetTimerForm.FormCreate(Sender: TObject);
@@ -60,10 +66,10 @@ begin
       'Just a clock',
       Trunc(loContent.Width),
       Trunc(loContent.Height),
-      $FF2A001A,
+      $FF8D003A,
       $FF2A001A,
       TAlphaColorRec.Lime,
-      TAlphaColorRec.Lime);
+      $FFADADAD);
 
   HoursNumScrollFrame.Init(0, 23, 1);
   HoursNumScrollFrame.CurrentVal := 0;

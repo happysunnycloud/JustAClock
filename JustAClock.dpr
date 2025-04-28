@@ -31,7 +31,8 @@ uses
   ShowTextTimeUnit in 'ShowTextTimeUnit.pas',
   TextBoardFrameUnit in 'Frames\TextBoardFrameUnit.pas' {TextBoardFrame: TFrame},
   VerticalTextBoardFrameUnit in 'Frames\VerticalTextBoardFrameUnit.pas' {VerticalTextBoardFrame: TFrame},
-  FMX.ControlToolsUnit in '..\DevelopmentsCollection\FMX.ControlToolsUnit.pas';
+  FMX.ControlToolsUnit in '..\DevelopmentsCollection\FMX.ControlToolsUnit.pas',
+  SetCustomColorUnit in 'SetCustomColorUnit.pas' {SetCustomColorForm};
 
 {$R *.res}
 

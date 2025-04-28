@@ -73,11 +73,13 @@ type
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
     procedure MenuCountDownItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
+    procedure MenuSetCustomColorItemClickHandler(Sender: TObject);
 
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
 
     procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
+    procedure SetCustomColorOkButtonClickHandler(Sender: TObject);
 
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
 
@@ -123,11 +125,11 @@ type
       const ASLControl: TControl);
   private
     { Private declarations }
-    procedure OpenElectronicBoard(
+    procedure OpenBoard(
       const ABoard: TBoardKind;
-      const AColorIdent: String;
+      const AColor: TAlphaColor;
       const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
-    procedure CloseElectronicBoard;
+    procedure CloseBoard;
   public
     procedure StartSignal;
     procedure StopSignal;
@@ -152,6 +154,7 @@ uses
   , ThreadFactoryUnit
   , NumScrollUnit
   , SetTimerFormUnit
+  , SetCustomColorUnit
   , VerticalElectronicBoardFrameUnit
   , VerticalTextBoardFrameUnit
   ;
@@ -274,6 +277,18 @@ begin
     MenuItem.OnClick := MenuColorItemClickHandler;
     Colors.AddObject(MenuItem);
   end;
+  MenuItem := TMenuItem.Create(Colors);
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  MenuItem.OnClick := SetCustomColorOkButtonClickHandler;
+  Colors.AddObject(MenuItem);
+
+  MenuItem := TMenuItem.Create(Colors);
+  MenuItem.Text := 'Custom color';
+  MenuItem.Tag := 0;
+  MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
+  Colors.AddObject(MenuItem);
+
   MenuItem := TMenuItem.Create(SettingsPopupMenu);
   MenuItem.Text := '-';
   MenuItem.Tag := -1;
@@ -344,8 +359,9 @@ begin
 
   TState.Orientation := okHorizontal;
   TState.ColorIdent := FElectronicBoardColorArray[0];
+  TState.Color := ColorByIdent(TState.ColorIdent);
 
-  OpenElectronicBoard(bkText, TState.ColorIdent, TState.Orientation);
+  OpenBoard(bkText, ColorByIdent(TState.ColorIdent), TState.Orientation);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -355,7 +371,7 @@ begin
   if Assigned(FTrayPopupMenu) then
     FTrayPopupMenu.Free;
 
-  CloseElectronicBoard;
+  CloseBoard;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -483,19 +499,18 @@ begin
     TShowTime.ShowTime(Time);
 end;
 
-procedure TMainForm.OpenElectronicBoard(
+procedure TMainForm.OpenBoard(
   const ABoard: TBoardKind;
-  const AColorIdent: String;
+  const AColor: TAlphaColor;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
 begin
   TimeVoidEdit.OnChange := nil;
   if Assigned(FTimeThread) then
     FTimeThread.OutputControl := nil;
 
-  CloseElectronicBoard;
+  CloseBoard;
 
   TState.Board := ABoard;
-  TState.ColorIdent := AColorIdent;
   TState.Orientation := AOrientation;
 
   if TState.Board = bkElectronic then
@@ -522,7 +537,7 @@ begin
       {$ELSE}
       'Digits.pck',
       {$ENDIF}
-      TState.ColorIdent,
+      AColor,
       FElectronicBoardFrame.HHImage,
       FElectronicBoardFrame.HLImage,
       FElectronicBoardFrame.HDelimImage,
@@ -557,7 +572,7 @@ begin
     end;
 
     TShowTextTime.Init(
-      TState.ColorIdent,
+      AColor,
       FTextBoardFrame.HHText,
       FTextBoardFrame.HLText,
       FTextBoardFrame.HDelimText,
@@ -579,7 +594,7 @@ begin
   Self.Resize;
 end;
 
-procedure TMainForm.CloseElectronicBoard;
+procedure TMainForm.CloseBoard;
 begin
   TimeVoidEdit.OnChange := nil;
   if Assigned(FTimeThread) then
@@ -604,20 +619,21 @@ var
   MenuItem: TMenuItem;
 begin
   MenuItem := TMenuItem(Sender);
-  OpenElectronicBoard(
+  TState.ColorIdent := FElectronicBoardColorArray[MenuItem.Tag];
+  OpenBoard(
     TState.Board,
-    FElectronicBoardColorArray[MenuItem.Tag],
+    ColorByIdent(TState.ColorIdent),
     TState.Orientation);
 end;
 
 procedure TMainForm.MenuTextBoardItemClickHandler(Sender: TObject);
 begin
-  OpenElectronicBoard(bkText, TState.ColorIdent, TState.Orientation);
+  OpenBoard(bkText, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.MenuElectronicBoardItemClickHandler(Sender: TObject);
 begin
-  OpenElectronicBoard(bkElectronic, TState.ColorIdent, TState.Orientation);
+  OpenBoard(bkElectronic, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.MenuCountDownItemClickHandler(Sender: TObject);
@@ -625,7 +641,7 @@ begin
   StopSignal;
 
   SetTimerForm := TSetTimerForm.Create(Self);
-  SetTimerForm.OkButton.OnClick := SetTimerFormOkButtonClickHandler;
+  SetTimerForm.OkButtonRectangle.OnClick := SetTimerFormOkButtonClickHandler;
   SetTimerForm.ShowModal;
 end;
 
@@ -636,14 +652,22 @@ begin
   RunTime;
 end;
 
+procedure TMainForm.MenuSetCustomColorItemClickHandler(Sender: TObject);
+begin
+  SetCustomColorForm := TSetCustomColorForm.Create(Self);
+  SetCustomColorForm.Color := TState.Color;
+  SetCustomColorForm.OkButtonRectangle.OnClick := SetCustomColorOkButtonClickHandler;
+  SetCustomColorForm.ShowModal;
+end;
+
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
 begin
-  OpenElectronicBoard(TState.Board, TState.ColorIdent, okVertical);
+  OpenBoard(TState.Board, TState.Color, okVertical);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
 begin
-  OpenElectronicBoard(TState.Board, TState.ColorIdent, okHorizontal);
+  OpenBoard(TState.Board, TState.Color, okHorizontal);
 end;
 
 procedure TMainForm.RunTime;
@@ -748,6 +772,15 @@ begin
   SetTimerForm.Close;
 
   RunTimer(TimerTime);
+end;
+
+procedure TMainForm.SetCustomColorOkButtonClickHandler(Sender: TObject);
+begin
+  TState.Color := SetCustomColorForm.Color;
+  SetCustomColorForm.Close;
+
+  CloseBoard;
+  OpenBoard(TState.Board, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.ResizeVerticalBoardFrame(
@@ -879,6 +912,5 @@ begin
   ASecondsDelimLayout.Align := TAlignLayout.Left;
   ASecondsLayout.Align := TAlignLayout.Left;
 end;
-
 
 end.

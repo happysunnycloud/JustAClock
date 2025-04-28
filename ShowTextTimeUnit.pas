@@ -8,6 +8,7 @@ uses
   , FMX.Graphics
   , FilePackerUnit
   , CommonUnit
+  , System.UITypes
   ;
 
 const
@@ -30,7 +31,7 @@ type
       FDelimiter: String;
   public
     class procedure Init(
-      const AColorIdent: String;
+      const AColor: TAlphaColor;
       const AHH: TText;
       const AHL: TText;
       const AHDelim: TText;
@@ -51,11 +52,10 @@ uses
     System.SysUtils
   , System.Classes
   , FMX.ImageExtractorUnit
-  , System.UITypes
   ;
 
 class procedure TShowTextTime.Init(
-  const AColorIdent: String;
+  const AColor: TAlphaColor;
   const AHH: TText;
   const AHL: TText;
   const AHDelim: TText;
@@ -66,29 +66,11 @@ class procedure TShowTextTime.Init(
   const ASL: TText;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
 
-  procedure _SetColor(const AColorIdent: String; const AText: TText);
+  procedure _SetColor(const AColor: TAlphaColor; const AText: TText);
   var
     Color: TAlphaColor;
   begin
-    Color := $FB00FF1C;
-    if AColorIdent = 'Green' then
-      Color := $FB00FF1C
-    else
-    if AColorIdent = 'Red' then
-      Color := $FFCE0000
-    else
-    if AColorIdent = 'Orange' then
-      Color := $FBFF8C00
-    else
-    if AColorIdent = 'White' then
-      Color := $FFFFFFFF
-    else
-    if AColorIdent = 'Blue' then
-      Color := $FF00A7FF
-    else
-    if AColorIdent = 'Violet' then
-      Color := $FF8600FF;
-
+    Color := AColor;
     AText.TextSettings.FontColor := Color;
   end;
 begin
@@ -105,14 +87,14 @@ begin
   FSH := ASH;
   FSL := ASL;
 
-  _SetColor(AColorIdent, FHH);
-  _SetColor(AColorIdent, FHL);
-  _SetColor(AColorIdent, FHDelim);
-  _SetColor(AColorIdent, FMH);
-  _SetColor(AColorIdent, FML);
-  _SetColor(AColorIdent, FSDelim);
-  _SetColor(AColorIdent, FSH);
-  _SetColor(AColorIdent, FSL);
+  _SetColor(AColor, FHH);
+  _SetColor(AColor, FHL);
+  _SetColor(AColor, FHDelim);
+  _SetColor(AColor, FMH);
+  _SetColor(AColor, FML);
+  _SetColor(AColor, FSDelim);
+  _SetColor(AColor, FSH);
+  _SetColor(AColor, FSL);
 end;
 
 class procedure TShowTextTime.UnInit;

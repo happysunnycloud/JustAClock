@@ -8,6 +8,7 @@ uses
   , FMX.Graphics
   , FilePackerUnit
   , CommonUnit
+  , System.UITypes
   ;
 
 type
@@ -28,7 +29,7 @@ type
   public
     class procedure Init(
       const AImageFileName: String;
-      const AColorIdent: String;
+      const AColor: TAlphaColor;
       const AHH: TImage;
       const AHL: TImage;
       const AHDelim: TImage;
@@ -49,11 +50,12 @@ uses
     System.SysUtils
   , System.Classes
   , FMX.ImageExtractorUnit
+  , FMX.ImageToolsUnit
   ;
 
 class procedure TShowTime.Init(
   const AImageFileName: String;
-  const AColorIdent: String;
+  const AColor: TAlphaColor;
   const AHH: TImage;
   const AHL: TImage;
   const AHDelim: TImage;
@@ -68,9 +70,12 @@ var
   BitMap: TBitMap;
   ImageFile: TFilePacker;
   OrientationPrefix: String;
+  Color: TAlphaColor;
 begin
   if not FileExists(AImageFileName) then
     raise Exception.CreateFmt('File "%s" not exists', [AImageFileName]);
+
+  Color := AColor;
 
   OrientationPrefix := '';
   if AOrientation = okVertical then
@@ -95,16 +100,22 @@ begin
 
       TImageExtractor.ExtractToBitmap(
         ImageFile,
-        AColorIdent + '\' + i.ToString + '.png',
+        CHROMAKEY_COLOR_IDENT + '\' + i.ToString + '.png',
         BitMap);
+
+      TImageTools.ReplaceNotNullColor(BitMap, Color);
+
       FBitmapList.Add(BitMap);
     end;
 
     BitMap := TBitMap.Create;
     TImageExtractor.ExtractToBitmap(
       ImageFile,
-      AColorIdent + '\' + OrientationPrefix + 'Delimiter.png',
+      CHROMAKEY_COLOR_IDENT + '\' + OrientationPrefix + 'Delimiter.png',
       BitMap);
+
+    TImageTools.ReplaceNotNullColor(BitMap, Color);
+
     FBitmapList.Add(BitMap);
   finally
     FreeAndNil(ImageFile);
