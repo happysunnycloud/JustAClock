@@ -5,8 +5,11 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Colors,
-  FMX.Layouts, FMX.Objects, FMX.Controls.Presentation, FMX.StdCtrls,
-  BorderFrameUnit;
+  FMX.Layouts, FMX.Objects, FMX.Controls.Presentation, FMX.StdCtrls
+  {$IFDEF MSWINDOWS}
+  , BorderFrameUnit
+  {$ENDIF}
+  ;
 
 type
   TSetCustomColorForm = class(TForm)
@@ -25,8 +28,9 @@ type
     procedure SetColor(const AColor: TAlphaColor);
     function GetColor: TAlphaColor;
   public
+    {$IFDEF MSWINDOWS}
     FBorderFrame: TBorderFrame;
-
+    {$ENDIF}
     property Color: TAlphaColor read GetColor write SetColor;
   end;
 
@@ -56,6 +60,7 @@ end;
 
 procedure TSetCustomColorForm.FormCreate(Sender: TObject);
 begin
+  {$IFDEF MSWINDOWS}
   FBorderFrame :=
     TBorderFrame.Create(
       Self,
@@ -67,6 +72,7 @@ begin
       $FF2A001A,
       TAlphaColorRec.Lime,
       $FFADADAD);
+  {$ENDIF}
 end;
 
 procedure TSetCustomColorForm.FormDestroy(Sender: TObject);

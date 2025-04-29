@@ -7,11 +7,13 @@ object MainForm: TMainForm
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
+  Quality = HighQuality
   FormStyle = StayOnTop
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnDestroy = FormDestroy
   OnResize = FormResize
@@ -210,6 +212,15 @@ object MainForm: TMainForm
       Size.PlatformDefault = False
       Stroke.Color = claWhite
       Stroke.Thickness = 4.000000000000000000
+    end
+    object SettingsLayout: TLayout
+      OnTap = SettingsLayoutTap
+      Align = Contents
+      Size.Width = 230.000000000000000000
+      Size.Height = 85.000000000000000000
+      Size.PlatformDefault = False
+      Visible = False
+      TabOrder = 1
     end
   end
   object ToolsPopupMenu: TPopupMenu

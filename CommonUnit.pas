@@ -17,6 +17,12 @@ const
 
   CHROMAKEY_COLOR_IDENT = 'Green';
 
+  {$IFDEF ANDROID}
+  PATH_DELIMITER = '/';
+  {$ELSE IF MSWINDOWS}
+  PATH_DELIMITER = '\';
+  {$ENDIF}
+
 type
   TBoardKind = (bkText = 0, bkElectronic = 1);
   TOrientationKind = (okHorizontal = 0, okVertical = 1);
@@ -52,6 +58,8 @@ type
   end;
 
 function ColorByIdent(const AColorIdent: String): TAlphaColor;
+function GetDigitsPackFile: String;
+procedure GetCurPos(var X, Y: Single);
 
 implementation
 
@@ -59,6 +67,12 @@ uses
     System.SysUtils
   , System.Classes
   , FileStreamToolsUnit
+  {$IFDEF ANDROID}
+  , System.IOUtils
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
+  , Winapi.Windows
+  {$ENDIF}
   ;
 
 function ColorByIdent(const AColorIdent: String): TAlphaColor;
@@ -87,6 +101,37 @@ begin
   Result := Color;
 end;
 
+function GetDigitsPackFile: String;
+begin
+  {$IFDEF ANDROID}
+  Result := System.IOUtils.TPath.GetDocumentsPath + PATH_DELIMITER + 'Digits.pck';
+  {$ELSE IF MSWINDOWS}
+    {$IFDEF DEBUG}
+    Result := '..\..\Arts\Digits.pck';
+    {$ELSE}
+    Result := 'Digits.pck';
+    {$ENDIF}
+  {$ENDIF}
+end;
+
+procedure GetCurPos(var X, Y: Single);
+{$IFDEF MSWINDOWS}
+var
+  MousePoint: TPoint;
+{$ENDIF}
+begin
+  {$IFDEF MSWINDOWS}
+  GetCursorPos(MousePoint);
+  X := MousePoint.X;
+  Y := MousePoint.Y;
+  {$ELSE IF ANDROID}
+  X := X;
+  Y := Y;
+  {$ENDIF}
+end;
+
+{ TState }
+
 class procedure TState.SetBoard(const ABoard: TBoardKind);
 begin
   FBoard := ABoard;
@@ -94,7 +139,11 @@ end;
 
 class function TState.GetConfigFileName: String;
 begin
+  {$IFDEF ANDROID}
+  Result := System.IOUtils.TPath.GetDocumentsPath + PATH_DELIMITER + 'Config.jcc';
+  {$ELSE IF MSWINDOWS}
   Result := ExtractFilePath(ParamStr(0)) + 'Config.jcc';
+  {$ENDIF}
 end;
 
 class procedure TState.Save;
@@ -159,6 +208,5 @@ initialization
 
 finalization
   TState.Save;
-
 
 end.

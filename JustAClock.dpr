@@ -5,11 +5,13 @@ uses
   FMX.Forms,
   JustAClockUnit in 'JustAClockUnit.pas' {MainForm},
   TimeThreadUnit in 'TimeThreadUnit.pas',
+  {$IFDEF MSWINDOWS}
   FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas',
   BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
   FMX.Craft.PopupMenu.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Win.pas',
   FMX.Craft.PopupMenu.Structures in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Structures.pas',
   FMX.Craft.PopupMenu.Thread.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Thread.Win.pas',
+  {$ENDIF}
   CustomThreadUnit in '..\DevelopmentsCollection\CustomThreadUnit.pas',
   ElectronicBoardFrameUnit in 'Frames\ElectronicBoardFrameUnit.pas' {ElectronicBoardFrame: TFrame},
   ShowTimeUnit in 'ShowTimeUnit.pas',

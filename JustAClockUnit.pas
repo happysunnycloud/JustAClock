@@ -5,8 +5,11 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
-  BorderFrameUnit, FMX.Layouts,
+   FMX.Layouts,
+  {$IFDEF MSWINDOWS}
+  BorderFrameUnit,
   FMX.Craft.PopupMenu.Win,
+  {$ENDIF}
   TimeThreadUnit,
   ElectronicBoardFrameUnit, FMX.Menus,
   FMX.FormExtUnit,
@@ -45,29 +48,33 @@ type
     SHText: TText;
     SLText: TText;
     TimeVoidEdit: TEdit;
+    SettingsLayout: TLayout;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure loContentMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
     procedure FormResize(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure SettingsLayoutTap(Sender: TObject; const Point: TPointF);
   strict private
+    {$IFDEF MSWINDOWS}
     FBorderFrame: TBorderFrame;
     FTrayPopupMenu: TCraftPopupMenu;
+    {$ENDIF}
     FTimeThread: TTimeThread;
 
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
     FCurrentElectronicBoardColor: String;
     FElectronicBoardColorArray: TElectronicBoardColorArray;
-
+    {$IFDEF MSWINDOWS}
     procedure TrayIconMouseRightButtonDown(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure TrayIconMouseLeftButtonDown(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-
     procedure OnCloseTrayItemHandler;
-
+    {$ENDIF}
     procedure MenuColorItemClickHandler(Sender: TObject);
     procedure MenuTextBoardItemClickHandler(Sender: TObject);
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
@@ -134,8 +141,9 @@ type
   public
     procedure StartSignal;
     procedure StopSignal;
-
+    {$IFDEF MSWINDOWS}
     property BorderFrame: TBorderFrame read FBorderFrame;
+    {$ENDIF}
   end;
 
 var
@@ -146,11 +154,14 @@ implementation
 {$R *.fmx}
 
 uses
+  {$IFDEF MSWINDOWS}
     Winapi.Windows
   , FMX.Platform.Win
   , FMX.Craft.PopupMenu.Structures
   , FMX.Craft.PopupMenu.Thread.Win
-  , ShowTimeUnit
+  ,
+  {$ENDIF}
+    ShowTimeUnit
   , ShowTextTimeUnit
   , ThreadFactoryUnit
   , NumScrollUnit
@@ -192,7 +203,7 @@ begin
 end;
 
 { TMainForm }
-
+{$IFDEF MSWINDOWS}
 procedure TMainForm.OnCloseTrayItemHandler;
 begin
   if Assigned(MainForm) then
@@ -202,18 +213,23 @@ end;
 
 procedure TMainForm.TrayIconMouseRightButtonDown(
   Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-var
-  MousePoint: TPoint;
 begin
-  GetCursorPos(MousePoint);
+  GetCurPos(X, Y);
   if FTrayPopupMenu <> nil then
-    FTrayPopupMenu.Open(MousePoint.X, MousePoint.Y);
+    FTrayPopupMenu.Open(Trunc(X), Trunc(Y));
 end;
 
 procedure TMainForm.TrayIconMouseLeftButtonDown(
   Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
   ShowWindow(ApplicationHWND, SW_HIDE);
+end;
+{$ENDIF}
+procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+{$IFDEF ANDROID}
+  Action := TCloseAction.caFree;
+{$ENDIF}
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -353,7 +369,7 @@ begin
   ToolsPopupMenu.AddObject(MenuItem);
 
   FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
-
+  {$IFDEF MSWINDOWS}
   ShowWindow(ApplicationHWND, SW_HIDE);
 
   FBorderFrame :=
@@ -374,10 +390,14 @@ begin
   FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
   FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
 
+  FTrayPopupMenu := nil;
   FTrayPopupMenu := TCraftPopupMenu.Create('>>', 1000);
   FTrayPopupMenu.MenuItems.AddItem('Close', 'Close', true, OnCloseTrayItemHandler);
   FTrayPopupMenu.BuildMenu;
-
+  {$ELSE IFDEF ANDROID}
+  Self.FullScreen := true;
+  TState.Orientation := okVertical;
+  {$ENDIF}
   FElectronicBoardFrame := nil;
 
   RunTime;
@@ -388,15 +408,18 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   TShowTextTime.UnInit;
-
+  {$IFDEF MSWINDOWS}
   if Assigned(FTrayPopupMenu) then
     FTrayPopupMenu.Free;
-
+  {$ENDIF}
   CloseBoard;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
+  SettingsLayout.Width := loContent.Width / 3;
+  SettingsLayout.Height := loContent.Height;
+
   if Assigned(FTextBoardFrame) then
   begin
     if FTextBoardFrame is TVerticalTextBoardFrame then
@@ -494,18 +517,16 @@ end;
 
 procedure TMainForm.loContentMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
-var
-  MousePoint: TPoint;
 begin
-  GetCursorPos(MousePoint);
+  GetCurPos(X, Y);
   if Button = TMouseButton.mbLeft then
   begin
-    SettingsPopupMenu.Popup(MousePoint.X, MousePoint.Y);
+    SettingsPopupMenu.Popup(X, Y);
   end
   else
   if Button = TMouseButton.mbRight then
   begin
-    ToolsPopupMenu.Popup(MousePoint.X, MousePoint.Y);
+    ToolsPopupMenu.Popup(X, Y);
   end;
 end;
 
@@ -538,26 +559,24 @@ begin
   begin
     if TState.Orientation = okHorizontal then
     begin
+      {$IFDEF MSWINDOWS}
       FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
       FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
-
+      {$ENDIF}
       FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
     end
     else
     if TState.Orientation = okVertical then
     begin
+      {$IFDEF MSWINDOWS}
       FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
       FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
-
+      {$ENDIF}
       FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
     end;
 
     TShowTime.Init(
-      {$IFDEF DEBUG}
-      '..\..\Arts\Digits.pck',
-      {$ELSE}
-      'Digits.pck',
-      {$ENDIF}
+      GetDigitsPackFile,
       AColor,
       FElectronicBoardFrame.HHImage,
       FElectronicBoardFrame.HLImage,
@@ -578,17 +597,19 @@ begin
   begin
     if TState.Orientation = okHorizontal then
     begin
+      {$IFDEF MSWINDOWS}
       FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
       FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
-
+      {$ENDIF}
       FTextBoardFrame := TTextBoardFrame.Create(nil);
     end
     else
     if TState.Orientation = okVertical then
     begin
+      {$IFDEF MSWINDOWS}
       FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
       FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
-
+      {$ENDIF}
       FTextBoardFrame := TVerticalTextBoardFrame.Create(nil);
     end;
 
@@ -716,8 +737,6 @@ var
   OutputControl: TControl;
 begin
   OutputControl := TimeVoidEdit;
-//  if Assigned(FElectronicBoardFrame) then
-//    OutputControl := FElectronicBoardFrame.TimeVoidEdit;
 
   if Assigned(FTimeThread) then
     FTimeThread.Terminate;
@@ -740,7 +759,7 @@ procedure TMainForm.RunTimer(const ATimerTime: TTime);
 var
   OutputControl: TControl;
 begin
-  OutputControl := TimeVoidEdit; //TimeText;
+  OutputControl := TimeVoidEdit;
   if Assigned(FElectronicBoardFrame) then
     OutputControl := TimeVoidEdit;
 
@@ -772,9 +791,7 @@ begin
           procedure
           begin
             SignalRectangle.Visible := true;
-            //ShowWindow(ApplicationHwnd, SW_SHOW);
             Self.Show;
-            //SetForegroundWindow(ApplicationHwnd);
           end);
         Sleep(400);
 
@@ -813,6 +830,11 @@ begin
   SetTimerForm.Close;
 
   RunTimer(TimerTime);
+end;
+
+procedure TMainForm.SettingsLayoutTap(Sender: TObject; const Point: TPointF);
+begin
+  SettingsPopupMenu.Popup(Point.X, Point.Y);
 end;
 
 procedure TMainForm.SetCustomColorOkButtonClickHandler(Sender: TObject);

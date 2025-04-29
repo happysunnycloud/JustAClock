@@ -5,7 +5,10 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, NumScrollUnit,
-  BorderFrameUnit, FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls,
+  {$IFDEF MSWINDOWS}
+  BorderFrameUnit,
+  {$ENDIF}
+  FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls,
   FMX.Objects, FMX.Effects, FMX.FormExtUnit;
 
 type
@@ -25,7 +28,9 @@ type
     procedure OkButtonRectangleMouseLeave(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
+    {$IFDEF MSWINDOWS}
     FBorderFrame: TBorderFrame;
+    {$ENDIF}
   public
     function GetTime: TTime;
   end;
@@ -59,6 +64,7 @@ end;
 
 procedure TSetTimerForm.FormCreate(Sender: TObject);
 begin
+  {$IFDEF MSWINDOWS}
   FBorderFrame :=
     TBorderFrame.Create(
       Self,
@@ -70,7 +76,7 @@ begin
       $FF2A001A,
       TAlphaColorRec.Lime,
       $FFADADAD);
-
+  {$ENDIF}
   HoursNumScrollFrame.Init(0, 23, 1);
   HoursNumScrollFrame.CurrentVal := 0;
   MinutesNumScrollFrame.Init(0, 59, 1);
