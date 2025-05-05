@@ -215,7 +215,7 @@ procedure TMainForm.TrayIconMouseRightButtonDown(
   Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
   GetCurPos(X, Y);
-  if FTrayPopupMenu <> nil then
+  if Assigned(FTrayPopupMenu) then
     FTrayPopupMenu.Open(Trunc(X), Trunc(Y));
 end;
 
