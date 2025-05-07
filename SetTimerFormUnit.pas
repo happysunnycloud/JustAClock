@@ -17,20 +17,24 @@ type
     loContent: TLayout;
     MinutesNumScrollFrame: TNumScrollFrame;
     OkButtonRectangle: TRectangle;
-    Text1: TText;
+    OkButtonText: TText;
     TopLayout: TLayout;
     Text2: TText;
     Text3: TText;
+    CancelButtonRectangle: TRectangle;
+    ButtonsLayout: TLayout;
+    CancelButtonText: TText;
+    ButtonsLine: TLine;
+    CenterLayout: TLayout;
     procedure FormCreate(Sender: TObject);
-    procedure OkButtonClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure OkButtonRectangleMouseEnter(Sender: TObject);
-    procedure OkButtonRectangleMouseLeave(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     {$IFDEF MSWINDOWS}
     FBorderFrame: TBorderFrame;
     {$ENDIF}
+    procedure OnRectangleMouseEnterHandler(Sender: TObject);
+    procedure OnRectangleMouseLeaveHandler(Sender: TObject);
   public
     function GetTime: TTime;
   end;
@@ -42,19 +46,14 @@ implementation
 
 {$R *.fmx}
 
-procedure TSetTimerForm.OkButtonClick(Sender: TObject);
+procedure TSetTimerForm.OnRectangleMouseEnterHandler(Sender: TObject);
 begin
-  Close;
+  TRectangle(Sender).Fill.Color := $FF4F4F4F;
 end;
 
-procedure TSetTimerForm.OkButtonRectangleMouseEnter(Sender: TObject);
+procedure TSetTimerForm.OnRectangleMouseLeaveHandler(Sender: TObject);
 begin
-  OkButtonRectangle.Fill.Color := $FF4F4F4F;
-end;
-
-procedure TSetTimerForm.OkButtonRectangleMouseLeave(Sender: TObject);
-begin
-  OkButtonRectangle.Fill.Color := $00000000;
+  TRectangle(Sender).Fill.Color := $00000000;
 end;
 
 procedure TSetTimerForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -81,6 +80,12 @@ begin
   HoursNumScrollFrame.CurrentVal := 0;
   MinutesNumScrollFrame.Init(0, 59, 1);
   MinutesNumScrollFrame.CurrentVal := 0;
+
+  OkButtonRectangle.OnMouseEnter := OnRectangleMouseEnterHandler;
+  OkButtonRectangle.OnMouseLeave := OnRectangleMouseLeaveHandler;
+
+  CancelButtonRectangle.OnMouseEnter := OnRectangleMouseEnterHandler;
+  CancelButtonRectangle.OnMouseLeave := OnRectangleMouseLeaveHandler;
 end;
 
 procedure TSetTimerForm.FormDestroy(Sender: TObject);

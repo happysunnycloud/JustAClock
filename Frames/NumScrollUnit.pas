@@ -16,8 +16,6 @@ type
     BackgroundRectangle: TRectangle;
     Line1: TLine;
     Line2: TLine;
-    procedure NumsLayoutMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; var Handled: Boolean);
   private
     FMinVal: Integer;
     FMaxVal: Integer;
@@ -32,9 +30,16 @@ type
 
     function ShiftVal(const AStepVal: Integer; const ADirection: Boolean): Integer;
 
+    procedure OnMouseWheelHandler(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; var Handled: Boolean);
+    procedure OnTopNumClickHandler(Sender: TObject);
+    procedure OnButtonNumClickHandler(Sender: TObject);
+
 //    property MinVal: Integer read FMinVal write FMinVal;
 //    property MaxVal: Integer read FMaxVal write SetMaxVal;
   public
+    procedure AfterConstruction; override;
+
     property CurrentVal: Integer read FCurrentVal write SetCurrentVal;
     property CurrentValStr: String read GetCurrentValStr write SetCurrentValStr;
 
@@ -50,6 +55,16 @@ type
 implementation
 
 {$R *.fmx}
+
+procedure TNumScrollFrame.AfterConstruction;
+begin
+  TopNumText.OnMouseWheel := OnMouseWheelHandler;
+  BottomNumText.OnMouseWheel := OnMouseWheelHandler;
+  CurrentNumText.OnMouseWheel := OnMouseWheelHandler;
+
+  TopNumText.OnClick := OnTopNumClickHandler;
+  BottomNumText.OnClick := OnButtonNumClickHandler;
+end;
 
 function TNumScrollFrame.AlignNum(const AVal: Integer): String;
 var
@@ -106,16 +121,6 @@ begin
   FDimention := FMaxVal.ToString.Length;
 end;
 
-procedure TNumScrollFrame.NumsLayoutMouseWheel(Sender: TObject;
-  Shift: TShiftState; WheelDelta: Integer; var Handled: Boolean);
-begin
-  if WheelDelta < 0 then
-    IncVal
-  else
-  if WheelDelta > 0 then
-    DecVal;
-end;
-
 function TNumScrollFrame.ShiftVal(
   const AStepVal: Integer;
   const ADirection: Boolean): Integer;
@@ -150,4 +155,25 @@ begin
   SetCurrentVal(Result);
 end;
 
+procedure TNumScrollFrame.OnMouseWheelHandler(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; var Handled: Boolean);
+begin
+  if WheelDelta < 0 then
+    IncVal
+  else
+  if WheelDelta > 0 then
+    DecVal;
+end;
+
+procedure TNumScrollFrame.OnTopNumClickHandler(Sender: TObject);
+begin
+  DecVal;
+end;
+
+procedure TNumScrollFrame.OnButtonNumClickHandler(Sender: TObject);
+begin
+  IncVal;
+end;
+
 end.
+

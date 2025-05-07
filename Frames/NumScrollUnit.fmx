@@ -1,34 +1,31 @@
 object NumScrollFrame: TNumScrollFrame
   HitTest = False
-  Size.Width = 96.000000000000000000
-  Size.Height = 110.000000000000000000
+  Size.Width = 131.000000000000000000
+  Size.Height = 185.000000000000000000
   Size.PlatformDefault = False
   object BackgroundRectangle: TRectangle
     Align = Contents
     Fill.Color = claBlack
     HitTest = False
-    Size.Width = 96.000000000000000000
-    Size.Height = 110.000000000000000000
+    Size.Width = 131.000000000000000000
+    Size.Height = 185.000000000000000000
     Size.PlatformDefault = False
     Stroke.Kind = None
     Stroke.Thickness = 0.000000000000000000
   end
   object NumsLayout: TLayout
     Align = Contents
-    HitTest = True
-    Size.Width = 96.000000000000000000
-    Size.Height = 110.000000000000000000
+    Size.Width = 131.000000000000000000
+    Size.Height = 185.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    OnMouseWheel = NumsLayoutMouseWheel
     object TopNumText: TText
       Align = Top
-      HitTest = False
       Opacity = 0.300000011920929000
       Margins.Top = 5.000000000000000000
       Position.Y = 5.000000000000000000
-      Size.Width = 96.000000000000000000
-      Size.Height = 30.000000000000000000
+      Size.Width = 131.000000000000000000
+      Size.Height = 50.000000000000000000
       Size.PlatformDefault = False
       Text = '59'
       TextSettings.Font.Size = 18.000000000000000000
@@ -37,8 +34,8 @@ object NumScrollFrame: TNumScrollFrame
       object Line2: TLine
         Align = Bottom
         LineType = Diagonal
-        Position.Y = 29.000000000000000000
-        Size.Width = 96.000000000000000000
+        Position.Y = 49.000000000000000000
+        Size.Width = 131.000000000000000000
         Size.Height = 1.000000000000000000
         Size.PlatformDefault = False
         Stroke.Color = xFF616161
@@ -47,12 +44,11 @@ object NumScrollFrame: TNumScrollFrame
     end
     object BottomNumText: TText
       Align = Bottom
-      HitTest = False
       Opacity = 0.300000011920929000
       Margins.Bottom = 5.000000000000000000
-      Position.Y = 75.000000000000000000
-      Size.Width = 96.000000000000000000
-      Size.Height = 30.000000000000000000
+      Position.Y = 130.000000000000000000
+      Size.Width = 131.000000000000000000
+      Size.Height = 50.000000000000000000
       Size.PlatformDefault = False
       Text = '01'
       TextSettings.Font.Size = 18.000000000000000000
@@ -61,7 +57,7 @@ object NumScrollFrame: TNumScrollFrame
       object Line1: TLine
         Align = Top
         LineType = Diagonal
-        Size.Width = 96.000000000000000000
+        Size.Width = 131.000000000000000000
         Size.Height = 1.000000000000000000
         Size.PlatformDefault = False
         Stroke.Color = xFF616161
@@ -69,10 +65,9 @@ object NumScrollFrame: TNumScrollFrame
       end
     end
     object CurrentNumText: TText
-      Align = Contents
-      HitTest = False
-      Size.Width = 96.000000000000000000
-      Size.Height = 110.000000000000000000
+      Align = Client
+      Size.Width = 131.000000000000000000
+      Size.Height = 75.000000000000000000
       Size.PlatformDefault = False
       Text = '00'
       TextSettings.Font.Size = 18.000000000000000000

@@ -100,6 +100,8 @@ type
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
 
     procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
+    procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
+
     procedure SetCustomColorOkButtonClickHandler(Sender: TObject);
 
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
@@ -345,9 +347,35 @@ begin
     'Blue',
     'Violet');
 
+  { MenuTheme}
+
+//  TState.MenuTheme.TextColor := TAlphaColorRec.White;
+//  TState.MenuTheme.TextFontSize := 14;
+
+//  TState.MenuTheme.TextSettings.Font.Size := 14;
+//  TState.MenuTheme.TextSettings.FontColor := TAlphaColorRec.White;
+//  TState.MenuTheme.TextSettings.HorzAlign := TTextAlign.Leading;
+//  TState.MenuTheme.TextSettings.VertAlign := TTextAlign.Center;
+
+  TState.MenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
+  TState.MenuTheme.LightBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
+  TState.MenuTheme.DarkBackgroundColor := TAlphaColorRec.Cornflowerblue;
+
+  TState.MenuTheme.TextControlSettings.Align := TAlignLayout.Client;
+  TState.MenuTheme.TextControlSettings.HitTest := false;
+  TState.MenuTheme.TextControlSettings.TextSettings.FontColor :=
+    TAlphaColorRec.White;
+  TState.MenuTheme.TextControlSettings.TextSettings.HorzAlign :=
+    TTextAlign.Leading;
+  TState.MenuTheme.TextControlSettings.TextSettings.VertAlign :=
+    TTextAlign.Center;
+  TState.MenuTheme.TextControlSettings.Margins.Left := 5;
+  TState.MenuTheme.TextControlSettings.WordWrap := false;
+
   { SettingsPopupMenu }
 
   FSettingsPopupMenuExt := TPopupMenuExt.Create(Self);
+  TState.MenuTheme.CopyTo(FSettingsPopupMenuExt.Theme);
 
   Boards := TItem.Create;
   Boards.Text := 'Boards';
@@ -368,6 +396,24 @@ begin
   MenuItem := TItem.Create;
   MenuItem.Text := '-';
   MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  Orientation := TItem.Create;
+  Orientation.Text := 'Orientation';
+  FSettingsPopupMenuExt.Add(Orientation);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := Orientation;
+  MenuItem.Text := 'Horizontal';
+  MenuItem.Tag := 0;
+  MenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := Orientation;
+  MenuItem.Text := 'Vertical';
+  MenuItem.Tag := 0;
+  MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   Colors := TItem.Create;
@@ -421,29 +467,6 @@ begin
     MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
-
-  MenuItem := TItem.Create;
-  MenuItem.Text := '-';
-  MenuItem.Tag := -1;
-  FSettingsPopupMenuExt.Add(MenuItem);
-
-  Orientation := TItem.Create;
-  Orientation.Text := 'Orientation';
-  FSettingsPopupMenuExt.Add(Orientation);
-
-  MenuItem := TItem.Create;
-  MenuItem.Parent := Orientation;
-  MenuItem.Text := 'Horizontal';
-  MenuItem.Tag := 0;
-  MenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
-  FSettingsPopupMenuExt.Add(MenuItem);
-
-  MenuItem := TItem.Create;
-  MenuItem.Parent := Orientation;
-  MenuItem.Text := 'Vertical';
-  MenuItem.Tag := 0;
-  MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
-  FSettingsPopupMenuExt.Add(MenuItem);
 
 //  Boards := TMenuItem.Create(SettingsPopupMenu);
 //  Boards.Text := 'Boards';
@@ -534,6 +557,7 @@ begin
   { ToolsPopupMenu }
 
   FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
+  TState.MenuTheme.CopyTo(FToolsPopupMenuExt.Theme);
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Set timer';
@@ -581,8 +605,8 @@ begin
       TAlphaColorRec.Lime,
       $FFADADAD);
 
-  FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
-  FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
+//  FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
+//  FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
 
   FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
   FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
@@ -956,7 +980,12 @@ begin
 
   SetTimerForm := TSetTimerForm.Create(Self);
   SetTimerForm.OkButtonRectangle.OnClick := SetTimerFormOkButtonClickHandler;
+  SetTimerForm.CancelButtonRectangle.OnClick := SetTimerFormCancelButtonClickHandler;
+  {$IFDEF MSWINDOWS}
   SetTimerForm.ShowModal;
+  {$ELSE IFDEF ANDROID}
+  SetTimerForm.Show;
+  {$ENDIF}
 end;
 
 procedure TMainForm.MenuCancelTimerItemClickHandler(Sender: TObject);
@@ -1109,6 +1138,11 @@ begin
   SetTimerForm.Close;
 
   RunTimer(TimerTime);
+end;
+
+procedure TMainForm.SetTimerFormCancelButtonClickHandler(Sender: TObject);
+begin
+  SetTimerForm.Close;
 end;
 
 procedure TMainForm.SettingsLayoutMouseUp(Sender: TObject; Button: TMouseButton;

@@ -37,8 +37,9 @@ uses
   FMX.Craft.PopupMenu.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Win.pas',
   FMX.Craft.PopupMenu.Structures in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Structures.pas',
   FMX.Craft.PopupMenu.Thread.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Thread.Win.pas',
-  {$ENDIF}
-  FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas';
+  {$ENDIF }
+  FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas',
+  FMX.ThemeUnit in '..\DevelopmentsCollection\FMX.ThemeUnit.pas';
 
 {$R *.res}
 

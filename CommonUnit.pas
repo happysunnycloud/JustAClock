@@ -3,7 +3,9 @@
 interface
 
 uses
-  System.UITypes;
+    System.UITypes
+  , FMX.ThemeUnit
+  ;
 
 const
   VERTICAL_ORIENTATION_IDENT = 'Vertical';
@@ -38,11 +40,17 @@ type
       FCustomColor3: TAlphaColor;
       FOrientation: TOrientationKind;
       FBoard: TBoardKind;
+
+      FMenuTheme: TTheme;
+
     class procedure SetBoard(const ABoard: TBoardKind); static;
     class function GetConfigFileName: String; static;
 
     class property ConfigFileName: String read GetConfigFileName;
   public
+    class constructor Initialize;
+    class destructor Finalize;
+
     class property ColorIdent: String read FColorIdent write FColorIdent;
     class property Color: TAlphaColor read FColor write FColor;
     class property CustomColor0: TAlphaColor read FCustomColor0 write FCustomColor0;
@@ -51,6 +59,8 @@ type
     class property CustomColor3: TAlphaColor read FCustomColor3 write FCustomColor3;
     class property Orientation: TOrientationKind read FOrientation write FOrientation;
     class property Board: TBoardKind read FBoard write SetBoard;
+
+    class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
 
     class procedure Init;
     class procedure Save;
@@ -150,6 +160,16 @@ begin
 end;
 
 { TState }
+
+class constructor TState.Initialize;
+begin
+  FMenuTheme := TTheme.Create;
+end;
+
+class destructor TState.Finalize;
+begin
+  FreeAndNil(FMenuTheme);
+end;
 
 class procedure TState.SetBoard(const ABoard: TBoardKind);
 begin
