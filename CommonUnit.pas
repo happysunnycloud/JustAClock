@@ -58,6 +58,7 @@ type
   end;
 
 function ColorByIdent(const AColorIdent: String): TAlphaColor;
+function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
 function GetDigitsPackFile: String;
 procedure GetCurPos(var X, Y: Single);
 
@@ -97,6 +98,24 @@ begin
   else
   if AColorIdent = 'Violet' then
     Color := $FF8600FF;
+
+  Result := Color;
+end;
+
+function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
+var
+  CustomColorNumber: Byte;
+  Color: TAlphaColor;
+begin
+  CustomColorNumber := AColorNumber;
+  case CustomColorNumber of
+    0: Color := TState.CustomColor0;
+    1: Color := TState.CustomColor1;
+    2: Color := TState.CustomColor2;
+    3: Color := TState.CustomColor3;
+    else
+      raise Exception.Create('CustomColorByNumber: Out of range');
+  end;
 
   Result := Color;
 end;
@@ -198,15 +217,27 @@ begin
   FCustomColor1 := FColor;
   FCustomColor2 := FColor;
   FCustomColor3 := FColor;
+  {$IFDEF MSWINDOWS}
   FOrientation := TOrientationKind.okHorizontal;
+  {$ELSE IFDEF ANDROID}
+  FOrientation := TOrientationKind.okVertical;
+  {$ENDIF}
   FBoard := TBoardKind.bkText;
 end;
 
 initialization
-  TState.Init;
-  TState.Load;
+  try
+    TState.Init;
+    TState.Load;
+  except
+    RaiseLastOSError;
+  end;
 
 finalization
-  TState.Save;
+  try
+    TState.Save;
+  except
+    RaiseLastOSError;
+  end;
 
 end.

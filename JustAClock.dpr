@@ -5,13 +5,6 @@ uses
   FMX.Forms,
   JustAClockUnit in 'JustAClockUnit.pas' {MainForm},
   TimeThreadUnit in 'TimeThreadUnit.pas',
-  {$IFDEF MSWINDOWS}
-  FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas',
-  BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
-  FMX.Craft.PopupMenu.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Win.pas',
-  FMX.Craft.PopupMenu.Structures in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Structures.pas',
-  FMX.Craft.PopupMenu.Thread.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Thread.Win.pas',
-  {$ENDIF}
   CustomThreadUnit in '..\DevelopmentsCollection\CustomThreadUnit.pas',
   ElectronicBoardFrameUnit in 'Frames\ElectronicBoardFrameUnit.pas' {ElectronicBoardFrame: TFrame},
   ShowTimeUnit in 'ShowTimeUnit.pas',
@@ -35,7 +28,17 @@ uses
   VerticalTextBoardFrameUnit in 'Frames\VerticalTextBoardFrameUnit.pas' {VerticalTextBoardFrame: TFrame},
   FMX.ControlToolsUnit in '..\DevelopmentsCollection\FMX.ControlToolsUnit.pas',
   SetCustomColorUnit in 'SetCustomColorUnit.pas' {SetCustomColorForm},
-  FileStreamToolsUnit in '..\DevelopmentsCollection\FileStreamToolsUnit.pas';
+  FileStreamToolsUnit in '..\DevelopmentsCollection\FileStreamToolsUnit.pas',
+  FMX.PopupMenuExtThreadUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtThreadUnit.pas',
+  FMX.PopupMenuExtUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtUnit.pas',
+  {$IFDEF MSWINDOWS}
+  FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas',
+  BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
+  FMX.Craft.PopupMenu.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Win.pas',
+  FMX.Craft.PopupMenu.Structures in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Structures.pas',
+  FMX.Craft.PopupMenu.Thread.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Thread.Win.pas',
+  {$ENDIF}
+  FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas';
 
 {$R *.res}
 

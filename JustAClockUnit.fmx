@@ -17,6 +17,7 @@ object MainForm: TMainForm
   OnCloseQuery = FormCloseQuery
   OnDestroy = FormDestroy
   OnResize = FormResize
+  OnPaint = FormPaint
   DesignerMasterStyle = 0
   object SettingsPopupMenu: TPopupMenu
     Left = 6
@@ -24,12 +25,10 @@ object MainForm: TMainForm
   end
   object loContent: TLayout
     Align = Contents
-    HitTest = True
     Size.Width = 230.000000000000000000
     Size.Height = 85.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    OnMouseUp = loContentMouseUp
     object TimeLayout: TLayout
       Align = Client
       Size.Width = 230.000000000000000000
@@ -213,19 +212,28 @@ object MainForm: TMainForm
       Stroke.Color = claWhite
       Stroke.Thickness = 4.000000000000000000
     end
-    object SettingsLayout: TLayout
-      OnTap = SettingsLayoutTap
-      Align = Contents
+    object ToolsLayout: TLayout
+      OnTap = ToolsLayoutTap
+      HitTest = True
       Size.Width = 230.000000000000000000
       Size.Height = 85.000000000000000000
       Size.PlatformDefault = False
-      Visible = False
+      TabOrder = 2
+      OnMouseUp = ToolsLayoutMouseUp
+    end
+    object SettingsLayout: TLayout
+      OnTap = SettingsLayoutTap
+      HitTest = True
+      Size.Width = 230.000000000000000000
+      Size.Height = 85.000000000000000000
+      Size.PlatformDefault = False
       TabOrder = 1
+      OnMouseUp = SettingsLayoutMouseUp
     end
   end
   object ToolsPopupMenu: TPopupMenu
-    Left = 36
-    Top = 2
+    Left = 44
+    Top = 4
   end
   object TimeVoidEdit: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
