@@ -39,7 +39,8 @@ uses
   FMX.Craft.PopupMenu.Thread.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Thread.Win.pas',
   {$ENDIF }
   FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas',
-  FMX.ThemeUnit in '..\DevelopmentsCollection\FMX.ThemeUnit.pas';
+  FMX.ThemeUnit in '..\DevelopmentsCollection\FMX.ThemeUnit.pas',
+  ProportionUnit in 'ProportionUnit.pas';
 
 {$R *.res}
 

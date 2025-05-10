@@ -186,6 +186,7 @@ uses
   , SetCustomColorUnit
   , VerticalElectronicBoardFrameUnit
   , VerticalTextBoardFrameUnit
+  , ProportionUnit
   ;
 
 { TElectronicBoardColorArrayHelper }
@@ -722,23 +723,24 @@ begin
   begin
     if FElectronicBoardFrame is TVerticalElectronicBoardFrame then
     begin
-      ResizeVerticalBoardFrame(
-        0.65,
-        0.75,
-        FElectronicBoardFrame.DigitsLayout,
-        FElectronicBoardFrame.HoursLayout,
-        FElectronicBoardFrame.HoursDelimLayout,
-        FElectronicBoardFrame.MinutesLayout,
-        FElectronicBoardFrame.SecondsDelimLayout,
-        FElectronicBoardFrame.SecondsLayout,
-        FElectronicBoardFrame.HHImage,
-        FElectronicBoardFrame.HLImage,
-        FElectronicBoardFrame.HDelimImage,
-        FElectronicBoardFrame.MHImage,
-        FElectronicBoardFrame.MLImage,
-        FElectronicBoardFrame.SDelimImage,
-        FElectronicBoardFrame.SHImage,
-        FElectronicBoardFrame.SLImage);
+      TProportion.Resize;
+//      ResizeVerticalBoardFrame(
+//        0.65,
+//        0.75,
+//        FElectronicBoardFrame.DigitsLayout,
+//        FElectronicBoardFrame.HoursLayout,
+//        FElectronicBoardFrame.HoursDelimLayout,
+//        FElectronicBoardFrame.MinutesLayout,
+//        FElectronicBoardFrame.SecondsDelimLayout,
+//        FElectronicBoardFrame.SecondsLayout,
+//        FElectronicBoardFrame.HHImage,
+//        FElectronicBoardFrame.HLImage,
+//        FElectronicBoardFrame.HDelimImage,
+//        FElectronicBoardFrame.MHImage,
+//        FElectronicBoardFrame.MLImage,
+//        FElectronicBoardFrame.SDelimImage,
+//        FElectronicBoardFrame.SHImage,
+//        FElectronicBoardFrame.SLImage);
     end
     else
     if FElectronicBoardFrame is TElectronicBoardFrame then
@@ -826,6 +828,8 @@ procedure TMainForm.OpenBoard(
     if AOrientationKind = okVertical then
     begin
       {$IFDEF MSWINDOWS}
+//      Self.Width := VERTICAL_MIN_WIDTH;
+//      Self.Height := VERTICAL_MIN_HEIGHT;
       FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
       FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
       {$ELSE IFDEF ANDROID}
@@ -848,6 +852,25 @@ begin
   if TState.Board = bkElectronic then
   begin
     _SetScreenOrientation(TState.Orientation);
+
+    TProportion.Init(
+      FBorderFrame,
+      VERTICAL_MIN_WIDTH,
+      VERTICAL_MIN_HEIGHT,
+      FElectronicBoardFrame.DigitsLayout,
+      FElectronicBoardFrame.HoursLayout,
+      FElectronicBoardFrame.HoursDelimLayout,
+      FElectronicBoardFrame.MinutesLayout,
+      FElectronicBoardFrame.SecondsDelimLayout,
+      FElectronicBoardFrame.SecondsLayout,
+      FElectronicBoardFrame.HHImage,
+      FElectronicBoardFrame.HLImage,
+      FElectronicBoardFrame.HDelimImage,
+      FElectronicBoardFrame.MHImage,
+      FElectronicBoardFrame.MLImage,
+      FElectronicBoardFrame.SDelimImage,
+      FElectronicBoardFrame.SHImage,
+      FElectronicBoardFrame.SLImage);
 
     //    if TState.Orientation = okHorizontal then
     //    begin
@@ -1195,14 +1218,22 @@ procedure TMainForm.ResizeVerticalBoardFrame(
   const ASDelimControl: TControl;
   const ASHControl: TControl;
   const ASLControl: TControl);
+
 var
   W0: Single;
   H0: Single;
   H1: Single;
 begin
   ADigitsLayout.Align  := TAlignLayout.None;
-  ADigitsLayout.Width  := Self.Width * WidthCorrector;
-  ADigitsLayout.Height := Self.Height * HeightCorrector;
+
+//  if Self.Width / Self.Height < 1 then
+//    _SetWidthHeightLoss(Self, ADigitsLayout, WidthCorrector, HeightCorrector);
+//  else
+//    _SetWidthHeightGreat(Self, ADigitsLayout, WidthCorrector, HeightCorrector);
+
+//  ADigitsLayout.Width  := Self.Width * WidthCorrector;
+//  ADigitsLayout.Height := Self.Height * HeightCorrector;
+
   ADigitsLayout.Align  := TAlignLayout.Center;
 
   W0 := ADigitsLayout.Width  / 2;
