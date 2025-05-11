@@ -64,10 +64,12 @@ uses
     FMX.Types
   , FMX.Forms
   , System.SysUtils
+  {$IFDEF MSWINDOWS}
   , BorderFrameUnit
-{$IFDEF ANDROID}
+  {$ELSE IFDEF ANDROID}
+  , System.Types
   , FMX.Platform
-{$ENDIF}
+  {$ENDIF}
   ;
 
 class procedure TProportion.Init(
@@ -231,9 +233,11 @@ class function TProportion.ClientFormWidth: Integer;
 begin
   if FOrigin is TForm then
     Result := TForm(FOrigin).ClientWidth
+  {$IFDEF MSWINDOWS}
   else
   if FOrigin is TBorderFrame then
     Result := TBorderFrame(FOrigin).ClientWidth
+  {$ENDIF}
   else
     raise Exception.Create('TProportion.ClientFormWidth: Unknown origin type');
 end;
@@ -242,9 +246,11 @@ class function TProportion.ClientFormHeight: Integer;
 begin
   if FOrigin is TForm then
     Result := TForm(FOrigin).ClientHeight
+  {$IFDEF MSWINDOWS}
   else
   if FOrigin is TBorderFrame then
     Result := TBorderFrame(FOrigin).ClientHeight
+  {$ENDIF}
   else
     raise Exception.Create('TProportion.ClientFormHeight: Unknown origin type');
 end;

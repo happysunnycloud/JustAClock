@@ -854,7 +854,11 @@ begin
     _SetScreenOrientation(TState.Orientation);
 
     TProportion.Init(
+      {$IFDEF MSWINDOWS}
       FBorderFrame,
+      {$ELSE IFDEF ANDROID}
+      Self,
+      {$ENDIF}
       VERTICAL_MIN_WIDTH,
       VERTICAL_MIN_HEIGHT,
       FElectronicBoardFrame.DigitsLayout,
