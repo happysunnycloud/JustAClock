@@ -75,19 +75,18 @@ type
     FElectronicBoardColorArray: TElectronicBoardColorArray;
     FSettingsPopupMenuExt: TPopupMenuExt;
     FToolsPopupMenuExt: TPopupMenuExt;
+    FTrayPopupMenuExt: TPopupMenuExt;
 
     {$IFDEF MSWINDOWS}
     FBorderFrame: TBorderFrame;
-    FTrayPopupMenu: TCraftPopupMenu;
     {$ENDIF}
 
-    {$IFDEF MSWINDOWS}
     procedure TrayIconMouseRightButtonDown(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure TrayIconMouseLeftButtonDown(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-    procedure OnCloseTrayItemHandler;
-    {$ENDIF}
+    procedure OnCloseTrayItemHandler(Sender: TObject);
+
     procedure MenuColorItemClickHandler(Sender: TObject);
     procedure MenuTextBoardItemClickHandler(Sender: TObject);
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
@@ -221,20 +220,19 @@ begin
 end;
 
 { TMainForm }
-{$IFDEF MSWINDOWS}
-procedure TMainForm.OnCloseTrayItemHandler;
+
+procedure TMainForm.OnCloseTrayItemHandler(Sender: TObject);
 begin
-  if Assigned(MainForm) then
-    MainForm.BorderFrame.CloseButtonRectangle.
-      OnClick(MainForm.BorderFrame.CloseButtonRectangle);
+  MainForm.BorderFrame.CloseButtonRectangle.
+    OnClick(MainForm.BorderFrame.CloseButtonRectangle);
 end;
 
 procedure TMainForm.TrayIconMouseRightButtonDown(
   Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
   GetCurPos(X, Y);
-  if Assigned(FTrayPopupMenu) then
-    FTrayPopupMenu.Open(Trunc(X), Trunc(Y));
+
+  FTrayPopupMenuExt.Open(Trunc(X), Trunc(Y));
 end;
 
 procedure TMainForm.TrayIconMouseLeftButtonDown(
@@ -242,7 +240,7 @@ procedure TMainForm.TrayIconMouseLeftButtonDown(
 begin
   ShowWindow(ApplicationHWND, SW_HIDE);
 end;
-{$ENDIF}
+
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := TCloseAction.caFree;
@@ -590,6 +588,14 @@ begin
 //  MenuItem.OnClick := MenuCancelTimerItemClickHandler;
 //  ToolsPopupMenu.AddObject(MenuItem);
 
+  FTrayPopupMenuExt := TPopupMenuExt.Create(Self);
+  TState.MenuTheme.CopyTo(FTrayPopupMenuExt.Theme);
+
+  MenuItem := TItem.Create;
+  MenuItem.Text := 'Close';
+  MenuItem.OnClick := OnCloseTrayItemHandler;
+  FTrayPopupMenuExt.Add(MenuItem);
+
   FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
   {$IFDEF MSWINDOWS}
   ShowWindow(ApplicationHWND, SW_HIDE);
@@ -612,10 +618,6 @@ begin
   FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
   FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
 
-  FTrayPopupMenu := nil;
-  FTrayPopupMenu := TCraftPopupMenu.Create('>>', 1000);
-  FTrayPopupMenu.MenuItems.AddItem('Close', 'Close', true, OnCloseTrayItemHandler);
-  FTrayPopupMenu.BuildMenu;
   {$ELSE IFDEF ANDROID}
   Self.FullScreen := true;
   {$ENDIF}
@@ -631,10 +633,7 @@ begin
   //FSettingsPopupMenuExt.Free;
 
   TShowTextTime.UnInit;
-  {$IFDEF MSWINDOWS}
-  if Assigned(FTrayPopupMenu) then
-    FTrayPopupMenu.Free;
-  {$ENDIF}
+
   CloseBoard;
 end;
 
