@@ -93,10 +93,10 @@ class procedure TProportion.Init(
   const ASLControl: TControl);
 
 var
-{$IFDEF ANDROID}
-  ScreenService: IFMXScreenService;
-  sScreenSize: TPoint;
-{$ENDIF}
+//{$IFDEF ANDROID}
+//  ScreenService: IFMXScreenService;
+//  sScreenSize: TPoint;
+//{$ENDIF}
   MinWidth: Integer;
   MinHeight: Integer;
 begin
@@ -122,26 +122,28 @@ begin
 
   if FOrientation = okVertical then
   begin
-    {$IFDEF MSWINDOWS}
     FDigitsLayout.Position.X := 5;//MinWidth / 10;
     FDigitsLayout.Position.Y := 5;//MinHeight / 20;
-    {$ELSE IFDEF ANDROID}
-    if TPlatformServices.Current.SupportsPlatformService(IFMXScreenService, IInterface(ScreenService)) then
-    begin
-      sScreenSize := ScreenService.GetScreenSize.Round;
-
-      if (sScreenSize.Y / sScreenSize.X) < (16 / 9) then
-      begin
-        FDigitsLayout.Position.X := MinWidth / 6;
-        FDigitsLayout.Position.Y := MinHeight / 14;
-      end
-      else
-      begin
-        FDigitsLayout.Position.X := MinWidth / 6;
-        FDigitsLayout.Position.Y := MinHeight / 14;
-      end;
-    end;
-    {$ENDIF}
+//    {$IFDEF MSWINDOWS}
+//    FDigitsLayout.Position.X := 5;//MinWidth / 10;
+//    FDigitsLayout.Position.Y := 5;//MinHeight / 20;
+//    {$ELSE IFDEF ANDROID}
+//    if TPlatformServices.Current.SupportsPlatformService(IFMXScreenService, IInterface(ScreenService)) then
+//    begin
+//      sScreenSize := ScreenService.GetScreenSize.Round;
+//
+//      if (sScreenSize.Y / sScreenSize.X) < (16 / 9) then
+//      begin
+//        FDigitsLayout.Position.X := MinWidth / 6;
+//        FDigitsLayout.Position.Y := MinHeight / 14;
+//      end
+//      else
+//      begin
+//        FDigitsLayout.Position.X := MinWidth / 6;
+//        FDigitsLayout.Position.Y := MinHeight / 14;
+//      end;
+//    end;
+//    {$ENDIF}
     FDigitsLayout.Width := MinWidth - (FDigitsLayout.Position.X * 2);
     FDigitsLayout.Height := MinHeight - (FDigitsLayout.Position.Y * 2);
 
@@ -156,26 +158,29 @@ begin
   else
   if FOrientation = okHorizontal then
   begin
-    {$IFDEF MSWINDOWS}
     FDigitsLayout.Position.X := 5;//MinWidth / 64;
     FDigitsLayout.Position.Y := 10;//MinHeight / 12;
-    {$ELSE IFDEF ANDROID}
-    if TPlatformServices.Current.SupportsPlatformService(IFMXScreenService, IInterface(ScreenService)) then
-    begin
-      sScreenSize := ScreenService.GetScreenSize.Round;
 
-      if (sScreenSize.Y / sScreenSize.X) < (16 / 9) then
-      begin
-        FDigitsLayout.Position.X := MinWidth / 6;
-        FDigitsLayout.Position.Y := MinHeight / 14;
-      end
-      else
-      begin
-        FDigitsLayout.Position.X := MinWidth / 6;
-        FDigitsLayout.Position.Y := MinHeight / 14;
-      end;
-    end;
-    {$ENDIF}
+//    {$IFDEF MSWINDOWS}
+//    FDigitsLayout.Position.X := 5;//MinWidth / 64;
+//    FDigitsLayout.Position.Y := 10;//MinHeight / 12;
+//    {$ELSE IFDEF ANDROID}
+//    if TPlatformServices.Current.SupportsPlatformService(IFMXScreenService, IInterface(ScreenService)) then
+//    begin
+//      sScreenSize := ScreenService.GetScreenSize.Round;
+//
+//      if (sScreenSize.Y / sScreenSize.X) < (16 / 9) then
+//      begin
+//        FDigitsLayout.Position.X := MinWidth / 6;
+//        FDigitsLayout.Position.Y := MinHeight / 14;
+//      end
+//      else
+//      begin
+//        FDigitsLayout.Position.X := MinWidth / 6;
+//        FDigitsLayout.Position.Y := MinHeight / 14;
+//      end;
+//    end;
+//    {$ENDIF}
     FDigitsLayout.Width := AMinWidth - (FDigitsLayout.Position.X * 2);
     FDigitsLayout.Height := AMinHeight - (FDigitsLayout.Position.Y * 2);
 
