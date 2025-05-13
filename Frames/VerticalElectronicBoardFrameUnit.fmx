@@ -1,15 +1,14 @@
 inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
   Size.Width = 80.000000000000000000
-  Size.Height = 261.000000000000000000
+  Size.Height = 260.000000000000000000
   inherited BackgroundLayout: TLayout
     Size.Width = 80.000000000000000000
-    Size.Height = 261.000000000000000000
+    Size.Height = 260.000000000000000000
     inherited BackgroundRectangle: TRectangle
       Size.Width = 80.000000000000000000
-      Size.Height = 261.000000000000000000
+      Size.Height = 260.000000000000000000
       inherited DigitsLayout: TLayout
-        Align = None
-        Anchors = []
+        Position.Y = 10.500000000000000000
         Size.Width = 60.000000000000000000
         Size.Height = 241.000000000000000000
         inherited HoursLayout: TLayout
@@ -24,14 +23,6 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
             Size.Height = 60.000000000000000000
-          end
-          object Rectangle2: TRectangle
-            Align = Contents
-            Opacity = 0.500000000000000000
-            Size.Width = 60.000000000000000000
-            Size.Height = 60.000000000000000000
-            Size.PlatformDefault = False
-            Visible = False
           end
         end
         inherited MinutesLayout: TLayout
@@ -98,15 +89,6 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
             Size.Width = 60.000000000000000000
             Size.Height = 30.000000000000000000
           end
-        end
-        object Rectangle3: TRectangle
-          Align = Contents
-          Fill.Color = xFFD30000
-          Opacity = 0.500000000000000000
-          Size.Width = 60.000000000000000000
-          Size.Height = 241.000000000000000000
-          Size.PlatformDefault = False
-          Visible = False
         end
       end
     end

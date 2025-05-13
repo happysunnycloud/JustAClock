@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Left = 6
     Top = 3
   end
-  object loContent: TLayout
+  object ContentLayout: TLayout
     Align = Contents
     Size.Width = 230.000000000000000000
     Size.Height = 85.000000000000000000

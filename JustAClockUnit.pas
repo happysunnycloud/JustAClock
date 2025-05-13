@@ -32,7 +32,7 @@ type
 
   TMainForm = class(TFormExt)
     TimeText: TText;
-    loContent: TLayout;
+    ContentLayout: TLayout;
     TimeLayout: TLayout;
     SettingsPopupMenu: TPopupMenu;
     SignalRectangle: TRectangle;
@@ -109,23 +109,23 @@ type
     procedure RunTime;
     procedure RunTimer(const ATimerTime: TTime);
 
-    procedure ResizeVerticalBoardFrame(
-      const WidthCorrector: Single;
-      const HeightCorrector: Single;
-      const ADigitsLayout: TLayout;
-      const AHoursLayout: TLayout;
-      const AHoursDelimLayout: TLayout;
-      const AMinutesLayout: TLayout;
-      const ASecondsDelimLayout: TLayout;
-      const ASecondsLayout: TLayout;
-      const AHHControl: TControl;
-      const AHLControl: TControl;
-      const AHDelimControl: TControl;
-      const AMHControl: TControl;
-      const AMLControl: TControl;
-      const ASDelimControl: TControl;
-      const ASHControl: TControl;
-      const ASLControl: TControl);
+//    procedure ResizeVerticalBoardFrame(
+//      const WidthCorrector: Single;
+//      const HeightCorrector: Single;
+//      const ADigitsLayout: TLayout;
+//      const AHoursLayout: TLayout;
+//      const AHoursDelimLayout: TLayout;
+//      const AMinutesLayout: TLayout;
+//      const ASecondsDelimLayout: TLayout;
+//      const ASecondsLayout: TLayout;
+//      const AHHControl: TControl;
+//      const AHLControl: TControl;
+//      const AHDelimControl: TControl;
+//      const AMHControl: TControl;
+//      const AMLControl: TControl;
+//      const ASDelimControl: TControl;
+//      const ASHControl: TControl;
+//      const ASLControl: TControl);
 
     procedure ResizeHorizontalBoardFrame(
       const WidthCorrector: Single;
@@ -597,10 +597,10 @@ begin
   FBorderFrame :=
     TBorderFrame.Create(
       Self,
-      loContent,
+      ContentLayout,
       'Just a clock',
-      Trunc(loContent.Width),
-      Trunc(loContent.Height),
+      Trunc(ContentLayout.Width),
+      Trunc(ContentLayout.Height),
       $FF8D003A,
       $FF2A001A,
       TAlphaColorRec.Lime,
@@ -648,51 +648,52 @@ procedure TMainForm.FormResize(Sender: TObject);
 begin
   if TState.Orientation = okHorizontal then
   begin
-    SettingsLayout.Width := loContent.Width / 2;
-    SettingsLayout.Height := loContent.Height;
-    SettingsLayout.Position.X := loContent.Position.X;
-    SettingsLayout.Position.Y := loContent.Position.Y;
+    SettingsLayout.Width := ContentLayout.Width / 2;
+    SettingsLayout.Height := ContentLayout.Height;
+    SettingsLayout.Position.X := ContentLayout.Position.X;
+    SettingsLayout.Position.Y := ContentLayout.Position.Y;
 
-    ToolsLayout.Width := loContent.Width / 2;
-    ToolsLayout.Height := loContent.Height;
-    ToolsLayout.Position.X := loContent.Width / 2;
-    ToolsLayout.Position.Y := loContent.Position.Y;
+    ToolsLayout.Width := ContentLayout.Width / 2;
+    ToolsLayout.Height := ContentLayout.Height;
+    ToolsLayout.Position.X := ContentLayout.Width / 2;
+    ToolsLayout.Position.Y := ContentLayout.Position.Y;
   end
   else
   if TState.Orientation = okVertical then
   begin
-    SettingsLayout.Width := loContent.Width;
-    SettingsLayout.Height := loContent.Height / 2;
-    SettingsLayout.Position.X := loContent.Position.X;
-    SettingsLayout.Position.Y := loContent.Position.Y;
+    SettingsLayout.Width := ContentLayout.Width;
+    SettingsLayout.Height := ContentLayout.Height / 2;
+    SettingsLayout.Position.X := ContentLayout.Position.X;
+    SettingsLayout.Position.Y := ContentLayout.Position.Y;
 
-    ToolsLayout.Width := loContent.Width;
-    ToolsLayout.Height := loContent.Height / 2;
-    ToolsLayout.Position.X := loContent.Position.X;
-    ToolsLayout.Position.Y := loContent.Height / 2;
+    ToolsLayout.Width := ContentLayout.Width;
+    ToolsLayout.Height := ContentLayout.Height / 2;
+    ToolsLayout.Position.X := ContentLayout.Position.X;
+    ToolsLayout.Position.Y := ContentLayout.Height / 2;
   end;
 
   if Assigned(FTextBoardFrame) then
   begin
     if FTextBoardFrame is TVerticalTextBoardFrame then
     begin
-      ResizeVerticalBoardFrame(
-        0.6,
-        0.85,
-        FTextBoardFrame.TextTimeLayout,
-        FTextBoardFrame.TextHoursLayout,
-        FTextBoardFrame.TextHoursDelimLayout,
-        FTextBoardFrame.TextMinutesLayout,
-        FTextBoardFrame.TextSecondsDelimLayout,
-        FTextBoardFrame.TextSecondsLayout,
-        FTextBoardFrame.HHText,
-        FTextBoardFrame.HLText,
-        FTextBoardFrame.HDelimText,
-        FTextBoardFrame.MHText,
-        FTextBoardFrame.MLText,
-        FTextBoardFrame.SDelimText,
-        FTextBoardFrame.SHText,
-        FTextBoardFrame.SLText);
+      TProportion.Resize;
+//      ResizeVerticalBoardFrame(
+//        0.6,
+//        0.85,
+//        FTextBoardFrame.TextTimeLayout,
+//        FTextBoardFrame.TextHoursLayout,
+//        FTextBoardFrame.TextHoursDelimLayout,
+//        FTextBoardFrame.TextMinutesLayout,
+//        FTextBoardFrame.TextSecondsDelimLayout,
+//        FTextBoardFrame.TextSecondsLayout,
+//        FTextBoardFrame.HHText,
+//        FTextBoardFrame.HLText,
+//        FTextBoardFrame.HDelimText,
+//        FTextBoardFrame.MHText,
+//        FTextBoardFrame.MLText,
+//        FTextBoardFrame.SDelimText,
+//        FTextBoardFrame.SHText,
+//        FTextBoardFrame.SLText);
     end
     else
     if FTextBoardFrame is TTextBoardFrame then
@@ -720,52 +721,7 @@ begin
   end
   else
   if Assigned(FElectronicBoardFrame) then
-  begin
-    if FElectronicBoardFrame is TVerticalElectronicBoardFrame then
-    begin
-      TProportion.Resize;
-//      ResizeVerticalBoardFrame(
-//        0.65,
-//        0.75,
-//        FElectronicBoardFrame.DigitsLayout,
-//        FElectronicBoardFrame.HoursLayout,
-//        FElectronicBoardFrame.HoursDelimLayout,
-//        FElectronicBoardFrame.MinutesLayout,
-//        FElectronicBoardFrame.SecondsDelimLayout,
-//        FElectronicBoardFrame.SecondsLayout,
-//        FElectronicBoardFrame.HHImage,
-//        FElectronicBoardFrame.HLImage,
-//        FElectronicBoardFrame.HDelimImage,
-//        FElectronicBoardFrame.MHImage,
-//        FElectronicBoardFrame.MLImage,
-//        FElectronicBoardFrame.SDelimImage,
-//        FElectronicBoardFrame.SHImage,
-//        FElectronicBoardFrame.SLImage);
-    end
-    else
-    if FElectronicBoardFrame is TElectronicBoardFrame then
-    begin
-      ResizeHorizontalBoardFrame(
-        0.85,
-        0.45,
-        4,
-        8,
-        FElectronicBoardFrame.DigitsLayout,
-        FElectronicBoardFrame.HoursLayout,
-        FElectronicBoardFrame.HoursDelimLayout,
-        FElectronicBoardFrame.MinutesLayout,
-        FElectronicBoardFrame.SecondsDelimLayout,
-        FElectronicBoardFrame.SecondsLayout,
-        FElectronicBoardFrame.HHImage,
-        FElectronicBoardFrame.HLImage,
-        FElectronicBoardFrame.HDelimImage,
-        FElectronicBoardFrame.MHImage,
-        FElectronicBoardFrame.MLImage,
-        FElectronicBoardFrame.SDelimImage,
-        FElectronicBoardFrame.SHImage,
-        FElectronicBoardFrame.SLImage);
-    end;
-  end;
+    TProportion.Resize;
 end;
 
 procedure TMainForm.TimeVoidEditOnChangeHandler(Sender: TObject);
@@ -796,48 +752,26 @@ procedure TMainForm.OpenBoard(
   const AColor: TAlphaColor;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
 
-  procedure _SetScreenOrientation(const AOrientationKind: TOrientationKind);
   {$IFDEF ANDROID}
-    procedure _SetAndroidScreenOrientation(
-      const AAndroidScreenOrientation: TScreenOrientation);
-    var
-      ScreenService: IFMXScreenService;
-      OrientSet: TScreenOrientations;
-    begin
-      if TPlatformServices.Current.
-        SupportsPlatformService(IFMXScreenService, IInterface(ScreenService))
-      then
-      begin
-        OrientSet := [AAndroidScreenOrientation];
-        ScreenService.SetSupportedScreenOrientations(OrientSet);
-      end;
-    end;
-  {$ENDIF}
+  procedure _SetAndroidScreenOrientation(
+    const AAndroidScreenOrientation: TScreenOrientation);
+  var
+    ScreenService: IFMXScreenService;
+    OrientSet: TScreenOrientations;
   begin
-    if AOrientationKind = okHorizontal then
+    if TPlatformServices.Current.
+      SupportsPlatformService(IFMXScreenService, IInterface(ScreenService))
+    then
     begin
-      {$IFDEF MSWINDOWS}
-      FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
-      FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
-      {$ELSE IFDEF ANDROID}
-      _SetAndroidScreenOrientation(TScreenOrientation.Landscape);
-      {$ENDIF}
-      FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
-    end
-    else
-    if AOrientationKind = okVertical then
-    begin
-      {$IFDEF MSWINDOWS}
-//      Self.Width := VERTICAL_MIN_WIDTH;
-//      Self.Height := VERTICAL_MIN_HEIGHT;
-      FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
-      FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
-      {$ELSE IFDEF ANDROID}
-      _SetAndroidScreenOrientation(TScreenOrientation.Portrait);
-      {$ENDIF}
-      FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
+      OrientSet := [AAndroidScreenOrientation];
+      ScreenService.SetSupportedScreenOrientations(OrientSet);
     end;
   end;
+  {$ENDIF}
+
+var
+  MinClientWidth: Integer;
+  MinClientHeight: Integer;
 begin
   TimeVoidEdit.OnChange := nil;
   if Assigned(FTimeThread) then
@@ -851,16 +785,33 @@ begin
 
   if TState.Board = bkElectronic then
   begin
-    _SetScreenOrientation(TState.Orientation);
+    if TState.Orientation = okHorizontal then
+    begin
+      MinClientWidth := HORIZONTAL_MIN_WIDTH;
+      MinClientHeight := HORIZONTAL_MIN_HEIGHT;
+      {$IFDEF ANDROID}
+      _SetAndroidScreenOrientation(TScreenOrientation.Landscape);
+      {$ENDIF}
+      FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
+    end
+    else
+    if TState.Orientation = okVertical then
+    begin
+      MinClientWidth := VERTICAL_MIN_WIDTH;
+      MinClientHeight := VERTICAL_MIN_HEIGHT;
+      {$IFDEF ANDROID}
+      _SetAndroidScreenOrientation(TScreenOrientation.Portrait);
+      {$ENDIF}
+      FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
+    end
+    else
+      raise Exception.Create('TMainForm.ToolsLayoutTap: Unknown orientation kind');
 
     TProportion.Init(
-      {$IFDEF MSWINDOWS}
-      FBorderFrame,
-      {$ELSE IFDEF ANDROID}
-      Self,
-      {$ENDIF}
-      VERTICAL_MIN_WIDTH,
-      VERTICAL_MIN_HEIGHT,
+      TState.Orientation,
+      ContentLayout,
+      MinClientWidth,
+      MinClientHeight,
       FElectronicBoardFrame.DigitsLayout,
       FElectronicBoardFrame.HoursLayout,
       FElectronicBoardFrame.HoursDelimLayout,
@@ -875,28 +826,6 @@ begin
       FElectronicBoardFrame.SDelimImage,
       FElectronicBoardFrame.SHImage,
       FElectronicBoardFrame.SLImage);
-
-    //    if TState.Orientation = okHorizontal then
-    //    begin
-    //      {$IFDEF MSWINDOWS}
-    //      FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
-    //      FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
-    //      {$ELSE IFDEF ANDROID}
-    //      _SetAndroidOrientation(TScreenOrientation.Landscape);
-    //      {$ENDIF}
-    //      FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
-    //    end
-    //    else
-    //    if TState.Orientation = okVertical then
-    //    begin
-    //      {$IFDEF MSWINDOWS}
-    //      FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
-    //      FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
-    //      {$ELSE IFDEF ANDROID}
-    //      _SetAndroidOrientation(TScreenOrientation.Portrait);
-    //      {$ENDIF}
-    //      FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
-    //    end;
 
     TShowTime.Init(
       GetDigitsPackFile,
@@ -914,6 +843,13 @@ begin
     FElectronicBoardFrame.Parent := TimeLayout;
     FElectronicBoardFrame.Align := TAlignLayout.Contents;
     FElectronicBoardFrame.HitTest := false;
+
+    // Выставлять размеры нужно в конце,
+    // иначе уйдет на Resize формы до инициализации табло
+    {$IFDEF MSWINDOWS}
+    FBorderFrame.MinClientWidth := MinClientWidth;
+    FBorderFrame.MinClientHeight := MinClientHeight;
+    {$ENDIF}
   end
   else
   if TState.Board = bkText then
@@ -1203,79 +1139,6 @@ begin
 
   CloseBoard;
   OpenBoard(TState.Board, TState.Color, TState.Orientation);
-end;
-
-procedure TMainForm.ResizeVerticalBoardFrame(
-  const WidthCorrector: Single;
-  const HeightCorrector: Single;
-  const ADigitsLayout: TLayout;
-  const AHoursLayout: TLayout;
-  const AHoursDelimLayout: TLayout;
-  const AMinutesLayout: TLayout;
-  const ASecondsDelimLayout: TLayout;
-  const ASecondsLayout: TLayout;
-  const AHHControl: TControl;
-  const AHLControl: TControl;
-  const AHDelimControl: TControl;
-  const AMHControl: TControl;
-  const AMLControl: TControl;
-  const ASDelimControl: TControl;
-  const ASHControl: TControl;
-  const ASLControl: TControl);
-
-var
-  W0: Single;
-  H0: Single;
-  H1: Single;
-begin
-  ADigitsLayout.Align  := TAlignLayout.None;
-
-//  if Self.Width / Self.Height < 1 then
-//    _SetWidthHeightLoss(Self, ADigitsLayout, WidthCorrector, HeightCorrector);
-//  else
-//    _SetWidthHeightGreat(Self, ADigitsLayout, WidthCorrector, HeightCorrector);
-
-//  ADigitsLayout.Width  := Self.Width * WidthCorrector;
-//  ADigitsLayout.Height := Self.Height * HeightCorrector;
-
-  ADigitsLayout.Align  := TAlignLayout.Center;
-
-  W0 := ADigitsLayout.Width  / 2;
-  H0 := ADigitsLayout.Height / 4;
-  H1 := ADigitsLayout.Height / 8;
-
-  AHoursLayout.Align         := TAlignLayout.None;
-  AHoursDelimLayout.Align    := TAlignLayout.None;
-  AMinutesLayout.Align       := TAlignLayout.None;
-  ASecondsDelimLayout.Align  := TAlignLayout.None;
-  ASecondsLayout.Align       := TAlignLayout.None;
-
-  AHoursLayout.Height        := H0;
-  AHoursDelimLayout.Height   := H1;
-  AMinutesLayout.Height      := H0;
-  ASecondsDelimLayout.Height := H1;
-  ASecondsLayout.Height      := H0;
-
-  ASecondsLayout.Align       := TAlignLayout.Bottom;
-  ASecondsDelimLayout.Align  := TAlignLayout.Bottom;
-  AMinutesLayout.Align       := TAlignLayout.Bottom;
-  AHoursDelimLayout.Align    := TAlignLayout.Bottom;
-  AHoursLayout.Align         := TAlignLayout.Bottom;
-
-  AHoursLayout.Align         := TAlignLayout.Top;
-  AHoursDelimLayout.Align    := TAlignLayout.Top;
-  AMinutesLayout.Align       := TAlignLayout.Top;
-  ASecondsDelimLayout.Align  := TAlignLayout.Top;
-  ASecondsLayout.Align       := TAlignLayout.Top;
-
-  AHHControl.Width     := W0;
-  AHLControl.Width     := W0;
-  AHDelimControl.Width := W0;
-  AMHControl.Width     := W0;
-  AMLControl.Width     := W0;
-  ASDelimControl.Width := W0;
-  ASHControl.Width     := W0;
-  ASLControl.Width     := W0;
 end;
 
 procedure TMainForm.ResizeHorizontalBoardFrame(

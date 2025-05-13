@@ -11,8 +11,6 @@ uses
 type
   TVerticalElectronicBoardFrame = class(TElectronicBoardFrame)
     Rectangle1: TRectangle;
-    Rectangle2: TRectangle;
-    Rectangle3: TRectangle;
   private
     { Private declarations }
   public
