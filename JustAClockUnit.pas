@@ -14,7 +14,6 @@ uses
   , FMX.PopupMenuExtUnit
   {$IFDEF MSWINDOWS}
   , BorderFrameUnit
-  , FMX.Craft.PopupMenu.Win, FMX.Gestures
   {$ENDIF}
   {$IFDEF ANDROID}
   , FMX.Platform
@@ -75,17 +74,17 @@ type
     FElectronicBoardColorArray: TElectronicBoardColorArray;
     FSettingsPopupMenuExt: TPopupMenuExt;
     FToolsPopupMenuExt: TPopupMenuExt;
-    FTrayPopupMenuExt: TPopupMenuExt;
 
     {$IFDEF MSWINDOWS}
+    FTrayPopupMenuExt: TPopupMenuExt;
     FBorderFrame: TBorderFrame;
-    {$ENDIF}
 
     procedure TrayIconMouseRightButtonDown(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure TrayIconMouseLeftButtonDown(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure OnCloseTrayItemHandler(Sender: TObject);
+    {$ENDIF}
 
     procedure MenuColorItemClickHandler(Sender: TObject);
     procedure MenuTextBoardItemClickHandler(Sender: TObject);
@@ -221,6 +220,7 @@ end;
 
 { TMainForm }
 
+{$IFDEF MSWINDOWS}
 procedure TMainForm.OnCloseTrayItemHandler(Sender: TObject);
 begin
   MainForm.BorderFrame.CloseButtonRectangle.
@@ -240,6 +240,7 @@ procedure TMainForm.TrayIconMouseLeftButtonDown(
 begin
   ShowWindow(ApplicationHWND, SW_HIDE);
 end;
+{$ENDIF}
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -311,12 +312,6 @@ var
   {$IFDEF ANDROID}
   aFMXApplicationEventService: IFMXApplicationEventService;
   {$ENDIF}
-//  MenuItem: TMenuItem;
-//
-//  Colors: TMenuItem;
-//  CustomColors: TMenuItem;
-//  SetCustomColors: TMenuItem;
-//  Boards: TMenuItem;
   ColorIdent: String;
   Boards: TItem;
   MenuItem: TItem;
@@ -588,6 +583,9 @@ begin
 //  MenuItem.OnClick := MenuCancelTimerItemClickHandler;
 //  ToolsPopupMenu.AddObject(MenuItem);
 
+  FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
+
+  {$IFDEF MSWINDOWS}
   FTrayPopupMenuExt := TPopupMenuExt.Create(Self);
   TState.MenuTheme.CopyTo(FTrayPopupMenuExt.Theme);
 
@@ -596,8 +594,6 @@ begin
   MenuItem.OnClick := OnCloseTrayItemHandler;
   FTrayPopupMenuExt.Add(MenuItem);
 
-  FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
-  {$IFDEF MSWINDOWS}
   ShowWindow(ApplicationHWND, SW_HIDE);
 
   FBorderFrame :=
