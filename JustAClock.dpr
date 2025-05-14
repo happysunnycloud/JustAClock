@@ -1,6 +1,24 @@
 program JustAClock;
-
+//  {$IFDEF ANDROID}
+//  Androidapi.Helpers,
+//  Androidapi.JNI.GraphicsContentViewText,
+//  Androidapi.JNI.App,
+//  Android.JNI.PowerManager in '..\DevelopmentsCollection\Android.JNI.PowerManager.pas',
+//  {$ENDIF}
+//  Application.Initialize;
+//  {$IFDEF ANDROID}
+//  //отключаем гашение экрана
+//  TAndroidHelper.Activity.GetWindow.addFlags(TJWindowManager_LayoutParams.JavaClass.FLAG_KEEP_SCREEN_ON);
+//  {$ENDIF}
+//  Application.CreateForm(TMainForm, MainForm);
+//  Application.Run;
 uses
+  {$IFDEF ANDROID}
+  Androidapi.Helpers,
+  Androidapi.JNI.GraphicsContentViewText,
+  Androidapi.JNI.App,
+  Android.JNI.PowerManager in '..\DevelopmentsCollection\Android.JNI.PowerManager.pas',
+  {$ENDIF}
   System.StartUpCopy,
   FMX.Forms,
   JustAClockUnit in 'JustAClockUnit.pas' {MainForm},
@@ -46,6 +64,10 @@ uses
 
 begin
   Application.Initialize;
+  {$IFDEF ANDROID}
+  //отключаем гашение экрана
+  TAndroidHelper.Activity.GetWindow.addFlags(TJWindowManager_LayoutParams.JavaClass.FLAG_KEEP_SCREEN_ON);
+  {$ENDIF}
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.

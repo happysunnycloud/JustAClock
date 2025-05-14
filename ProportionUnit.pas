@@ -64,6 +64,7 @@ uses
     FMX.Types
   , FMX.Forms
   , System.SysUtils
+  , FMX.Objects
   {$IFDEF MSWINDOWS}
   , BorderFrameUnit
   {$ELSE IFDEF ANDROID}
@@ -93,10 +94,6 @@ class procedure TProportion.Init(
   const ASLControl: TControl);
 
 var
-//{$IFDEF ANDROID}
-//  ScreenService: IFMXScreenService;
-//  sScreenSize: TPoint;
-//{$ENDIF}
   MinWidth: Integer;
   MinHeight: Integer;
 begin
@@ -124,26 +121,7 @@ begin
   begin
     FDigitsLayout.Position.X := 5;//MinWidth / 10;
     FDigitsLayout.Position.Y := 5;//MinHeight / 20;
-//    {$IFDEF MSWINDOWS}
-//    FDigitsLayout.Position.X := 5;//MinWidth / 10;
-//    FDigitsLayout.Position.Y := 5;//MinHeight / 20;
-//    {$ELSE IFDEF ANDROID}
-//    if TPlatformServices.Current.SupportsPlatformService(IFMXScreenService, IInterface(ScreenService)) then
-//    begin
-//      sScreenSize := ScreenService.GetScreenSize.Round;
-//
-//      if (sScreenSize.Y / sScreenSize.X) < (16 / 9) then
-//      begin
-//        FDigitsLayout.Position.X := MinWidth / 6;
-//        FDigitsLayout.Position.Y := MinHeight / 14;
-//      end
-//      else
-//      begin
-//        FDigitsLayout.Position.X := MinWidth / 6;
-//        FDigitsLayout.Position.Y := MinHeight / 14;
-//      end;
-//    end;
-//    {$ENDIF}
+
     FDigitsLayout.Width := MinWidth - (FDigitsLayout.Position.X * 2);
     FDigitsLayout.Height := MinHeight - (FDigitsLayout.Position.Y * 2);
 
@@ -161,26 +139,6 @@ begin
     FDigitsLayout.Position.X := 5;//MinWidth / 64;
     FDigitsLayout.Position.Y := 10;//MinHeight / 12;
 
-//    {$IFDEF MSWINDOWS}
-//    FDigitsLayout.Position.X := 5;//MinWidth / 64;
-//    FDigitsLayout.Position.Y := 10;//MinHeight / 12;
-//    {$ELSE IFDEF ANDROID}
-//    if TPlatformServices.Current.SupportsPlatformService(IFMXScreenService, IInterface(ScreenService)) then
-//    begin
-//      sScreenSize := ScreenService.GetScreenSize.Round;
-//
-//      if (sScreenSize.Y / sScreenSize.X) < (16 / 9) then
-//      begin
-//        FDigitsLayout.Position.X := MinWidth / 6;
-//        FDigitsLayout.Position.Y := MinHeight / 14;
-//      end
-//      else
-//      begin
-//        FDigitsLayout.Position.X := MinWidth / 6;
-//        FDigitsLayout.Position.Y := MinHeight / 14;
-//      end;
-//    end;
-//    {$ENDIF}
     FDigitsLayout.Width := AMinWidth - (FDigitsLayout.Position.X * 2);
     FDigitsLayout.Height := AMinHeight - (FDigitsLayout.Position.Y * 2);
 
@@ -205,6 +163,19 @@ begin
 end;
 
 class procedure TProportion.Resize;
+
+  procedure _SetTextSize(const AControl: TControl);
+  begin
+    TText(AControl).TextSettings.Font.Size :=
+      Trunc((FHHControl.Height * 50) / 60);
+//    if FOrientation = okVertical then
+//      TText(AControl).TextSettings.Font.Size :=
+//        Trunc((FHHControl.Height * 50) / 60)
+//    else
+//    if FOrientation = okVertical then
+//      TText(AControl).TextSettings.Font.Size :=
+//        Trunc((FDigitsLayout.Height * 50) / 60)
+  end;
 
   procedure ResizeVerticalBoardFrame;
   var
@@ -258,11 +229,13 @@ class procedure TProportion.Resize;
   end;
 
   procedure ResizeHorizontalBoardFrame;
+
     procedure _HorizontalAlign(const AControl: TControl; const AWidth: Single);
     begin
       AControl.Width := AWidth;
       AControl.Align := TAlignLayout.Left;
     end;
+
   var
     W0: Single;
     W1: Single;
@@ -275,7 +248,7 @@ class procedure TProportion.Resize;
     _HorizontalAlign(FHoursLayout, W0);
     _HorizontalAlign(FHHControl, W0 / 2);
     _HorizontalAlign(FHLControl, W0 / 2);
-    _HorizontalAlign(FHoursDelimLayout , W1);
+    _HorizontalAlign(FHoursDelimLayout, W1);
     _HorizontalAlign(FHDelimControl, W1);
     _HorizontalAlign(FMinutesLayout, W0);
     _HorizontalAlign(FMHControl, W0 / 2);
@@ -378,6 +351,18 @@ begin
   _ProportionalAligment(
     TProportion.ClientWidth,
     TProportion.ClientHeight);
+
+  if FHDelimControl is TText then
+  begin
+    _SetTextSize(FHHControl);
+    _SetTextSize(FHLControl);
+    _SetTextSize(FHDelimControl);
+    _SetTextSize(FMHControl);
+    _SetTextSize(FMLControl);
+    _SetTextSize(FSDelimControl);
+    _SetTextSize(FSHControl);
+    _SetTextSize(FSLControl);
+  end;
 end;
 
 end.

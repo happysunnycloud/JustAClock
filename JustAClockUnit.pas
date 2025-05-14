@@ -107,43 +107,6 @@ type
     procedure RunTime;
     procedure RunTimer(const ATimerTime: TTime);
 
-//    procedure ResizeVerticalBoardFrame(
-//      const WidthCorrector: Single;
-//      const HeightCorrector: Single;
-//      const ADigitsLayout: TLayout;
-//      const AHoursLayout: TLayout;
-//      const AHoursDelimLayout: TLayout;
-//      const AMinutesLayout: TLayout;
-//      const ASecondsDelimLayout: TLayout;
-//      const ASecondsLayout: TLayout;
-//      const AHHControl: TControl;
-//      const AHLControl: TControl;
-//      const AHDelimControl: TControl;
-//      const AMHControl: TControl;
-//      const AMLControl: TControl;
-//      const ASDelimControl: TControl;
-//      const ASHControl: TControl;
-//      const ASLControl: TControl);
-
-    procedure ResizeHorizontalBoardFrame(
-      const WidthCorrector: Single;
-      const HeightCorrector: Single;
-      const WidthDigitsCorrector: Single;
-      const WidthDelimiterCorrector: Single;
-      const ADigitsLayout: TLayout;
-      const AHoursLayout: TLayout;
-      const AHoursDelimLayout: TLayout;
-      const AMinutesLayout: TLayout;
-      const ASecondsDelimLayout: TLayout;
-      const ASecondsLayout: TLayout;
-      const AHHControl: TControl;
-      const AHLControl: TControl;
-      const AHDelimControl: TControl;
-      const AMHControl: TControl;
-      const AMLControl: TControl;
-      const ASDelimControl: TControl;
-      const ASHControl: TControl;
-      const ASLControl: TControl);
   private
     {$IFDEF ANDROID}
     function HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
@@ -343,14 +306,6 @@ begin
 
   { MenuTheme}
 
-//  TState.MenuTheme.TextColor := TAlphaColorRec.White;
-//  TState.MenuTheme.TextFontSize := 14;
-
-//  TState.MenuTheme.TextSettings.Font.Size := 14;
-//  TState.MenuTheme.TextSettings.FontColor := TAlphaColorRec.White;
-//  TState.MenuTheme.TextSettings.HorzAlign := TTextAlign.Leading;
-//  TState.MenuTheme.TextSettings.VertAlign := TTextAlign.Center;
-
   TState.MenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
   TState.MenuTheme.LightBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
   TState.MenuTheme.DarkBackgroundColor := TAlphaColorRec.Cornflowerblue;
@@ -462,92 +417,6 @@ begin
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
 
-//  Boards := TMenuItem.Create(SettingsPopupMenu);
-//  Boards.Text := 'Boards';
-//  SettingsPopupMenu.AddObject(Boards);
-//
-//  MenuItem := TMenuItem.Create(Boards);
-//  MenuItem.Text := 'Text';
-//  MenuItem.OnClick := MenuTextBoardItemClickHandler;
-//  Boards.AddObject(MenuItem);
-//
-//  MenuItem := TMenuItem.Create(Boards);
-//  MenuItem.Text := 'Electronic';
-//  MenuItem.OnClick := MenuElectronicBoardItemClickHandler;
-//  Boards.AddObject(MenuItem);
-//
-//  MenuItem := TMenuItem.Create(SettingsPopupMenu);
-//  MenuItem.Text := '-';
-//  MenuItem.Tag := -1;
-//  SettingsPopupMenu.AddObject(MenuItem);
-//
-//  Colors := TMenuItem.Create(SettingsPopupMenu);
-//  Colors.Text := 'Colors';
-//  SettingsPopupMenu.AddObject(Colors);
-//  for i := 0 to Pred(Length(FElectronicBoardColorArray)) do
-//  begin
-//    ColorIdent := FElectronicBoardColorArray[i];
-//    MenuItem := TMenuItem.Create(Colors);
-//    MenuItem.Text := ColorIdent;
-//    MenuItem.Tag := i;
-//    MenuItem.OnClick := MenuColorItemClickHandler;
-//    Colors.AddObject(MenuItem);
-//  end;
-//
-//  CustomColors := TMenuItem.Create(SettingsPopupMenu);
-//  CustomColors.Text := 'Custom color';
-//  CustomColors.Tag := 0;
-//  SettingsPopupMenu.AddObject(CustomColors);
-//
-//  for i := 0 to 3 do
-//  begin
-//    MenuItem := TMenuItem.Create(CustomColors);
-//    MenuItem.Text := 'Custom color ' + (i + 1).ToString;
-//    MenuItem.Tag := i;
-//    MenuItem.OnClick := MenuGetCustomColorItemClickHandler;
-//    CustomColors.AddObject(MenuItem);
-//  end;
-//
-//  MenuItem := TMenuItem.Create(CustomColors);
-//  MenuItem.Text := '-';
-//  MenuItem.Tag := -1;
-//  CustomColors.AddObject(MenuItem);
-//
-//  SetCustomColors := TMenuItem.Create(CustomColors);
-//  SetCustomColors.Text := 'Set';
-//  SetCustomColors.Tag := 0;
-//  CustomColors.AddObject(SetCustomColors);
-//
-//  for i := 0 to 3 do
-//  begin
-//    MenuItem := TMenuItem.Create(SetCustomColors);
-//    MenuItem.Text := 'Set custom color ' + (i + 1).ToString;
-//    MenuItem.Tag := i;
-//    MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
-//    SetCustomColors.AddObject(MenuItem);
-//  end;
-//
-//  MenuItem := TMenuItem.Create(SettingsPopupMenu);
-//  MenuItem.Text := '-';
-//  MenuItem.Tag := -1;
-//  SettingsPopupMenu.AddObject(MenuItem);
-//
-//  Orientation := TMenuItem.Create(SettingsPopupMenu);
-//  Orientation.Text := 'Orientation';
-//  SettingsPopupMenu.AddObject(Orientation);
-//
-//  MenuItem := TMenuItem.Create(Orientation);
-//  MenuItem.Text := 'Horizontal';
-//  MenuItem.Tag := 0;
-//  MenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
-//  Orientation.AddObject(MenuItem);
-//
-//  MenuItem := TMenuItem.Create(Orientation);
-//  MenuItem.Text := 'Vertical';
-//  MenuItem.Tag := 0;
-//  MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
-//  Orientation.AddObject(MenuItem);
-
   { ToolsPopupMenu }
 
   FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
@@ -567,21 +436,6 @@ begin
   MenuItem.Text := 'Cancel';
   MenuItem.OnClick := MenuCancelTimerItemClickHandler;
   FToolsPopupMenuExt.Add(MenuItem);
-
-//  MenuItem := TMenuItem.Create(ToolsPopupMenu);
-//  MenuItem.Text := 'Set timer';
-//  MenuItem.OnClick := MenuCountDownItemClickHandler;
-//  ToolsPopupMenu.AddObject(MenuItem);
-//
-//  MenuItem := TMenuItem.Create(ToolsPopupMenu);
-//  MenuItem.Text := '-';
-//  MenuItem.Tag := -1;
-//  ToolsPopupMenu.AddObject(MenuItem);
-//
-//  MenuItem := TMenuItem.Create(ToolsPopupMenu);
-//  MenuItem.Text := 'Cancel';
-//  MenuItem.OnClick := MenuCancelTimerItemClickHandler;
-//  ToolsPopupMenu.AddObject(MenuItem);
 
   FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
 
@@ -607,9 +461,6 @@ begin
       $FF2A001A,
       TAlphaColorRec.Lime,
       $FFADADAD);
-
-//  FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
-//  FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
 
   FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
   FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
@@ -667,56 +518,7 @@ begin
     ToolsLayout.Position.Y := ContentLayout.Height / 2;
   end;
 
-  if Assigned(FTextBoardFrame) then
-  begin
-    if FTextBoardFrame is TVerticalTextBoardFrame then
-    begin
-      TProportion.Resize;
-//      ResizeVerticalBoardFrame(
-//        0.6,
-//        0.85,
-//        FTextBoardFrame.TextTimeLayout,
-//        FTextBoardFrame.TextHoursLayout,
-//        FTextBoardFrame.TextHoursDelimLayout,
-//        FTextBoardFrame.TextMinutesLayout,
-//        FTextBoardFrame.TextSecondsDelimLayout,
-//        FTextBoardFrame.TextSecondsLayout,
-//        FTextBoardFrame.HHText,
-//        FTextBoardFrame.HLText,
-//        FTextBoardFrame.HDelimText,
-//        FTextBoardFrame.MHText,
-//        FTextBoardFrame.MLText,
-//        FTextBoardFrame.SDelimText,
-//        FTextBoardFrame.SHText,
-//        FTextBoardFrame.SLText);
-    end
-    else
-    if FTextBoardFrame is TTextBoardFrame then
-    begin
-      ResizeHorizontalBoardFrame(
-        0.85,
-        0.6,
-        3.5,
-        14,
-        FTextBoardFrame.TextTimeLayout,
-        FTextBoardFrame.TextHoursLayout,
-        FTextBoardFrame.TextHoursDelimLayout,
-        FTextBoardFrame.TextMinutesLayout,
-        FTextBoardFrame.TextSecondsDelimLayout,
-        FTextBoardFrame.TextSecondsLayout,
-        FTextBoardFrame.HHText,
-        FTextBoardFrame.HLText,
-        FTextBoardFrame.HDelimText,
-        FTextBoardFrame.MHText,
-        FTextBoardFrame.MLText,
-        FTextBoardFrame.SDelimText,
-        FTextBoardFrame.SHText,
-        FTextBoardFrame.SLText);
-    end;
-  end
-  else
-  if Assigned(FElectronicBoardFrame) then
-    TProportion.Resize;
+  TProportion.Resize;
 end;
 
 procedure TMainForm.TimeVoidEditOnChangeHandler(Sender: TObject);
@@ -747,6 +549,9 @@ procedure TMainForm.OpenBoard(
   const AColor: TAlphaColor;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
 
+type
+  TFrameClass = class of TFrame;
+
   {$IFDEF ANDROID}
   procedure _SetAndroidScreenOrientation(
     const AAndroidScreenOrientation: TScreenOrientation);
@@ -763,10 +568,14 @@ procedure TMainForm.OpenBoard(
     end;
   end;
   {$ENDIF}
-
+  function _SetOrientation(const AClass: TFrameClass): Pointer;
+  begin
+    Result := AClass.Create(nil);
+  end;
 var
   MinClientWidth: Integer;
   MinClientHeight: Integer;
+  BoardFrameClass: TFrameClass;
 begin
   TimeVoidEdit.OnChange := nil;
   if Assigned(FTimeThread) then
@@ -778,29 +587,37 @@ begin
   TState.Orientation := AOrientation;
   TState.Color := AColor;
 
+  if TState.Orientation = okHorizontal then
+  begin
+    MinClientWidth := HORIZONTAL_MIN_WIDTH;
+    MinClientHeight := HORIZONTAL_MIN_HEIGHT;
+    {$IFDEF ANDROID}
+    _SetAndroidScreenOrientation(TScreenOrientation.Landscape);
+    {$ENDIF}
+  end
+  else
+  if TState.Orientation = okVertical then
+  begin
+    MinClientWidth := VERTICAL_MIN_WIDTH;
+    MinClientHeight := VERTICAL_MIN_HEIGHT;
+    {$IFDEF ANDROID}
+    _SetAndroidScreenOrientation(TScreenOrientation.Portrait);
+    {$ENDIF}
+  end
+  else
+    raise Exception.Create('TMainForm.OpenBoard: Unknown orientation kind');
+
   if TState.Board = bkElectronic then
   begin
     if TState.Orientation = okHorizontal then
-    begin
-      MinClientWidth := HORIZONTAL_MIN_WIDTH;
-      MinClientHeight := HORIZONTAL_MIN_HEIGHT;
-      {$IFDEF ANDROID}
-      _SetAndroidScreenOrientation(TScreenOrientation.Landscape);
-      {$ENDIF}
-      FElectronicBoardFrame := TElectronicBoardFrame.Create(nil);
-    end
+      BoardFrameClass := TElectronicBoardFrame
     else
     if TState.Orientation = okVertical then
-    begin
-      MinClientWidth := VERTICAL_MIN_WIDTH;
-      MinClientHeight := VERTICAL_MIN_HEIGHT;
-      {$IFDEF ANDROID}
-      _SetAndroidScreenOrientation(TScreenOrientation.Portrait);
-      {$ENDIF}
-      FElectronicBoardFrame := TVerticalElectronicBoardFrame.Create(nil);
-    end
+      BoardFrameClass := TVerticalElectronicBoardFrame
     else
-      raise Exception.Create('TMainForm.ToolsLayoutTap: Unknown orientation kind');
+      raise Exception.Create('TMainForm.OpenBoard: Unknown orientation kind');
+
+    FElectronicBoardFrame := _SetOrientation(BoardFrameClass);
 
     TProportion.Init(
       TState.Orientation,
@@ -850,22 +667,34 @@ begin
   if TState.Board = bkText then
   begin
     if TState.Orientation = okHorizontal then
-    begin
-      {$IFDEF MSWINDOWS}
-      FBorderFrame.MinWidth := HORIZONTAL_MIN_WIDTH;
-      FBorderFrame.MinHeight := HORIZONTAL_MIN_HEIGHT;
-      {$ENDIF}
-      FTextBoardFrame := TTextBoardFrame.Create(nil);
-    end
+      BoardFrameClass := TTextBoardFrame
     else
     if TState.Orientation = okVertical then
-    begin
-      {$IFDEF MSWINDOWS}
-      FBorderFrame.MinWidth := VERTICAL_MIN_WIDTH;
-      FBorderFrame.MinHeight := VERTICAL_MIN_HEIGHT;
-      {$ENDIF}
-      FTextBoardFrame := TVerticalTextBoardFrame.Create(nil);
-    end;
+      BoardFrameClass := TVerticalTextBoardFrame
+    else
+      raise Exception.Create('TMainForm.OpenBoard: Unknown orientation kind');
+
+    FTextBoardFrame := _SetOrientation(BoardFrameClass);
+
+    TProportion.Init(
+      TState.Orientation,
+      ContentLayout,
+      MinClientWidth,
+      MinClientHeight,
+      FTextBoardFrame.TextTimeLayout,
+      FTextBoardFrame.TextHoursLayout,
+      FTextBoardFrame.TextHoursDelimLayout,
+      FTextBoardFrame.TextMinutesLayout,
+      FTextBoardFrame.TextSecondsDelimLayout,
+      FTextBoardFrame.TextSecondsLayout,
+      FTextBoardFrame.HHText,
+      FTextBoardFrame.HLText,
+      FTextBoardFrame.HDelimText,
+      FTextBoardFrame.MHText,
+      FTextBoardFrame.MLText,
+      FTextBoardFrame.SDelimText,
+      FTextBoardFrame.SHText,
+      FTextBoardFrame.SLText);
 
     TShowTextTime.Init(
       AColor,
@@ -882,6 +711,13 @@ begin
     FTextBoardFrame.Parent := TimeLayout;
     FTextBoardFrame.Align := TAlignLayout.Contents;
     FTextBoardFrame.HitTest := false;
+
+    // Выставлять размеры нужно в конце,
+    // иначе уйдет на Resize формы до инициализации табло
+    {$IFDEF MSWINDOWS}
+    FBorderFrame.MinClientWidth := MinClientWidth;
+    FBorderFrame.MinClientHeight := MinClientHeight;
+    {$ENDIF}
   end;
 
   FTimeThread.OutputControl := TimeVoidEdit;
@@ -1134,71 +970,6 @@ begin
 
   CloseBoard;
   OpenBoard(TState.Board, TState.Color, TState.Orientation);
-end;
-
-procedure TMainForm.ResizeHorizontalBoardFrame(
-  const WidthCorrector: Single;
-  const HeightCorrector: Single;
-  const WidthDigitsCorrector: Single;
-  const WidthDelimiterCorrector: Single;
-  const ADigitsLayout: TLayout;
-  const AHoursLayout: TLayout;
-  const AHoursDelimLayout: TLayout;
-  const AMinutesLayout: TLayout;
-  const ASecondsDelimLayout: TLayout;
-  const ASecondsLayout: TLayout;
-  const AHHControl: TControl;
-  const AHLControl: TControl;
-  const AHDelimControl: TControl;
-  const AMHControl: TControl;
-  const AMLControl: TControl;
-  const ASDelimControl: TControl;
-  const ASHControl: TControl;
-  const ASLControl: TControl);
-
-  procedure _HorizontalAlign(const AControl: TControl; const AWidth: Single);
-  begin
-    AControl.Width := AWidth;
-    AControl.Align := TAlignLayout.Left;
-  end;
-
-var
-  W0: Single;
-  W1: Single;
-begin
-  ADigitsLayout.Align  := TAlignLayout.None;
-  ADigitsLayout.Width  := Self.Width * WidthCorrector;
-  ADigitsLayout.Height := Self.Height * HeightCorrector;
-  ADigitsLayout.Align  := TAlignLayout.Center;
-
-  W0 := ADigitsLayout.Width / WidthDigitsCorrector;
-  W1 := ADigitsLayout.Width / WidthDelimiterCorrector;
-
-  AHoursLayout.Align := TAlignLayout.Right;
-  AHoursDelimLayout.Align := TAlignLayout.Right;
-  AMinutesLayout.Align := TAlignLayout.Right;
-  ASecondsDelimLayout.Align := TAlignLayout.Right;
-  ASecondsLayout.Align := TAlignLayout.Right;
-
-  _HorizontalAlign(AHoursLayout, W0);
-  _HorizontalAlign(AHHControl, W0 / 2);
-  _HorizontalAlign(AHLControl, W0 / 2);
-  _HorizontalAlign(AHoursDelimLayout , W1);
-  _HorizontalAlign(AHDelimControl, W1);
-  _HorizontalAlign(AMinutesLayout, W0);
-  _HorizontalAlign(AMHControl, W0 / 2);
-  _HorizontalAlign(AMLControl, W0 / 2);
-  _HorizontalAlign(ASecondsDelimLayout, W1);
-  _HorizontalAlign(ASDelimControl, W1);
-  _HorizontalAlign(ASecondsLayout, W0);
-  _HorizontalAlign(ASHControl, W0 / 2);
-  _HorizontalAlign(ASLControl, W0 / 2);
-
-  AHoursLayout.Align := TAlignLayout.Left;
-  AHoursDelimLayout.Align := TAlignLayout.Left;
-  AMinutesLayout.Align := TAlignLayout.Left;
-  ASecondsDelimLayout.Align := TAlignLayout.Left;
-  ASecondsLayout.Align := TAlignLayout.Left;
 end;
 
 end.
