@@ -18,7 +18,8 @@ uses
   Androidapi.JNI.GraphicsContentViewText,
   Androidapi.JNI.App,
   Android.JNI.PowerManager in '..\DevelopmentsCollection\Android.JNI.PowerManager.pas',
-  {$ENDIF}
+  {$ENDIF }
+  System.SysUtils,
   System.StartUpCopy,
   FMX.Forms,
   JustAClockUnit in 'JustAClockUnit.pas' {MainForm},
@@ -52,13 +53,11 @@ uses
   {$IFDEF MSWINDOWS}
   FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas',
   BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
-  FMX.Craft.PopupMenu.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Win.pas',
-  FMX.Craft.PopupMenu.Structures in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Structures.pas',
-  FMX.Craft.PopupMenu.Thread.Win in '..\DevelopmentsCollection\FMX.Craft.PopupMenu\FMX.Craft.PopupMenu.Thread.Win.pas',
   {$ENDIF }
   FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas',
   FMX.ThemeUnit in '..\DevelopmentsCollection\FMX.ThemeUnit.pas',
-  ProportionUnit in 'ProportionUnit.pas';
+  ProportionUnit in 'ProportionUnit.pas',
+  MotionSensorDataThreadUnit in 'MotionSensorDataThreadUnit.pas';
 
 {$R *.res}
 

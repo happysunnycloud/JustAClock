@@ -58,6 +58,7 @@ object TextBoardFrame: TTextBoardFrame
             Size.Width = 30.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
+            Stretch = True
             TextSettings.Font.Size = 40.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             TextSettings.FontColor = claWhite
@@ -69,6 +70,7 @@ object TextBoardFrame: TTextBoardFrame
             Size.Width = 30.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
+            Stretch = True
             TextSettings.Font.Size = 40.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             TextSettings.FontColor = claWhite
@@ -87,6 +89,7 @@ object TextBoardFrame: TTextBoardFrame
             Size.Width = 30.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
+            Stretch = True
             TextSettings.Font.Size = 40.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             TextSettings.FontColor = claWhite
@@ -98,6 +101,7 @@ object TextBoardFrame: TTextBoardFrame
             Size.Width = 30.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
+            Stretch = True
             TextSettings.Font.Size = 40.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             TextSettings.FontColor = claWhite
@@ -134,6 +138,7 @@ object TextBoardFrame: TTextBoardFrame
             Size.Width = 30.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
+            Stretch = True
             TextSettings.Font.Size = 40.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             TextSettings.FontColor = claWhite
@@ -145,6 +150,7 @@ object TextBoardFrame: TTextBoardFrame
             Size.Width = 30.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
+            Stretch = True
             TextSettings.Font.Size = 40.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             TextSettings.FontColor = claWhite

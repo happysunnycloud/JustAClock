@@ -33,7 +33,7 @@ type
   protected
     // Специально не перегружаем Execute,
     // чтобы выполнился на стороне родительского класса
-    // В родителе лювятся исключения
+    // В родителе ловятся исключения
     procedure Execute(const AThread: TThreadExt); reintroduce; // override;
   public
     constructor Create(

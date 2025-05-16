@@ -107,6 +107,8 @@ type
     procedure RunTime;
     procedure RunTimer(const ATimerTime: TTime);
 
+    procedure VerticalDetectedProc;
+    procedure HorizontalDetectedProc;
   private
     {$IFDEF ANDROID}
     function HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
@@ -134,10 +136,7 @@ implementation
 uses
   {$IFDEF MSWINDOWS}
     Winapi.Windows
-  , FMX.Platform.Win
-  , FMX.Craft.PopupMenu.Structures
-  , FMX.Craft.PopupMenu.Thread.Win
-  ,
+  , FMX.Platform.Win,
   {$ENDIF}
     ShowTimeUnit
   , ShowTextTimeUnit
@@ -148,6 +147,7 @@ uses
   , VerticalElectronicBoardFrameUnit
   , VerticalTextBoardFrameUnit
   , ProportionUnit
+  , MotionSensorDataThreadUnit
   ;
 
 { TElectronicBoardColorArrayHelper }
@@ -332,14 +332,14 @@ begin
 
   MenuItem := TItem.Create;
   MenuItem.Parent := Boards;
-  MenuItem.Text := 'Text';
-  MenuItem.OnClick := MenuTextBoardItemClickHandler;
+  MenuItem.Text := 'Electronic';
+  MenuItem.OnClick := MenuElectronicBoardItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
   MenuItem.Parent := Boards;
-  MenuItem.Text := 'Electronic';
-  MenuItem.OnClick := MenuElectronicBoardItemClickHandler;
+  MenuItem.Text := 'Text';
+  MenuItem.OnClick := MenuTextBoardItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
@@ -472,13 +472,14 @@ begin
 
   RunTime;
 
+  TState.LastOrientation := TState.Orientation;
   OpenBoard(TState.Board, TState.Color, TState.Orientation);
+
+  TMotionSensorDataThread.Init(Self, VerticalDetectedProc, HorizontalDetectedProc);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  //FSettingsPopupMenuExt.Free;
-
   TShowTextTime.UnInit;
 
   CloseBoard;
@@ -491,7 +492,36 @@ begin
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
+
+  function _GetCurrentOrientation: TOrientationKind;
+  begin
+    Result := okHorizontal;
+    if Width <= Height then
+      Result := okVertical;
+  end;
+
+var
+  CurrentOrientation: TOrientationKind;
 begin
+  CurrentOrientation := _GetCurrentOrientation;
+  if CurrentOrientation <> TState.LastOrientation then
+  begin
+    TThread.ForceQueue(nil,
+      procedure
+      begin
+        CloseBoard;
+      end);
+
+    TThread.ForceQueue(nil,
+      procedure
+      begin
+        TState.LastOrientation := TState.Orientation;
+        OpenBoard(TState.Board, TState.Color, CurrentOrientation);
+      end);
+
+    Exit;
+  end;
+
   if TState.Orientation = okHorizontal then
   begin
     SettingsLayout.Width := ContentLayout.Width / 2;
@@ -760,11 +790,13 @@ end;
 
 procedure TMainForm.MenuTextBoardItemClickHandler(Sender: TObject);
 begin
+//  TState.LastOrientation := TState.Orientation;
   OpenBoard(bkText, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.MenuElectronicBoardItemClickHandler(Sender: TObject);
 begin
+//  TState.LastOrientation := TState.Orientation;
   OpenBoard(bkElectronic, TState.Color, TState.Orientation);
 end;
 
@@ -819,11 +851,13 @@ end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
 begin
+  TState.Orientation := okVertical;
   OpenBoard(TState.Board, TState.Color, okVertical);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
 begin
+  TState.Orientation := okHorizontal;
   OpenBoard(TState.Board, TState.Color, okHorizontal);
 end;
 
@@ -970,6 +1004,18 @@ begin
 
   CloseBoard;
   OpenBoard(TState.Board, TState.Color, TState.Orientation);
+end;
+
+procedure TMainForm.VerticalDetectedProc;
+begin
+  if TState.Orientation = okHorizontal then
+    MenuVerticalOrientationItemClickHandler(nil);
+end;
+
+procedure TMainForm.HorizontalDetectedProc;
+begin
+  if TState.Orientation = okVertical then
+    MenuHorizontalOrientationItemClickHandler(nil);
 end;
 
 end.

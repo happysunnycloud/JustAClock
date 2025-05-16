@@ -48,6 +48,7 @@ type
       FCustomColor2: TAlphaColor;
       FCustomColor3: TAlphaColor;
       FOrientation: TOrientationKind;
+      FLastOrientation: TOrientationKind;
       FBoard: TBoardKind;
 
       FMenuTheme: TTheme;
@@ -67,6 +68,7 @@ type
     class property CustomColor2: TAlphaColor read FCustomColor2 write FCustomColor2;
     class property CustomColor3: TAlphaColor read FCustomColor3 write FCustomColor3;
     class property Orientation: TOrientationKind read FOrientation write FOrientation;
+    class property LastOrientation: TOrientationKind read FLastOrientation write FLastOrientation;
     class property Board: TBoardKind read FBoard write SetBoard;
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
