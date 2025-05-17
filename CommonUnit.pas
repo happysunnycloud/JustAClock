@@ -162,6 +162,19 @@ begin
   {$ENDIF}
 end;
 
+function GetImagesPackFile(const AImagePackName: String): String;
+begin
+  {$IFDEF ANDROID}
+  Result := System.IOUtils.TPath.GetDocumentsPath + PATH_DELIMITER + AImagePackName + '.pck';
+  {$ELSE IF MSWINDOWS}
+    {$IFDEF DEBUG}
+    Result := '..\..\Arts\' + AImagePackName + '.pck';
+    {$ELSE}
+    Result := AImagePackName + '.pck';
+    {$ENDIF}
+  {$ENDIF}
+end;
+
 procedure GetCurPos(var X, Y: Single);
 {$IFDEF MSWINDOWS}
 var

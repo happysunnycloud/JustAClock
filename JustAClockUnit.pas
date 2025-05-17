@@ -29,6 +29,8 @@ type
     function NextValue(const ACurrentValue: String): String;
   end;
 
+  TFrameClass = class of TFrame;
+
   TMainForm = class(TFormExt)
     TimeText: TText;
     ContentLayout: TLayout;
@@ -123,6 +125,27 @@ type
       const AColor: TAlphaColor;
       const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
     procedure CloseBoard;
+
+    function SetBoardOrientation(const AClass: TFrameClass): Pointer;
+    {$IFDEF MSWINDOWS}
+    procedure SetBoardSize(
+      const AMinWidth: Integer;
+      const AMinHeight: Integer;
+      const ALastOrientationIsEqual: Boolean);
+    {$ENDIF}
+    procedure GetElectronicBoard(
+      const AOrientation: TOrientationKind;
+      const AMinWidth: Integer;
+      const AMinHeight: Integer;
+      const AColor: TAlphaColor;
+      const ALastOrientationIsEqual: Boolean);
+    procedure GetTextBoard(
+      const AOrientation: TOrientationKind;
+      const AMinWidth: Integer;
+      const AMinHeight: Integer;
+      const AColor: TAlphaColor;
+      const ALastOrientationIsEqual: Boolean);
+    procedure GetImageBoard;
   public
     procedure StartSignal;
     procedure StopSignal;
@@ -346,6 +369,12 @@ begin
   MenuItem.Parent := Boards;
   MenuItem.Text := 'Text';
   MenuItem.OnClick := MenuTextBoardItemClickHandler;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := Boards;
+  MenuItem.Text := 'Image';
+  MenuItem.Tag := 0;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
@@ -591,13 +620,164 @@ begin
   FToolsPopupMenuExt.Open(Point.X, Point.Y);
 end;
 
+function TMainForm.SetBoardOrientation(const AClass: TFrameClass): Pointer;
+begin
+  Result := AClass.Create(nil);
+end;
+
+{$IFDEF MSWINDOWS}
+procedure TMainForm.SetBoardSize(
+  const AMinWidth: Integer;
+  const AMinHeight: Integer;
+  const ALastOrientationIsEqual: Boolean);
+begin
+  FBorderFrame.MinClientWidth := AMinWidth;
+  FBorderFrame.MinClientHeight := AMinHeight;
+
+  if not ALastOrientationIsEqual then
+  begin
+    FBorderFrame.ClientWidth := FBorderFrame.MinClientWidth;
+    FBorderFrame.ClientHeight := FBorderFrame.MinClientHeight;
+  end
+  else
+  begin
+    FBorderFrame.ClientWidth  := TState.FormWidth;
+    FBorderFrame.ClientHeight := TState.FormHeight;
+  end;
+end;
+{$ENDIF}
+
+procedure TMainForm.GetElectronicBoard(
+  const AOrientation: TOrientationKind;
+  const AMinWidth: Integer;
+  const AMinHeight: Integer;
+  const AColor: TAlphaColor;
+  const ALastOrientationIsEqual: Boolean);
+var
+  BoardFrameClass: TFrameClass;
+begin
+  if TState.Orientation = okHorizontal then
+    BoardFrameClass := TElectronicBoardFrame
+  else
+  if TState.Orientation = okVertical then
+    BoardFrameClass := TVerticalElectronicBoardFrame
+  else
+    raise Exception.Create('TMainForm.GetElectronicBoard: Unknown orientation kind');
+
+  FElectronicBoardFrame := SetBoardOrientation(BoardFrameClass);
+
+  TProportion.Init(
+    TState.Orientation,
+    ContentLayout,
+    AMinWidth,
+    AMinHeight,
+    FElectronicBoardFrame.DigitsLayout,
+    FElectronicBoardFrame.HoursLayout,
+    FElectronicBoardFrame.HoursDelimLayout,
+    FElectronicBoardFrame.MinutesLayout,
+    FElectronicBoardFrame.SecondsDelimLayout,
+    FElectronicBoardFrame.SecondsLayout,
+    FElectronicBoardFrame.HHImage,
+    FElectronicBoardFrame.HLImage,
+    FElectronicBoardFrame.HDelimImage,
+    FElectronicBoardFrame.MHImage,
+    FElectronicBoardFrame.MLImage,
+    FElectronicBoardFrame.SDelimImage,
+    FElectronicBoardFrame.SHImage,
+    FElectronicBoardFrame.SLImage);
+
+  TShowTime.Init(
+    GetDigitsPackFile,
+    AColor,
+    FElectronicBoardFrame.HHImage,
+    FElectronicBoardFrame.HLImage,
+    FElectronicBoardFrame.HDelimImage,
+    FElectronicBoardFrame.MHImage,
+    FElectronicBoardFrame.MLImage,
+    FElectronicBoardFrame.SDelimImage,
+    FElectronicBoardFrame.SHImage,
+    FElectronicBoardFrame.SLImage,
+    TState.Orientation);
+
+  FElectronicBoardFrame.Parent := TimeLayout;
+  FElectronicBoardFrame.Align := TAlignLayout.Contents;
+  FElectronicBoardFrame.HitTest := false;
+
+//  {$IFDEF MSWINDOWS}
+//  // Выставлять размеры нужно в конце,
+//  // иначе уйдет на Resize формы до инициализации табло
+//  SetBoardSize(
+//    AMinWidth,
+//    AMinHeight,
+//    ALastOrientationIsEqual);
+//  {$ENDIF}
+end;
+
+procedure TMainForm.GetTextBoard(
+  const AOrientation: TOrientationKind;
+  const AMinWidth: Integer;
+  const AMinHeight: Integer;
+  const AColor: TAlphaColor;
+  const ALastOrientationIsEqual: Boolean);
+var
+  BoardFrameClass: TFrameClass;
+begin
+  if TState.Orientation = okHorizontal then
+    BoardFrameClass := TTextBoardFrame
+  else
+  if TState.Orientation = okVertical then
+    BoardFrameClass := TVerticalTextBoardFrame
+  else
+    raise Exception.Create('TMainForm.GetTextBoard: Unknown orientation kind');
+
+  FTextBoardFrame := SetBoardOrientation(BoardFrameClass);
+
+  TProportion.Init(
+    TState.Orientation,
+    ContentLayout,
+    AMinWidth,
+    AMinHeight,
+    FTextBoardFrame.TextTimeLayout,
+    FTextBoardFrame.TextHoursLayout,
+    FTextBoardFrame.TextHoursDelimLayout,
+    FTextBoardFrame.TextMinutesLayout,
+    FTextBoardFrame.TextSecondsDelimLayout,
+    FTextBoardFrame.TextSecondsLayout,
+    FTextBoardFrame.HHText,
+    FTextBoardFrame.HLText,
+    FTextBoardFrame.HDelimText,
+    FTextBoardFrame.MHText,
+    FTextBoardFrame.MLText,
+    FTextBoardFrame.SDelimText,
+    FTextBoardFrame.SHText,
+    FTextBoardFrame.SLText);
+
+  TShowTextTime.Init(
+    AColor,
+    FTextBoardFrame.HHText,
+    FTextBoardFrame.HLText,
+    FTextBoardFrame.HDelimText,
+    FTextBoardFrame.MHText,
+    FTextBoardFrame.MLText,
+    FTextBoardFrame.SDelimText,
+    FTextBoardFrame.SHText,
+    FTextBoardFrame.SLText,
+    TState.Orientation);
+
+  FTextBoardFrame.Parent := TimeLayout;
+  FTextBoardFrame.Align := TAlignLayout.Contents;
+  FTextBoardFrame.HitTest := false;
+end;
+
+procedure TMainForm.GetImageBoard;
+begin
+
+end;
+
 procedure TMainForm.OpenBoard(
   const ABoard: TBoardKind;
   const AColor: TAlphaColor;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
-
-type
-  TFrameClass = class of TFrame;
 
   {$IFDEF ANDROID}
   procedure _SetAndroidScreenOrientation(
@@ -615,36 +795,10 @@ type
     end;
   end;
   {$ENDIF}
-  function _SetOrientation(const AClass: TFrameClass): Pointer;
-  begin
-    Result := AClass.Create(nil);
-  end;
 
-  procedure _SetSize(
-    const AMinWidth: Integer;
-    const AMinHeight: Integer;
-    const ALastOrientationIsEqual: Boolean);
-  begin
-    {$IFDEF MSWINDOWS}
-    FBorderFrame.MinClientWidth := AMinWidth;
-    FBorderFrame.MinClientHeight := AMinHeight;
-
-    if not ALastOrientationIsEqual then
-    begin
-      FBorderFrame.ClientWidth := FBorderFrame.MinClientWidth;
-      FBorderFrame.ClientHeight := FBorderFrame.MinClientHeight;
-    end
-    else
-    begin
-      FBorderFrame.ClientWidth  := TState.FormWidth;
-      FBorderFrame.ClientHeight := TState.FormHeight;
-    end;
-    {$ENDIF}
-  end;
 var
   MinWidth: Integer;
   MinHeight: Integer;
-  BoardFrameClass: TFrameClass;
   LastOrientationIsEqual: Boolean;
 begin
   TimeVoidEdit.OnChange := nil;
@@ -692,116 +846,32 @@ begin
 
   if TState.Board = bkElectronic then
   begin
-    if TState.Orientation = okHorizontal then
-      BoardFrameClass := TElectronicBoardFrame
-    else
-    if TState.Orientation = okVertical then
-      BoardFrameClass := TVerticalElectronicBoardFrame
-    else
-      raise Exception.Create('TMainForm.OpenBoard: Unknown orientation kind');
-
-    FElectronicBoardFrame := _SetOrientation(BoardFrameClass);
-
-    TProportion.Init(
+    GetElectronicBoard(
       TState.Orientation,
-      ContentLayout,
       MinWidth,
       MinHeight,
-      FElectronicBoardFrame.DigitsLayout,
-      FElectronicBoardFrame.HoursLayout,
-      FElectronicBoardFrame.HoursDelimLayout,
-      FElectronicBoardFrame.MinutesLayout,
-      FElectronicBoardFrame.SecondsDelimLayout,
-      FElectronicBoardFrame.SecondsLayout,
-      FElectronicBoardFrame.HHImage,
-      FElectronicBoardFrame.HLImage,
-      FElectronicBoardFrame.HDelimImage,
-      FElectronicBoardFrame.MHImage,
-      FElectronicBoardFrame.MLImage,
-      FElectronicBoardFrame.SDelimImage,
-      FElectronicBoardFrame.SHImage,
-      FElectronicBoardFrame.SLImage);
-
-    TShowTime.Init(
-      GetDigitsPackFile,
       AColor,
-      FElectronicBoardFrame.HHImage,
-      FElectronicBoardFrame.HLImage,
-      FElectronicBoardFrame.HDelimImage,
-      FElectronicBoardFrame.MHImage,
-      FElectronicBoardFrame.MLImage,
-      FElectronicBoardFrame.SDelimImage,
-      FElectronicBoardFrame.SHImage,
-      FElectronicBoardFrame.SLImage,
-      TState.Orientation);
-
-    FElectronicBoardFrame.Parent := TimeLayout;
-    FElectronicBoardFrame.Align := TAlignLayout.Contents;
-    FElectronicBoardFrame.HitTest := false;
-
-    // Выставлять размеры нужно в конце,
-    // иначе уйдет на Resize формы до инициализации табло
-    _SetSize(
-      MinWidth,
-      MinHeight,
       LastOrientationIsEqual);
   end
   else
   if TState.Board = bkText then
   begin
-    if TState.Orientation = okHorizontal then
-      BoardFrameClass := TTextBoardFrame
-    else
-    if TState.Orientation = okVertical then
-      BoardFrameClass := TVerticalTextBoardFrame
-    else
-      raise Exception.Create('TMainForm.OpenBoard: Unknown orientation kind');
-
-    FTextBoardFrame := _SetOrientation(BoardFrameClass);
-
-    TProportion.Init(
+    GetTextBoard(
       TState.Orientation,
-      ContentLayout,
       MinWidth,
       MinHeight,
-      FTextBoardFrame.TextTimeLayout,
-      FTextBoardFrame.TextHoursLayout,
-      FTextBoardFrame.TextHoursDelimLayout,
-      FTextBoardFrame.TextMinutesLayout,
-      FTextBoardFrame.TextSecondsDelimLayout,
-      FTextBoardFrame.TextSecondsLayout,
-      FTextBoardFrame.HHText,
-      FTextBoardFrame.HLText,
-      FTextBoardFrame.HDelimText,
-      FTextBoardFrame.MHText,
-      FTextBoardFrame.MLText,
-      FTextBoardFrame.SDelimText,
-      FTextBoardFrame.SHText,
-      FTextBoardFrame.SLText);
-
-    TShowTextTime.Init(
       AColor,
-      FTextBoardFrame.HHText,
-      FTextBoardFrame.HLText,
-      FTextBoardFrame.HDelimText,
-      FTextBoardFrame.MHText,
-      FTextBoardFrame.MLText,
-      FTextBoardFrame.SDelimText,
-      FTextBoardFrame.SHText,
-      FTextBoardFrame.SLText,
-      TState.Orientation);
-
-    FTextBoardFrame.Parent := TimeLayout;
-    FTextBoardFrame.Align := TAlignLayout.Contents;
-    FTextBoardFrame.HitTest := false;
-
-    // Выставлять размеры нужно в конце,
-    // иначе уйдет на Resize формы до инициализации табло
-    _SetSize(
-      MinWidth,
-      MinHeight,
       LastOrientationIsEqual);
   end;
+
+  {$IFDEF MSWINDOWS}
+  // Выставлять размеры нужно в конце,
+  // иначе уйдет на Resize формы до инициализации табло
+  SetBoardSize(
+    MinWidth,
+    MinHeight,
+    LastOrientationIsEqual);
+  {$ENDIF}
 
   FTimeThread.OutputControl := TimeVoidEdit;
   TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
