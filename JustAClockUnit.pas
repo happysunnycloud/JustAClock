@@ -96,7 +96,9 @@ type
 
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
-
+    {$HINTS OFF}
+    procedure MenuAutoOrientationItemClickHandler(Sender: TObject);
+    {$HINTS ON}
     procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
 
@@ -106,6 +108,9 @@ type
 
     procedure RunTime;
     procedure RunTimer(const ATimerTime: TTime);
+
+    procedure StartMotionSensorDataThread;
+    procedure StopMotionSensorDataThread;
 
     procedure VerticalDetectedProc;
     procedure HorizontalDetectedProc;
@@ -274,6 +279,7 @@ const
 var
   {$IFDEF ANDROID}
   aFMXApplicationEventService: IFMXApplicationEventService;
+  AutoOrientation: TItem;
   {$ENDIF}
   ColorIdent: String;
   Boards: TItem;
@@ -361,8 +367,39 @@ begin
   MenuItem := TItem.Create;
   MenuItem.Parent := Orientation;
   MenuItem.Text := 'Vertical';
-  MenuItem.Tag := 0;
+  MenuItem.Tag := 1;
   MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
+  FSettingsPopupMenuExt.Add(MenuItem);
+  {$IFDEF ANDROID}
+  MenuItem := TItem.Create;
+  MenuItem.Parent := Orientation;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  AutoOrientation := TItem.Create;
+  AutoOrientation.Parent := Orientation;
+  AutoOrientation.Text := 'Auto';
+  AutoOrientation.Tag := 0;
+  FSettingsPopupMenuExt.Add(AutoOrientation);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := AutoOrientation;
+  MenuItem.Text := 'On';
+  MenuItem.Tag := 0;
+  MenuItem.OnClick := MenuAutoOrientationItemClickHandler;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := AutoOrientation;
+  MenuItem.Text := 'Off';
+  MenuItem.Tag := 1;
+  MenuItem.OnClick := MenuAutoOrientationItemClickHandler;
+  FSettingsPopupMenuExt.Add(MenuItem);
+  {$ENDIF}
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   Colors := TItem.Create;
@@ -465,6 +502,9 @@ begin
   FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
   FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
 
+  Self.Left := TState.FormLeft;
+  Self.Top  := TState.FormTop;
+
   {$ELSE IFDEF ANDROID}
   Self.FullScreen := true;
   {$ENDIF}
@@ -472,10 +512,10 @@ begin
 
   RunTime;
 
-  TState.LastOrientation := TState.Orientation;
   OpenBoard(TState.Board, TState.Color, TState.Orientation);
 
-  TMotionSensorDataThread.Init(Self, VerticalDetectedProc, HorizontalDetectedProc);
+  if TState.AutoOrientation then
+    StartMotionSensorDataThread;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -489,39 +529,16 @@ procedure TMainForm.FormPaint(Sender: TObject; Canvas: TCanvas;
   const ARect: TRectF);
 begin
   PaintRects(ARect);
+  {$IFDEF MSWINDOWS}
+  TState.FormLeft     := Self.Left;
+  TState.FormTop      := Self.Top;
+  TState.FormWidth    := FBorderFrame.ClientWidth;
+  TState.FormHeight   := FBorderFrame.ClientHeight;
+  {$ENDIF}
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
-
-  function _GetCurrentOrientation: TOrientationKind;
-  begin
-    Result := okHorizontal;
-    if Width <= Height then
-      Result := okVertical;
-  end;
-
-var
-  CurrentOrientation: TOrientationKind;
 begin
-  CurrentOrientation := _GetCurrentOrientation;
-  if CurrentOrientation <> TState.LastOrientation then
-  begin
-    TThread.ForceQueue(nil,
-      procedure
-      begin
-        CloseBoard;
-      end);
-
-    TThread.ForceQueue(nil,
-      procedure
-      begin
-        TState.LastOrientation := TState.Orientation;
-        OpenBoard(TState.Board, TState.Color, CurrentOrientation);
-      end);
-
-    Exit;
-  end;
-
   if TState.Orientation = okHorizontal then
   begin
     SettingsLayout.Width := ContentLayout.Width / 2;
@@ -602,10 +619,33 @@ type
   begin
     Result := AClass.Create(nil);
   end;
+
+  procedure _SetSize(
+    const AMinWidth: Integer;
+    const AMinHeight: Integer;
+    const ALastOrientationIsEqual: Boolean);
+  begin
+    {$IFDEF MSWINDOWS}
+    FBorderFrame.MinClientWidth := AMinWidth;
+    FBorderFrame.MinClientHeight := AMinHeight;
+
+    if not ALastOrientationIsEqual then
+    begin
+      FBorderFrame.ClientWidth := FBorderFrame.MinClientWidth;
+      FBorderFrame.ClientHeight := FBorderFrame.MinClientHeight;
+    end
+    else
+    begin
+      FBorderFrame.ClientWidth  := TState.FormWidth;
+      FBorderFrame.ClientHeight := TState.FormHeight;
+    end;
+    {$ENDIF}
+  end;
 var
-  MinClientWidth: Integer;
-  MinClientHeight: Integer;
+  MinWidth: Integer;
+  MinHeight: Integer;
   BoardFrameClass: TFrameClass;
+  LastOrientationIsEqual: Boolean;
 begin
   TimeVoidEdit.OnChange := nil;
   if Assigned(FTimeThread) then
@@ -614,13 +654,26 @@ begin
   CloseBoard;
 
   TState.Board := ABoard;
-  TState.Orientation := AOrientation;
   TState.Color := AColor;
+
+  if AOrientation = okNone then
+  begin
+    LastOrientationIsEqual := false;
+    TState.Orientation := okHorizontal;
+  end
+  else
+  begin
+    LastOrientationIsEqual := true;
+    if TState.Orientation <> AOrientation then
+      LastOrientationIsEqual := false;
+
+    TState.Orientation := AOrientation;
+  end;
 
   if TState.Orientation = okHorizontal then
   begin
-    MinClientWidth := HORIZONTAL_MIN_WIDTH;
-    MinClientHeight := HORIZONTAL_MIN_HEIGHT;
+    MinWidth := HORIZONTAL_MIN_WIDTH;
+    MinHeight := HORIZONTAL_MIN_HEIGHT;
     {$IFDEF ANDROID}
     _SetAndroidScreenOrientation(TScreenOrientation.Landscape);
     {$ENDIF}
@@ -628,8 +681,8 @@ begin
   else
   if TState.Orientation = okVertical then
   begin
-    MinClientWidth := VERTICAL_MIN_WIDTH;
-    MinClientHeight := VERTICAL_MIN_HEIGHT;
+    MinWidth := VERTICAL_MIN_WIDTH;
+    MinHeight := VERTICAL_MIN_HEIGHT;
     {$IFDEF ANDROID}
     _SetAndroidScreenOrientation(TScreenOrientation.Portrait);
     {$ENDIF}
@@ -652,8 +705,8 @@ begin
     TProportion.Init(
       TState.Orientation,
       ContentLayout,
-      MinClientWidth,
-      MinClientHeight,
+      MinWidth,
+      MinHeight,
       FElectronicBoardFrame.DigitsLayout,
       FElectronicBoardFrame.HoursLayout,
       FElectronicBoardFrame.HoursDelimLayout,
@@ -680,7 +733,7 @@ begin
       FElectronicBoardFrame.SDelimImage,
       FElectronicBoardFrame.SHImage,
       FElectronicBoardFrame.SLImage,
-      AOrientation);
+      TState.Orientation);
 
     FElectronicBoardFrame.Parent := TimeLayout;
     FElectronicBoardFrame.Align := TAlignLayout.Contents;
@@ -688,10 +741,10 @@ begin
 
     // Выставлять размеры нужно в конце,
     // иначе уйдет на Resize формы до инициализации табло
-    {$IFDEF MSWINDOWS}
-    FBorderFrame.MinClientWidth := MinClientWidth;
-    FBorderFrame.MinClientHeight := MinClientHeight;
-    {$ENDIF}
+    _SetSize(
+      MinWidth,
+      MinHeight,
+      LastOrientationIsEqual);
   end
   else
   if TState.Board = bkText then
@@ -709,8 +762,8 @@ begin
     TProportion.Init(
       TState.Orientation,
       ContentLayout,
-      MinClientWidth,
-      MinClientHeight,
+      MinWidth,
+      MinHeight,
       FTextBoardFrame.TextTimeLayout,
       FTextBoardFrame.TextHoursLayout,
       FTextBoardFrame.TextHoursDelimLayout,
@@ -744,10 +797,10 @@ begin
 
     // Выставлять размеры нужно в конце,
     // иначе уйдет на Resize формы до инициализации табло
-    {$IFDEF MSWINDOWS}
-    FBorderFrame.MinClientWidth := MinClientWidth;
-    FBorderFrame.MinClientHeight := MinClientHeight;
-    {$ENDIF}
+    _SetSize(
+      MinWidth,
+      MinHeight,
+      LastOrientationIsEqual);
   end;
 
   FTimeThread.OutputControl := TimeVoidEdit;
@@ -851,14 +904,21 @@ end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
 begin
-  TState.Orientation := okVertical;
   OpenBoard(TState.Board, TState.Color, okVertical);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
 begin
-  TState.Orientation := okHorizontal;
   OpenBoard(TState.Board, TState.Color, okHorizontal);
+end;
+
+procedure TMainForm.MenuAutoOrientationItemClickHandler(Sender: TObject);
+begin
+  if TItem(Sender).Tag = 0 then
+    StartMotionSensorDataThread
+  else
+  if TItem(Sender).Tag = 1 then
+    StopMotionSensorDataThread;
 end;
 
 procedure TMainForm.RunTime;
@@ -1016,6 +1076,18 @@ procedure TMainForm.HorizontalDetectedProc;
 begin
   if TState.Orientation = okVertical then
     MenuHorizontalOrientationItemClickHandler(nil);
+end;
+
+procedure TMainForm.StartMotionSensorDataThread;
+begin
+  TMotionSensorDataThread.Init(Self, VerticalDetectedProc, HorizontalDetectedProc);
+  TState.AutoOrientation := true;
+end;
+
+procedure TMainForm.StopMotionSensorDataThread;
+begin
+  TMotionSensorDataThread.UnInit;
+  TState.AutoOrientation := false;
 end;
 
 end.

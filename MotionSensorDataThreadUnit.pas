@@ -9,12 +9,17 @@ uses
   , FMX.FormExtUnit
   ;
 
+const
+  FACTORY_NAME = 'TMotionSensorDataThread';
+
 type
   TDetectOrientationProc = reference to procedure;
 
   TMotionSensorDataThread = class(TThreadExt)
   strict private
 //    FCriticalSection: TCriticalSection;
+    class var
+      FForm: TFormExt;
 
     FVerticalDetectedProc: TDetectOrientationProc;
     FHorizontalDetectedProc: TDetectOrientationProc;
@@ -28,6 +33,7 @@ type
   public
     constructor Create(
       const AThreadFactory: TThreadFactory;
+      const AThreadName: String;
       const ASensor: TCustomMotionSensor;
       const AVerticalDetectedProc: TDetectOrientationProc;
       const AHorizontalDetectedProc: TDetectOrientationProc);
@@ -37,6 +43,7 @@ type
       const AForm: TFormExt;
       const AVerticalDetectedProc: TDetectOrientationProc;
       const AHorizontalDetectedProc: TDetectOrientationProc);
+    class procedure UnInit;
   end;
 
 implementation
@@ -48,6 +55,7 @@ uses
 
 constructor TMotionSensorDataThread.Create(
   const AThreadFactory: TThreadFactory;
+  const AThreadName: String;
   const ASensor: TCustomMotionSensor;
   const AVerticalDetectedProc: TDetectOrientationProc;
   const AHorizontalDetectedProc: TDetectOrientationProc);
@@ -63,7 +71,7 @@ begin
 
   inherited Create(
     AThreadFactory,
-    'TMotionSensorDataThread',
+    AThreadName,
     Self.Execute);
 end;
 
@@ -101,7 +109,7 @@ var
   Sensor: TCustomMotionSensor;
   HasProperties: Boolean;
 begin
-  ReportMemoryLeaksOnShutdown := true;
+  FForm := AForm;
 
   SensorManager := TSensorManager.Current;
   SensorManager.Activate;
@@ -120,16 +128,26 @@ begin
   if not HasProperties then
     Exit;
 
-  AForm.ThreadFactory.CreateRegistredThread(
+  FForm.ThreadFactory.CreateRegistredThread(
     procedure (
       const AThreadFactory: TThreadFactory)
     begin
       TMotionSensorDataThread.Create(
         AThreadFactory,
+        FACTORY_NAME,
         Sensor,
         AVerticalDetectedProc,
         AHorizontalDetectedProc);
     end);
+end;
+
+class procedure TMotionSensorDataThread.UnInit;
+var
+  ThreadExt: TThreadExt;
+begin
+  ThreadExt := FForm.ThreadFactory.GetThreadByName(FACTORY_NAME);
+  if Assigned(ThreadExt) then
+    ThreadExt.Terminate;
 end;
 
 procedure TMotionSensorDataThread.Execute(const AThread: TThreadExt);
@@ -159,11 +177,10 @@ begin
           FVerticalDetectedProc;
         end);
 
-    Sleep(600);
+    Sleep(1000);
   end;
 
   FSensor.Stop;
 end;
-
 
 end.

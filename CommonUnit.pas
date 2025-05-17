@@ -36,7 +36,7 @@ const
 
 type
   TBoardKind = (bkText = 0, bkElectronic = 1);
-  TOrientationKind = (okHorizontal = 0, okVertical = 1);
+  TOrientationKind = (okNone = -1, okHorizontal = 0, okVertical = 1);
 
   TState = class
   strict private
@@ -48,8 +48,12 @@ type
       FCustomColor2: TAlphaColor;
       FCustomColor3: TAlphaColor;
       FOrientation: TOrientationKind;
-      FLastOrientation: TOrientationKind;
       FBoard: TBoardKind;
+      FAutoOrientation: Boolean;
+      FFormLeft: Integer;
+      FFormTop: Integer;
+      FFormWidth: Integer;
+      FFormHeight: Integer;
 
       FMenuTheme: TTheme;
 
@@ -68,8 +72,12 @@ type
     class property CustomColor2: TAlphaColor read FCustomColor2 write FCustomColor2;
     class property CustomColor3: TAlphaColor read FCustomColor3 write FCustomColor3;
     class property Orientation: TOrientationKind read FOrientation write FOrientation;
-    class property LastOrientation: TOrientationKind read FLastOrientation write FLastOrientation;
     class property Board: TBoardKind read FBoard write SetBoard;
+    class property AutoOrientation: Boolean read FAutoOrientation write FAutoOrientation;
+    class property FormLeft: Integer read FFormLeft write FFormLeft;
+    class property FormTop: Integer read FFormTop write FFormTop;
+    class property FormWidth: Integer read FFormWidth write FFormWidth;
+    class property FormHeight: Integer read FFormHeight write FFormHeight;
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
 
@@ -200,18 +208,26 @@ class procedure TState.Save;
 var
   FileStreamTools: TFileStreamTools;
   FileName: String;
+  Orientation: Integer;
 begin
   FileName := ConfigFileName;
+
+  Orientation := Integer(FOrientation);
 
   FileStreamTools := TFileStreamTools.Create(FileName, fmCreate);
   try
     FileStreamTools.Write(FBoard);
-    FileStreamTools.Write(FOrientation);
+    FileStreamTools.Write(Orientation);
     FileStreamTools.Write(FColor);
     FileStreamTools.Write(FCustomColor0);
     FileStreamTools.Write(FCustomColor1);
     FileStreamTools.Write(FCustomColor2);
     FileStreamTools.Write(FCustomColor3);
+    FileStreamTools.Write(FAutoOrientation);
+    FileStreamTools.Write(FFormLeft);
+    FileStreamTools.Write(FFormTop);
+    FileStreamTools.Write(FFormWidth);
+    FileStreamTools.Write(FFormHeight);
   finally
     FreeAndNil(FileStreamTools);
   end;
@@ -221,6 +237,7 @@ class procedure TState.Load;
 var
   FileStreamTools: TFileStreamTools;
   FileName: String;
+  Orientation: Integer;
 begin
   FileName := ConfigFileName;
   if not FileExists(FileName) then
@@ -228,13 +245,20 @@ begin
 
   FileStreamTools := TFileStreamTools.Create(FileName, fmOpenRead);
   try
-    FBoard        := TBoardKind(FileStreamTools.ReadAsByte);
-    FOrientation  := TOrientationKind(FileStreamTools.ReadAsByte);
-    FColor        := FileStreamTools.ReadAsUInt32;
-    FCustomColor0 := FileStreamTools.ReadAsUInt32;
-    FCustomColor1 := FileStreamTools.ReadAsUInt32;
-    FCustomColor2 := FileStreamTools.ReadAsUInt32;
-    FCustomColor3 := FileStreamTools.ReadAsUInt32;
+    FBoard              := TBoardKind(FileStreamTools.ReadAsByte);
+    Orientation         := FileStreamTools.ReadAsInteger;
+    FColor              := FileStreamTools.ReadAsUInt32;
+    FCustomColor0       := FileStreamTools.ReadAsUInt32;
+    FCustomColor1       := FileStreamTools.ReadAsUInt32;
+    FCustomColor2       := FileStreamTools.ReadAsUInt32;
+    FCustomColor3       := FileStreamTools.ReadAsUInt32;
+    FAutoOrientation    := FileStreamTools.ReadAsBoolean;
+    FFormLeft           := FileStreamTools.ReadAsInteger;
+    FFormTop            := FileStreamTools.ReadAsInteger;
+    FFormWidth          := FileStreamTools.ReadAsInteger;
+    FFormHeight         := FileStreamTools.ReadAsInteger;
+
+    FOrientation := TOrientationKind(Orientation);
   finally
     FreeAndNil(FileStreamTools);
   end;
@@ -242,18 +266,24 @@ end;
 
 class procedure TState.Init;
 begin
-  FColorIdent := CHROMAKEY_COLOR_IDENT;
-  FColor := ColorByIdent(FColorIdent);
-  FCustomColor0 := FColor;
-  FCustomColor1 := FColor;
-  FCustomColor2 := FColor;
-  FCustomColor3 := FColor;
+  FColorIdent         := CHROMAKEY_COLOR_IDENT;
+  FColor              := ColorByIdent(FColorIdent);
+  FCustomColor0       := FColor;
+  FCustomColor1       := FColor;
+  FCustomColor2       := FColor;
+  FCustomColor3       := FColor;
+  FBoard              := TBoardKind.bkElectronic;
+  FFormLeft           := 100;
+  FFormTop            := 100;
+  FFormWidth          := HORIZONTAL_MIN_WIDTH;
+  FFormHeight         := HORIZONTAL_MIN_HEIGHT;
   {$IFDEF MSWINDOWS}
-  FOrientation := TOrientationKind.okHorizontal;
+  FAutoOrientation    := false;
+  FOrientation        := TOrientationKind.okNone;
   {$ELSE IFDEF ANDROID}
-  FOrientation := TOrientationKind.okVertical;
+  FAutoOrientation    := true;
+  FOrientation        := TOrientationKind.okNone;
   {$ENDIF}
-  FBoard := TBoardKind.bkText;
 end;
 
 initialization
