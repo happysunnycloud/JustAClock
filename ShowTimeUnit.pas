@@ -29,6 +29,7 @@ type
   public
     class procedure Init(
       const AImageFileName: String;
+      const AImagesRootPath: String;
       const AColor: TAlphaColor;
       const AHH: TImage;
       const AHL: TImage;
@@ -55,6 +56,7 @@ uses
 
 class procedure TShowTime.Init(
   const AImageFileName: String;
+  const AImagesRootPath: String;
   const AColor: TAlphaColor;
   const AHH: TImage;
   const AHL: TImage;
@@ -100,10 +102,11 @@ begin
 
       TImageExtractor.ExtractToBitmap(
         ImageFile,
-        CHROMAKEY_COLOR_IDENT + '\' + i.ToString + '.png',
+        AImagesRootPath + i.ToString + '.png',
         BitMap);
 
-      TImageTools.ReplaceNotNullColor(BitMap, Color);
+      if Color <> NO_REPCALE_COLOR then
+        TImageTools.ReplaceNotNullColor(BitMap, Color);
 
       FBitmapList.Add(BitMap);
     end;
@@ -111,10 +114,11 @@ begin
     BitMap := TBitMap.Create;
     TImageExtractor.ExtractToBitmap(
       ImageFile,
-      CHROMAKEY_COLOR_IDENT + '\' + OrientationPrefix + 'Delimiter.png',
+      AImagesRootPath + OrientationPrefix + 'Delimiter.png',
       BitMap);
 
-    TImageTools.ReplaceNotNullColor(BitMap, Color);
+    if Color <> NO_REPCALE_COLOR then
+      TImageTools.ReplaceNotNullColor(BitMap, Color);
 
     FBitmapList.Add(BitMap);
   finally

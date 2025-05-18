@@ -27,6 +27,7 @@ const
 //  HORIZONTAL_MIN_HEIGHT = 120;
 
   CHROMAKEY_COLOR_IDENT = 'Green';
+  NO_REPCALE_COLOR = TAlphaColorRec.Null;
 
   {$IFDEF ANDROID}
   PATH_DELIMITER = '/';
@@ -35,7 +36,7 @@ const
   {$ENDIF}
 
 type
-  TBoardKind = (bkText = 0, bkElectronic = 1);
+  TBoardKind = (bkText = 0, bkElectronic = 1, bkImage = 2);
   TOrientationKind = (okNone = -1, okHorizontal = 0, okVertical = 1);
 
   TState = class
@@ -89,6 +90,7 @@ type
 function ColorByIdent(const AColorIdent: String): TAlphaColor;
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
 function GetDigitsPackFile: String;
+function GetImagesPackFile(const AImagePackName: String): String;
 procedure GetCurPos(var X, Y: Single);
 
 implementation

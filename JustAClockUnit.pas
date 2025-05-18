@@ -91,6 +91,7 @@ type
     procedure MenuColorItemClickHandler(Sender: TObject);
     procedure MenuTextBoardItemClickHandler(Sender: TObject);
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
+    procedure MenuImageBoardItemClickHandler(Sender: TObject);
     procedure MenuCountDownItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
     procedure MenuSetCustomColorItemClickHandler(Sender: TObject);
@@ -145,7 +146,12 @@ type
       const AMinHeight: Integer;
       const AColor: TAlphaColor;
       const ALastOrientationIsEqual: Boolean);
-    procedure GetImageBoard;
+    procedure GetImageBoard(
+      const AOrientation: TOrientationKind;
+      const AMinWidth: Integer;
+      const AMinHeight: Integer;
+      const AColor: TAlphaColor;
+      const ALastOrientationIsEqual: Boolean);
   public
     procedure StartSignal;
     procedure StopSignal;
@@ -305,12 +311,13 @@ var
   AutoOrientation: TItem;
   {$ENDIF}
   ColorIdent: String;
-  Boards: TItem;
   MenuItem: TItem;
-  Colors: TItem;
-  CustomColors: TItem;
-  SetCustomColors: TItem;
-  Orientation: TItem;
+  BoardsMenuItem: TItem;
+  ColorsMenuItem: TItem;
+  CustomColorsMenuItem: TItem;
+  SetCustomColorsMenuItem: TItem;
+  OrientationMenuItem: TItem;
+  ImageBoardMenuItem: TItem;
   i: Integer;
 begin
   ReportMemoryLeaksOnShutdown := true;
@@ -355,26 +362,33 @@ begin
   FSettingsPopupMenuExt := TPopupMenuExt.Create(Self);
   TState.MenuTheme.CopyTo(FSettingsPopupMenuExt.Theme);
 
-  Boards := TItem.Create;
-  Boards.Text := 'Boards';
-  FSettingsPopupMenuExt.Add(Boards);
+  BoardsMenuItem := TItem.Create;
+  BoardsMenuItem.Text := 'Boards';
+  FSettingsPopupMenuExt.Add(BoardsMenuItem);
 
   MenuItem := TItem.Create;
-  MenuItem.Parent := Boards;
+  MenuItem.Parent := BoardsMenuItem;
   MenuItem.Text := 'Electronic';
   MenuItem.OnClick := MenuElectronicBoardItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
-  MenuItem.Parent := Boards;
+  MenuItem.Parent := BoardsMenuItem;
   MenuItem.Text := 'Text';
   MenuItem.OnClick := MenuTextBoardItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
+  ImageBoardMenuItem := TItem.Create;
+  ImageBoardMenuItem.Parent := BoardsMenuItem;
+  ImageBoardMenuItem.Text := 'Image';
+
+  FSettingsPopupMenuExt.Add(ImageBoardMenuItem);
+
   MenuItem := TItem.Create;
-  MenuItem.Parent := Boards;
-  MenuItem.Text := 'Image';
+  MenuItem.Parent := ImageBoardMenuItem;
+  MenuItem.Text := 'Colored numbers';
   MenuItem.Tag := 0;
+  MenuItem.OnClick := MenuImageBoardItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
@@ -382,32 +396,32 @@ begin
   MenuItem.Tag := -1;
   FSettingsPopupMenuExt.Add(MenuItem);
 
-  Orientation := TItem.Create;
-  Orientation.Text := 'Orientation';
-  FSettingsPopupMenuExt.Add(Orientation);
+  OrientationMenuItem := TItem.Create;
+  OrientationMenuItem.Text := 'Orientation';
+  FSettingsPopupMenuExt.Add(OrientationMenuItem);
 
   MenuItem := TItem.Create;
-  MenuItem.Parent := Orientation;
+  MenuItem.Parent := OrientationMenuItem;
   MenuItem.Text := 'Horizontal';
   MenuItem.Tag := 0;
   MenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
-  MenuItem.Parent := Orientation;
+  MenuItem.Parent := OrientationMenuItem;
   MenuItem.Text := 'Vertical';
   MenuItem.Tag := 1;
   MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
   {$IFDEF ANDROID}
   MenuItem := TItem.Create;
-  MenuItem.Parent := Orientation;
+  MenuItem.Parent := OrientationMenuItem;
   MenuItem.Text := '-';
   MenuItem.Tag := -1;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   AutoOrientation := TItem.Create;
-  AutoOrientation.Parent := Orientation;
+  AutoOrientation.Parent := OrientationMenuItem;
   AutoOrientation.Text := 'Auto';
   AutoOrientation.Tag := 0;
   FSettingsPopupMenuExt.Add(AutoOrientation);
@@ -431,30 +445,30 @@ begin
   MenuItem.Tag := -1;
   FSettingsPopupMenuExt.Add(MenuItem);
 
-  Colors := TItem.Create;
-  Colors.Text := 'Colors';
-  FSettingsPopupMenuExt.Add(Colors);
+  ColorsMenuItem := TItem.Create;
+  ColorsMenuItem.Text := 'Colors';
+  FSettingsPopupMenuExt.Add(ColorsMenuItem);
 
   for i := 0 to Pred(Length(FElectronicBoardColorArray)) do
   begin
     ColorIdent := FElectronicBoardColorArray[i];
     MenuItem := TItem.Create;
-    MenuItem.Parent := Colors;
+    MenuItem.Parent := ColorsMenuItem;
     MenuItem.Text := ColorIdent;
     MenuItem.Tag := i;
     MenuItem.OnClick := MenuColorItemClickHandler;
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
 
-  CustomColors := TItem.Create;
-  CustomColors.Text := 'Custom color';
-  CustomColors.Tag := 0;
-  FSettingsPopupMenuExt.Add(CustomColors);
+  CustomColorsMenuItem := TItem.Create;
+  CustomColorsMenuItem.Text := 'Custom color';
+  CustomColorsMenuItem.Tag := 0;
+  FSettingsPopupMenuExt.Add(CustomColorsMenuItem);
 
   for i := 0 to 3 do
   begin
     MenuItem := TItem.Create;
-    MenuItem.Parent := CustomColors;
+    MenuItem.Parent := CustomColorsMenuItem;
     MenuItem.Text := 'Custom color ' + (i + 1).ToString;
     MenuItem.Tag := i;
     MenuItem.OnClick := MenuGetCustomColorItemClickHandler;
@@ -462,21 +476,21 @@ begin
   end;
 
   MenuItem := TItem.Create;
-  MenuItem.Parent := CustomColors;
+  MenuItem.Parent := CustomColorsMenuItem;
   MenuItem.Text := '-';
   MenuItem.Tag := -1;
   FSettingsPopupMenuExt.Add(MenuItem);
 
-  SetCustomColors := TItem.Create;
-  SetCustomColors.Parent := CustomColors;
-  SetCustomColors.Text := 'Set';
-  SetCustomColors.Tag := 0;
-  FSettingsPopupMenuExt.Add(SetCustomColors);
+  SetCustomColorsMenuItem := TItem.Create;
+  SetCustomColorsMenuItem.Parent := CustomColorsMenuItem;
+  SetCustomColorsMenuItem.Text := 'Set';
+  SetCustomColorsMenuItem.Tag := 0;
+  FSettingsPopupMenuExt.Add(SetCustomColorsMenuItem);
 
   for i := 0 to 3 do
   begin
     MenuItem := TItem.Create;
-    MenuItem.Parent := SetCustomColors;
+    MenuItem.Parent := SetCustomColorsMenuItem;
     MenuItem.Text := 'Set custom color ' + (i + 1).ToString;
     MenuItem.Tag := i;
     MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
@@ -688,6 +702,7 @@ begin
 
   TShowTime.Init(
     GetDigitsPackFile,
+    CHROMAKEY_COLOR_IDENT + '\',
     AColor,
     FElectronicBoardFrame.HHImage,
     FElectronicBoardFrame.HLImage,
@@ -702,15 +717,64 @@ begin
   FElectronicBoardFrame.Parent := TimeLayout;
   FElectronicBoardFrame.Align := TAlignLayout.Contents;
   FElectronicBoardFrame.HitTest := false;
+end;
 
-//  {$IFDEF MSWINDOWS}
-//  // Выставлять размеры нужно в конце,
-//  // иначе уйдет на Resize формы до инициализации табло
-//  SetBoardSize(
-//    AMinWidth,
-//    AMinHeight,
-//    ALastOrientationIsEqual);
-//  {$ENDIF}
+procedure TMainForm.GetImageBoard(
+  const AOrientation: TOrientationKind;
+  const AMinWidth: Integer;
+  const AMinHeight: Integer;
+  const AColor: TAlphaColor;
+  const ALastOrientationIsEqual: Boolean);
+var
+  BoardFrameClass: TFrameClass;
+begin
+  if TState.Orientation = okHorizontal then
+    BoardFrameClass := TElectronicBoardFrame
+  else
+  if TState.Orientation = okVertical then
+    BoardFrameClass := TVerticalElectronicBoardFrame
+  else
+    raise Exception.Create('TMainForm.GetImageBoard: Unknown orientation kind');
+
+  FElectronicBoardFrame := SetBoardOrientation(BoardFrameClass);
+
+  TProportion.Init(
+    TState.Orientation,
+    ContentLayout,
+    AMinWidth,
+    AMinHeight,
+    FElectronicBoardFrame.DigitsLayout,
+    FElectronicBoardFrame.HoursLayout,
+    FElectronicBoardFrame.HoursDelimLayout,
+    FElectronicBoardFrame.MinutesLayout,
+    FElectronicBoardFrame.SecondsDelimLayout,
+    FElectronicBoardFrame.SecondsLayout,
+    FElectronicBoardFrame.HHImage,
+    FElectronicBoardFrame.HLImage,
+    FElectronicBoardFrame.HDelimImage,
+    FElectronicBoardFrame.MHImage,
+    FElectronicBoardFrame.MLImage,
+    FElectronicBoardFrame.SDelimImage,
+    FElectronicBoardFrame.SHImage,
+    FElectronicBoardFrame.SLImage);
+
+  TShowTime.Init(
+    GetImagesPackFile('ColoredNumbers'),
+    '',
+    NO_REPCALE_COLOR,
+    FElectronicBoardFrame.HHImage,
+    FElectronicBoardFrame.HLImage,
+    FElectronicBoardFrame.HDelimImage,
+    FElectronicBoardFrame.MHImage,
+    FElectronicBoardFrame.MLImage,
+    FElectronicBoardFrame.SDelimImage,
+    FElectronicBoardFrame.SHImage,
+    FElectronicBoardFrame.SLImage,
+    TState.Orientation);
+
+  FElectronicBoardFrame.Parent := TimeLayout;
+  FElectronicBoardFrame.Align := TAlignLayout.Contents;
+  FElectronicBoardFrame.HitTest := false;
 end;
 
 procedure TMainForm.GetTextBoard(
@@ -767,11 +831,6 @@ begin
   FTextBoardFrame.Parent := TimeLayout;
   FTextBoardFrame.Align := TAlignLayout.Contents;
   FTextBoardFrame.HitTest := false;
-end;
-
-procedure TMainForm.GetImageBoard;
-begin
-
 end;
 
 procedure TMainForm.OpenBoard(
@@ -844,24 +903,36 @@ begin
   else
     raise Exception.Create('TMainForm.OpenBoard: Unknown orientation kind');
 
-  if TState.Board = bkElectronic then
-  begin
-    GetElectronicBoard(
-      TState.Orientation,
-      MinWidth,
-      MinHeight,
-      AColor,
-      LastOrientationIsEqual);
-  end
-  else
-  if TState.Board = bkText then
-  begin
-    GetTextBoard(
-      TState.Orientation,
-      MinWidth,
-      MinHeight,
-      AColor,
-      LastOrientationIsEqual);
+  case TState.Board of
+    bkElectronic:
+    begin
+      GetElectronicBoard(
+        TState.Orientation,
+        MinWidth,
+        MinHeight,
+        AColor,
+        LastOrientationIsEqual);
+    end;
+    bkText:
+    begin
+      GetTextBoard(
+        TState.Orientation,
+        MinWidth,
+        MinHeight,
+        AColor,
+        LastOrientationIsEqual);
+    end;
+    bkImage:
+    begin
+      GetImageBoard(
+        TState.Orientation,
+        MinWidth,
+        MinHeight,
+        AColor,
+        LastOrientationIsEqual);
+    end
+    else
+      raise Exception.Create('TMainForm.OpenBoard: Unknown board kind');
   end;
 
   {$IFDEF MSWINDOWS}
@@ -921,6 +992,11 @@ procedure TMainForm.MenuElectronicBoardItemClickHandler(Sender: TObject);
 begin
 //  TState.LastOrientation := TState.Orientation;
   OpenBoard(bkElectronic, TState.Color, TState.Orientation);
+end;
+
+procedure TMainForm.MenuImageBoardItemClickHandler(Sender: TObject);
+begin
+  OpenBoard(bkImage, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.MenuCountDownItemClickHandler(Sender: TObject);

@@ -1,1 +1,2 @@
+.\assets\internal\ColoredNumbers.pck
 .\assets\internal\Digits.pck
