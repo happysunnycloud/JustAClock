@@ -20,6 +20,10 @@ uses
   {$ENDIF}
   ;
 
+const
+  AUTO_ORIENTATION_ON_MENU_ITEM_NAME = 'AutoOrientationOnMenuItem';
+  AUTO_ORIENTATION_OFF_MENU_ITEM_NAME = 'AutoOrientationOffMenuItem';
+
 type
   TElectronicBoardColorArray = TArray<String>;
   TElectronicBoardColorArrayHelper = record helper for TElectronicBoardColorArray
@@ -369,6 +373,7 @@ begin
   MenuItem := TItem.Create;
   MenuItem.Parent := BoardsMenuItem;
   MenuItem.Text := 'Electronic';
+  MenuItem.IsChecked := true;
   MenuItem.OnClick := MenuElectronicBoardItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
 
@@ -427,17 +432,21 @@ begin
   FSettingsPopupMenuExt.Add(AutoOrientation);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := AUTO_ORIENTATION_ON_MENU_ITEM_NAME;
   MenuItem.Parent := AutoOrientation;
   MenuItem.Text := 'On';
   MenuItem.Tag := 0;
   MenuItem.OnClick := MenuAutoOrientationItemClickHandler;
+  MenuItem.IsChecked := TState.AutoOrientation;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := AUTO_ORIENTATION_OFF_MENU_ITEM_NAME;
   MenuItem.Parent := AutoOrientation;
   MenuItem.Text := 'Off';
   MenuItem.Tag := 1;
   MenuItem.OnClick := MenuAutoOrientationItemClickHandler;
+  MenuItem.IsChecked := not TState.AutoOrientation;
   FSettingsPopupMenuExt.Add(MenuItem);
   {$ENDIF}
   MenuItem := TItem.Create;
@@ -1059,11 +1068,31 @@ begin
 end;
 
 procedure TMainForm.MenuAutoOrientationItemClickHandler(Sender: TObject);
+var
+  AutoOrientationOn: TItem;
+  AutoOrientationOff: TItem;
 begin
-  if TItem(Sender).Tag = 0 then
+  AutoOrientationOn := FSettingsPopupMenuExt.FindItem(AUTO_ORIENTATION_ON_MENU_ITEM_NAME);
+  AutoOrientationOff := FSettingsPopupMenuExt.FindItem(AUTO_ORIENTATION_OFF_MENU_ITEM_NAME);
+
+  if Sender = AutoOrientationOn then
+  begin
+    AutoOrientationOn.IsChecked := true;
+    AutoOrientationOff.IsChecked := false;
+  end
+  else
+  if Sender = AutoOrientationOff then
+  begin
+    AutoOrientationOn.IsChecked := false;
+    AutoOrientationOff.IsChecked := true;
+  end;
+
+  TState.AutoOrientation := AutoOrientationOn.IsChecked;
+
+  if TState.AutoOrientation then
     StartMotionSensorDataThread
   else
-  if TItem(Sender).Tag = 1 then
+  if not TState.AutoOrientation then
     StopMotionSensorDataThread;
 end;
 
