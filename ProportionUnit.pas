@@ -119,8 +119,10 @@ begin
 
   if FOrientation = okVertical then
   begin
-    FDigitsLayout.Position.X := 5;
-    FDigitsLayout.Position.Y := 15;
+    FDigitsLayout.Position.X := MinWidth / 16;
+    //5;
+    FDigitsLayout.Position.Y := MinHeight / 17.3;
+    //15;
 
     FDigitsLayout.Width := MinWidth - (FDigitsLayout.Position.X * 2);
     FDigitsLayout.Height := MinHeight - (FDigitsLayout.Position.Y * 2);
@@ -136,8 +138,12 @@ begin
   else
   if FOrientation = okHorizontal then
   begin
-    FDigitsLayout.Position.X := 5;
-    FDigitsLayout.Position.Y := 15;
+    FDigitsLayout.Position.X := MinWidth / 52;
+    //FOrigin.Width / 44;
+    //5;
+    FDigitsLayout.Position.Y := MinHeight / 8;
+    //FOrigin.Height / 3.6;
+    //15;
 
     FDigitsLayout.Width := AMinWidth - (FDigitsLayout.Position.X * 2);
     FDigitsLayout.Height := AMinHeight - (FDigitsLayout.Position.Y * 2);

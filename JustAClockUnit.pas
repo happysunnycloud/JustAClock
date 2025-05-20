@@ -1,5 +1,5 @@
 ﻿unit JustAClockUnit;
-{ 85 * 230 }
+
 interface
 
 uses
@@ -23,8 +23,16 @@ uses
 const
   AUTO_ORIENTATION_ON_MENU_ITEM_NAME = 'AutoOrientationOnMenuItem';
   AUTO_ORIENTATION_OFF_MENU_ITEM_NAME = 'AutoOrientationOffMenuItem';
+  ELECTRONIC_BOARD_MEUN_ITEM_NAME = 'ElectronicBoardMenuItem';
+  TEXT_BOARD_MEUN_ITEM_NAME = 'TextBoardMenuItem';
+  COLORED_NUMBER_BOARD_MEUN_ITEM_NAME = 'ColoredNumbersMenuItem';
+  VERTICAL_ORIENTATION_MENU_ITEM_NAME = 'VerticalOrientationMenuItem';
+  HORIZONTAL_ORIENTATION_MENU_ITEM_NAME = 'HorizontalOrientationMenuItem';
+  COLOR_MENU_ITEM_NAME_PREFIX = 'ColorMenuItem';
+  CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX = 'CustomColorMenuItem';
 
 type
+  TMenuItemsArray = TArray<String>;
   TElectronicBoardColorArray = TArray<String>;
   TElectronicBoardColorArrayHelper = record helper for TElectronicBoardColorArray
   public
@@ -104,7 +112,8 @@ type
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
     {$HINTS OFF}
-    procedure MenuAutoOrientationItemClickHandler(Sender: TObject);
+    procedure MenuAutoOrientationOnItemClickHandler(Sender: TObject);
+    procedure MenuAutoOrientationOffItemClickHandler(Sender: TObject);
     {$HINTS ON}
     procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
@@ -121,6 +130,14 @@ type
 
     procedure VerticalDetectedProc;
     procedure HorizontalDetectedProc;
+
+    procedure SetIsCheckedMenuItem(
+      const AMenuItemsArray: TMenuItemsArray;
+      const Sender: TObject);
+    procedure SetIsCheckedColorMenuItem(
+      const Sender: TObject);
+    procedure SetIsCheckedCustomColorMenuItem(
+      const Sender: TObject);
   private
     {$IFDEF ANDROID}
     function HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
@@ -371,16 +388,19 @@ begin
   FSettingsPopupMenuExt.Add(BoardsMenuItem);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := ELECTRONIC_BOARD_MEUN_ITEM_NAME;
   MenuItem.Parent := BoardsMenuItem;
   MenuItem.Text := 'Electronic';
-  MenuItem.IsChecked := true;
   MenuItem.OnClick := MenuElectronicBoardItemClickHandler;
+  MenuItem.IsChecked := TState.Board = bkElectronic;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := TEXT_BOARD_MEUN_ITEM_NAME;
   MenuItem.Parent := BoardsMenuItem;
   MenuItem.Text := 'Text';
   MenuItem.OnClick := MenuTextBoardItemClickHandler;
+  MenuItem.IsChecked := TState.Board = bkText;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   ImageBoardMenuItem := TItem.Create;
@@ -390,10 +410,12 @@ begin
   FSettingsPopupMenuExt.Add(ImageBoardMenuItem);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := COLORED_NUMBER_BOARD_MEUN_ITEM_NAME;
   MenuItem.Parent := ImageBoardMenuItem;
   MenuItem.Text := 'Colored numbers';
   MenuItem.Tag := 0;
   MenuItem.OnClick := MenuImageBoardItemClickHandler;
+  MenuItem.IsChecked := TState.Board = bkImage;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
@@ -406,18 +428,23 @@ begin
   FSettingsPopupMenuExt.Add(OrientationMenuItem);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := HORIZONTAL_ORIENTATION_MENU_ITEM_NAME;
   MenuItem.Parent := OrientationMenuItem;
   MenuItem.Text := 'Horizontal';
   MenuItem.Tag := 0;
   MenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
+  MenuItem.IsChecked := TState.Orientation = okHorizontal;
   FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := VERTICAL_ORIENTATION_MENU_ITEM_NAME;
   MenuItem.Parent := OrientationMenuItem;
   MenuItem.Text := 'Vertical';
   MenuItem.Tag := 1;
   MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
+  MenuItem.IsChecked := TState.Orientation = okVertical;
   FSettingsPopupMenuExt.Add(MenuItem);
+
   {$IFDEF ANDROID}
   MenuItem := TItem.Create;
   MenuItem.Parent := OrientationMenuItem;
@@ -436,7 +463,7 @@ begin
   MenuItem.Parent := AutoOrientation;
   MenuItem.Text := 'On';
   MenuItem.Tag := 0;
-  MenuItem.OnClick := MenuAutoOrientationItemClickHandler;
+  MenuItem.OnClick := MenuAutoOrientationOnItemClickHandler;
   MenuItem.IsChecked := TState.AutoOrientation;
   FSettingsPopupMenuExt.Add(MenuItem);
 
@@ -445,7 +472,7 @@ begin
   MenuItem.Parent := AutoOrientation;
   MenuItem.Text := 'Off';
   MenuItem.Tag := 1;
-  MenuItem.OnClick := MenuAutoOrientationItemClickHandler;
+  MenuItem.OnClick := MenuAutoOrientationOffItemClickHandler;
   MenuItem.IsChecked := not TState.AutoOrientation;
   FSettingsPopupMenuExt.Add(MenuItem);
   {$ENDIF}
@@ -462,9 +489,11 @@ begin
   begin
     ColorIdent := FElectronicBoardColorArray[i];
     MenuItem := TItem.Create;
+    MenuItem.Name := COLOR_MENU_ITEM_NAME_PREFIX + Cardinal(ColorByIdent(ColorIdent)).ToString;
     MenuItem.Parent := ColorsMenuItem;
     MenuItem.Text := ColorIdent;
     MenuItem.Tag := i;
+//    MenuItem.IsChecked := TState.Color = ColorByIdent(ColorIdent);
     MenuItem.OnClick := MenuColorItemClickHandler;
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
@@ -474,14 +503,33 @@ begin
   CustomColorsMenuItem.Tag := 0;
   FSettingsPopupMenuExt.Add(CustomColorsMenuItem);
 
-  for i := 0 to 3 do
+  for i := 0 to Pred(CUSTOM_COLOR_COUNT) do
   begin
     MenuItem := TItem.Create;
+    MenuItem.Name := CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX + i.ToString;
     MenuItem.Parent := CustomColorsMenuItem;
     MenuItem.Text := 'Custom color ' + (i + 1).ToString;
     MenuItem.Tag := i;
     MenuItem.OnClick := MenuGetCustomColorItemClickHandler;
+//    MenuItem.IsChecked := (TState.CustomColorNumber = i) and (TState.CustomColorNumber > 0);
     FSettingsPopupMenuExt.Add(MenuItem);
+  end;
+
+  SetIsCheckedColorMenuItem(nil);
+  SetIsCheckedCustomColorMenuItem(nil);
+  if TState.CustomColorNumber > 0 then
+  begin
+    MenuItem := FSettingsPopupMenuExt.
+      FindItem(CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX + TState.CustomColorNumber.ToString);
+    if Assigned(MenuItem) then
+      MenuItem.IsChecked := true;
+  end
+  else
+  begin
+    MenuItem := FSettingsPopupMenuExt.
+      FindItem(COLOR_MENU_ITEM_NAME_PREFIX + Cardinal(TState.Color).ToString);
+    if Assigned(MenuItem) then
+      MenuItem.IsChecked := true;
   end;
 
   MenuItem := TItem.Create;
@@ -689,6 +737,14 @@ begin
 
   FElectronicBoardFrame := SetBoardOrientation(BoardFrameClass);
 
+  FElectronicBoardFrame.Parent := TimeLayout;
+  FElectronicBoardFrame.Align := TAlignLayout.Contents;
+  FElectronicBoardFrame.HitTest := false;
+
+  FElectronicBoardFrame.Width := AMinWidth;
+  FElectronicBoardFrame.Height := AMinHeight;
+  FElectronicBoardFrame.RecalcSize;
+
   TProportion.Init(
     TState.Orientation,
     ContentLayout,
@@ -722,10 +778,6 @@ begin
     FElectronicBoardFrame.SHImage,
     FElectronicBoardFrame.SLImage,
     TState.Orientation);
-
-  FElectronicBoardFrame.Parent := TimeLayout;
-  FElectronicBoardFrame.Align := TAlignLayout.Contents;
-  FElectronicBoardFrame.HitTest := false;
 end;
 
 procedure TMainForm.GetImageBoard(
@@ -983,7 +1035,13 @@ procedure TMainForm.MenuColorItemClickHandler(Sender: TObject);
 var
   MenuItem: TItem;
 begin
+  TState.CustomColorNumber := -1;
+
   MenuItem := TItem(Sender);
+
+  SetIsCheckedCustomColorMenuItem(nil);
+  SetIsCheckedColorMenuItem(Sender);
+
   TState.ColorIdent := FElectronicBoardColorArray[MenuItem.Tag];
   OpenBoard(
     TState.Board,
@@ -993,18 +1051,37 @@ end;
 
 procedure TMainForm.MenuTextBoardItemClickHandler(Sender: TObject);
 begin
-//  TState.LastOrientation := TState.Orientation;
+  SetIsCheckedMenuItem(
+    [
+      ELECTRONIC_BOARD_MEUN_ITEM_NAME,
+      TEXT_BOARD_MEUN_ITEM_NAME,
+      COLORED_NUMBER_BOARD_MEUN_ITEM_NAME
+    ], Sender);
+
   OpenBoard(bkText, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.MenuElectronicBoardItemClickHandler(Sender: TObject);
 begin
-//  TState.LastOrientation := TState.Orientation;
+  SetIsCheckedMenuItem(
+    [
+      ELECTRONIC_BOARD_MEUN_ITEM_NAME,
+      TEXT_BOARD_MEUN_ITEM_NAME,
+      COLORED_NUMBER_BOARD_MEUN_ITEM_NAME
+    ], Sender);
+
   OpenBoard(bkElectronic, TState.Color, TState.Orientation);
 end;
 
 procedure TMainForm.MenuImageBoardItemClickHandler(Sender: TObject);
 begin
+  SetIsCheckedMenuItem(
+    [
+      ELECTRONIC_BOARD_MEUN_ITEM_NAME,
+      TEXT_BOARD_MEUN_ITEM_NAME,
+      COLORED_NUMBER_BOARD_MEUN_ITEM_NAME
+    ], Sender);
+
   OpenBoard(bkImage, TState.Color, TState.Orientation);
 end;
 
@@ -1050,8 +1127,12 @@ var
   CustomColorNumber: Byte;
   Color: TAlphaColor;
 begin
-  CustomColorNumber := TItem(Sender).Tag;
+  TState.CustomColorNumber := TItem(Sender).Tag;
+  CustomColorNumber := TState.CustomColorNumber;
   Color := CustomColorByNumber(CustomColorNumber);
+
+  SetIsCheckedColorMenuItem(nil);
+  SetIsCheckedCustomColorMenuItem(Sender);
 
   CloseBoard;
   OpenBoard(TState.Board, Color, TState.Orientation);
@@ -1059,41 +1140,48 @@ end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
 begin
+  SetIsCheckedMenuItem(
+    [
+      VERTICAL_ORIENTATION_MENU_ITEM_NAME,
+      HORIZONTAL_ORIENTATION_MENU_ITEM_NAME
+    ], Sender);
+
   OpenBoard(TState.Board, TState.Color, okVertical);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
 begin
+  SetIsCheckedMenuItem(
+    [
+      VERTICAL_ORIENTATION_MENU_ITEM_NAME,
+      HORIZONTAL_ORIENTATION_MENU_ITEM_NAME
+    ], Sender);
+
   OpenBoard(TState.Board, TState.Color, okHorizontal);
 end;
 
-procedure TMainForm.MenuAutoOrientationItemClickHandler(Sender: TObject);
-var
-  AutoOrientationOn: TItem;
-  AutoOrientationOff: TItem;
+procedure TMainForm.MenuAutoOrientationOnItemClickHandler(Sender: TObject);
 begin
-  AutoOrientationOn := FSettingsPopupMenuExt.FindItem(AUTO_ORIENTATION_ON_MENU_ITEM_NAME);
-  AutoOrientationOff := FSettingsPopupMenuExt.FindItem(AUTO_ORIENTATION_OFF_MENU_ITEM_NAME);
+  SetIsCheckedMenuItem(
+    [
+      AUTO_ORIENTATION_ON_MENU_ITEM_NAME,
+      AUTO_ORIENTATION_OFF_MENU_ITEM_NAME
+    ], Sender);
 
-  if Sender = AutoOrientationOn then
-  begin
-    AutoOrientationOn.IsChecked := true;
-    AutoOrientationOff.IsChecked := false;
-  end
-  else
-  if Sender = AutoOrientationOff then
-  begin
-    AutoOrientationOn.IsChecked := false;
-    AutoOrientationOff.IsChecked := true;
-  end;
+  TState.AutoOrientation := true;
+  StartMotionSensorDataThread;
+end;
 
-  TState.AutoOrientation := AutoOrientationOn.IsChecked;
+procedure TMainForm.MenuAutoOrientationOffItemClickHandler(Sender: TObject);
+begin
+  SetIsCheckedMenuItem(
+    [
+      AUTO_ORIENTATION_ON_MENU_ITEM_NAME,
+      AUTO_ORIENTATION_OFF_MENU_ITEM_NAME
+    ], Sender);
 
-  if TState.AutoOrientation then
-    StartMotionSensorDataThread
-  else
-  if not TState.AutoOrientation then
-    StopMotionSensorDataThread;
+  TState.AutoOrientation := false;
+  StopMotionSensorDataThread;
 end;
 
 procedure TMainForm.RunTime;
@@ -1253,16 +1341,60 @@ begin
     MenuHorizontalOrientationItemClickHandler(nil);
 end;
 
+procedure TMainForm.SetIsCheckedMenuItem(
+  const AMenuItemsArray: TMenuItemsArray;
+  const Sender: TObject);
+var
+  i: Integer;
+  Item: TItem;
+begin
+  for i := 0 to Pred(Length(AMenuItemsArray)) do
+  begin
+    Item := FSettingsPopupMenuExt.FindItem(AMenuItemsArray[i]);
+    Item.IsChecked := false;
+  end;
+
+  if Assigned(Sender) then
+  begin
+    TItem(Sender).IsChecked := true;
+  end;
+end;
+
+procedure TMainForm.SetIsCheckedColorMenuItem(
+  const Sender: TObject);
+var
+  i: Integer;
+  MenuItemsArray: TMenuItemsArray;
+begin
+  SetLength(MenuItemsArray, Length(FElectronicBoardColorArray));
+  for i := 0 to Pred(Length(FElectronicBoardColorArray)) do
+    MenuItemsArray[i] := COLOR_MENU_ITEM_NAME_PREFIX +
+      Cardinal(ColorByIdent(FElectronicBoardColorArray[i])).ToString;
+
+  SetIsCheckedMenuItem(MenuItemsArray, Sender);
+end;
+
+procedure TMainForm.SetIsCheckedCustomColorMenuItem(
+  const Sender: TObject);
+var
+  i: Integer;
+  MenuItemsArray: TMenuItemsArray;
+begin
+  SetLength(MenuItemsArray, CUSTOM_COLOR_COUNT);
+  for i := 0 to Pred(CUSTOM_COLOR_COUNT) do
+    MenuItemsArray[i] := CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX + i.ToString;
+
+  SetIsCheckedMenuItem(MenuItemsArray, Sender);
+end;
+
 procedure TMainForm.StartMotionSensorDataThread;
 begin
   TMotionSensorDataThread.Init(Self, VerticalDetectedProc, HorizontalDetectedProc);
-  TState.AutoOrientation := true;
 end;
 
 procedure TMainForm.StopMotionSensorDataThread;
 begin
   TMotionSensorDataThread.UnInit;
-  TState.AutoOrientation := false;
 end;
 
 end.

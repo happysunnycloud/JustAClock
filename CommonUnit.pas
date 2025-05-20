@@ -14,20 +14,13 @@ const
   VERTICAL_MIN_WIDTH = 80;
   VERTICAL_MIN_HEIGHT = 260;
 
-//  VERTICAL_MIN_WIDTH = 120;
-//  VERTICAL_MIN_HEIGHT = 320;
-
   HORIZONTAL_MIN_WIDTH = 260;
   HORIZONTAL_MIN_HEIGHT = 80;
 
-//  HORIZONTAL_MIN_WIDTH = 355;
-//  HORIZONTAL_MIN_HEIGHT = 101;
-
-//  HORIZONTAL_MIN_WIDTH = 320;
-//  HORIZONTAL_MIN_HEIGHT = 120;
-
   CHROMAKEY_COLOR_IDENT = 'Green';
   NO_REPCALE_COLOR = TAlphaColorRec.Null;
+
+  CUSTOM_COLOR_COUNT = 4;
 
   {$IFDEF ANDROID}
   PATH_DELIMITER = '/';
@@ -48,6 +41,7 @@ type
       FCustomColor1: TAlphaColor;
       FCustomColor2: TAlphaColor;
       FCustomColor3: TAlphaColor;
+      FCustomColorNumber: Integer;
       FOrientation: TOrientationKind;
       FBoard: TBoardKind;
       FAutoOrientation: Boolean;
@@ -62,16 +56,19 @@ type
     class function GetConfigFileName: String; static;
 
     class property ConfigFileName: String read GetConfigFileName;
+    class procedure SetColor(const AAlphaColor: TAlphaColor); static;
+    class procedure SetCustomColorNumber(const ANumber: Integer); static;
   public
     class constructor Initialize;
     class destructor Finalize;
 
     class property ColorIdent: String read FColorIdent write FColorIdent;
-    class property Color: TAlphaColor read FColor write FColor;
+    class property Color: TAlphaColor read FColor write SetColor;
     class property CustomColor0: TAlphaColor read FCustomColor0 write FCustomColor0;
     class property CustomColor1: TAlphaColor read FCustomColor1 write FCustomColor1;
     class property CustomColor2: TAlphaColor read FCustomColor2 write FCustomColor2;
     class property CustomColor3: TAlphaColor read FCustomColor3 write FCustomColor3;
+    class property CustomColorNumber: Integer read FCustomColorNumber write SetCustomColorNumber;
     class property Orientation: TOrientationKind read FOrientation write FOrientation;
     class property Board: TBoardKind read FBoard write SetBoard;
     class property AutoOrientation: Boolean read FAutoOrientation write FAutoOrientation;
@@ -238,6 +235,7 @@ begin
     FileStreamTools.Write(FCustomColor1);
     FileStreamTools.Write(FCustomColor2);
     FileStreamTools.Write(FCustomColor3);
+    FileStreamTools.Write(FCustomColorNumber);
     FileStreamTools.Write(FAutoOrientation);
     FileStreamTools.Write(FFormLeft);
     FileStreamTools.Write(FFormTop);
@@ -267,6 +265,7 @@ begin
     FCustomColor1       := FileStreamTools.ReadAsUInt32;
     FCustomColor2       := FileStreamTools.ReadAsUInt32;
     FCustomColor3       := FileStreamTools.ReadAsUInt32;
+    FCustomColorNumber  := FileStreamTools.ReadAsInteger;
     FAutoOrientation    := FileStreamTools.ReadAsBoolean;
     FFormLeft           := FileStreamTools.ReadAsInteger;
     FFormTop            := FileStreamTools.ReadAsInteger;
@@ -287,6 +286,7 @@ begin
   FCustomColor1       := FColor;
   FCustomColor2       := FColor;
   FCustomColor3       := FColor;
+  FCustomColorNumber  := -1;
   FBoard              := TBoardKind.bkElectronic;
   FFormLeft           := 100;
   FFormTop            := 100;
@@ -299,6 +299,16 @@ begin
   FAutoOrientation    := true;
   FOrientation        := TOrientationKind.okNone;
   {$ENDIF}
+end;
+
+class procedure TState.SetColor(const AAlphaColor: TAlphaColor);
+begin
+  FColor := AAlphaColor;
+end;
+
+class procedure TState.SetCustomColorNumber(const ANumber: Integer);
+begin
+  FCustomColorNumber := ANumber;
 end;
 
 initialization
