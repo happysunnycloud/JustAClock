@@ -16,7 +16,7 @@ uses
   , BorderFrameUnit
   {$ENDIF}
   {$IFDEF ANDROID}
-  , FMX.Platform
+  , FMX.Platform, FMX.Gestures
   {$ENDIF}
   ;
 
@@ -47,9 +47,7 @@ type
     TimeText: TText;
     ContentLayout: TLayout;
     TimeLayout: TLayout;
-    SettingsPopupMenu: TPopupMenu;
     SignalRectangle: TRectangle;
-    ToolsPopupMenu: TPopupMenu;
     TextTimeLayout: TLayout;
     TextHoursLayout: TLayout;
     TextHoursDelimLayout: TLayout;
@@ -67,6 +65,7 @@ type
     TimeVoidEdit: TEdit;
     SettingsLayout: TLayout;
     ToolsLayout: TLayout;
+    GestureManager: TGestureManager;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -79,6 +78,10 @@ type
       Shift: TShiftState; X, Y: Single);
     procedure ToolsLayoutTap(Sender: TObject; const Point: TPointF);
     procedure FormPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
+    procedure SettingsLayoutGesture(Sender: TObject;
+      const EventInfo: TGestureEventInfo; var Handled: Boolean);
+    procedure ToolsLayoutGesture(Sender: TObject;
+      const EventInfo: TGestureEventInfo; var Handled: Boolean);
   strict private
     FTimeThread: TTimeThread;
 
@@ -119,8 +122,9 @@ type
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
 
     procedure SetCustomColorOkButtonClickHandler(Sender: TObject);
-
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
+
+    procedure GestureHandler(const EventInfo: TGestureEventInfo);
 
     procedure RunTime;
     procedure RunTimer(const ATimerTime: TTime);
@@ -679,11 +683,30 @@ begin
     TShowTime.ShowTime(Time);
 end;
 
+procedure TMainForm.GestureHandler(const EventInfo: TGestureEventInfo);
+var
+  Ident: String;
+begin
+  GestureToIdent(EventInfo.GestureID, Ident);
+  if Ident = 'sgiDown' then
+    Close;
+end;
+
+procedure TMainForm.ToolsLayoutGesture(Sender: TObject;
+  const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+  GestureHandler(EventInfo);
+end;
+
 procedure TMainForm.ToolsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
+  // Для Андроида специально должно глушиться,
+  // иначе не обработает собития жестов OnGesture
+  {$IFDEF MSWINDOWS}
   GetCurPos(X, Y);
-  FToolsPopupMenuExt.Open(X, Y);
+  FSettingsPopupMenuExt.Open(X, Y);
+  {$ENDIF}
 end;
 
 procedure TMainForm.ToolsLayoutTap(Sender: TObject; const Point: TPointF);
@@ -1296,11 +1319,21 @@ begin
   SetTimerForm.Close;
 end;
 
+procedure TMainForm.SettingsLayoutGesture(Sender: TObject;
+  const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+  GestureHandler(EventInfo);
+end;
+
 procedure TMainForm.SettingsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
+  // Для Андроида специально должно глушиться,
+  // иначе не обработает собития жестов OnGesture
+  {$IFDEF MSWINDOWS}
   GetCurPos(X, Y);
   FSettingsPopupMenuExt.Open(X, Y);
+  {$ENDIF}
 end;
 
 procedure TMainForm.SettingsLayoutTap(Sender: TObject; const Point: TPointF);

@@ -19,10 +19,6 @@ object MainForm: TMainForm
   OnResize = FormResize
   OnPaint = FormPaint
   DesignerMasterStyle = 0
-  object SettingsPopupMenu: TPopupMenu
-    Left = 6
-    Top = 3
-  end
   object ContentLayout: TLayout
     Align = Contents
     Size.Width = 230.000000000000000000
@@ -213,6 +209,8 @@ object MainForm: TMainForm
       Stroke.Thickness = 4.000000000000000000
     end
     object ToolsLayout: TLayout
+      Touch.GestureManager = GestureManager
+      OnGesture = ToolsLayoutGesture
       OnTap = ToolsLayoutTap
       HitTest = True
       Size.Width = 230.000000000000000000
@@ -222,6 +220,8 @@ object MainForm: TMainForm
       OnMouseUp = ToolsLayoutMouseUp
     end
     object SettingsLayout: TLayout
+      Touch.GestureManager = GestureManager
+      OnGesture = SettingsLayoutGesture
       OnTap = SettingsLayoutTap
       HitTest = True
       Size.Width = 230.000000000000000000
@@ -231,15 +231,49 @@ object MainForm: TMainForm
       OnMouseUp = SettingsLayoutMouseUp
     end
   end
-  object ToolsPopupMenu: TPopupMenu
-    Left = 44
-    Top = 4
-  end
   object TimeVoidEdit: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
     TabOrder = 3
     Position.X = 166.000000000000000000
     Position.Y = 8.000000000000000000
     Visible = False
+  end
+  object GestureManager: TGestureManager
+    Sensitivity = 80.000000000000000000
+    Left = 200
+    Top = 2
+    GestureData = <
+      item
+        Control = SettingsLayout
+        Collection = <
+          item
+            GestureID = sgiLeft
+          end
+          item
+            GestureID = sgiRight
+          end
+          item
+            GestureID = sgiUp
+          end
+          item
+            GestureID = sgiDown
+          end>
+      end
+      item
+        Control = ToolsLayout
+        Collection = <
+          item
+            GestureID = sgiLeft
+          end
+          item
+            GestureID = sgiRight
+          end
+          item
+            GestureID = sgiUp
+          end
+          item
+            GestureID = sgiDown
+          end>
+      end>
   end
 end
