@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, 
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Objects, FMX.Layouts;
+  FMX.Objects, FMX.Layouts, FMX.Gestures;
 
 type
   TNumScrollFrame = class(TFrame)
@@ -16,6 +16,7 @@ type
     BackgroundRectangle: TRectangle;
     Line1: TLine;
     Line2: TLine;
+    GestureManager: TGestureManager;
   private
     FMinVal: Integer;
     FMaxVal: Integer;
@@ -34,6 +35,10 @@ type
       WheelDelta: Integer; var Handled: Boolean);
     procedure OnTopNumClickHandler(Sender: TObject);
     procedure OnButtonNumClickHandler(Sender: TObject);
+    procedure OnGestureHandler(
+      Sender: TObject;
+      const EventInfo: TGestureEventInfo;
+      var Handled: Boolean);
 
 //    property MinVal: Integer read FMinVal write FMinVal;
 //    property MaxVal: Integer read FMaxVal write SetMaxVal;
@@ -64,6 +69,9 @@ begin
 
   TopNumText.OnClick := OnTopNumClickHandler;
   BottomNumText.OnClick := OnButtonNumClickHandler;
+
+  NumsLayout.OnGesture := OnGestureHandler;
+//  CurrentNumText.OnGesture := OnGestureHandler;
 end;
 
 function TNumScrollFrame.AlignNum(const AVal: Integer): String;
@@ -173,6 +181,22 @@ end;
 procedure TNumScrollFrame.OnButtonNumClickHandler(Sender: TObject);
 begin
   IncVal;
+end;
+
+procedure TNumScrollFrame.OnGestureHandler(
+  Sender: TObject;
+  const EventInfo: TGestureEventInfo;
+  var Handled: Boolean);
+var
+  Ident: String;
+begin
+  GestureToIdent(EventInfo.GestureID, Ident);
+
+  if Ident = 'sgiUp' then
+    IncVal
+  else
+  if Ident = 'sgiDown' then
+    DecVal;
 end;
 
 end.

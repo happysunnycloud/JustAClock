@@ -1,4 +1,4 @@
-unit SetCustomColorUnit;
+﻿unit SetCustomColorUnit;
 
 interface
 
@@ -13,18 +13,27 @@ uses
 
 type
   TSetCustomColorForm = class(TForm)
-    ColorPanel: TColorPanel;
     SampleImage: TImage;
     loContent: TLayout;
     OkButtonRectangle: TRectangle;
-    Text1: TText;
+    OkButtonText: TText;
+    ColorQuad: TColorQuad;
+    ColorPicker: TColorPicker;
+    ColorBox: TColorBox;
+    ColorsLayout: TLayout;
+    ButtonsLayout: TLayout;
+    CancelButtonRectangle: TRectangle;
+    CancelButtonText: TText;
     procedure OkButtonRectangleMouseEnter(Sender: TObject);
     procedure OkButtonRectangleMouseLeave(Sender: TObject);
-    procedure ColorPanelChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ColorQuadChange(Sender: TObject);
   private
+    procedure OnRectangleMouseEnterHandler(Sender: TObject);
+    procedure OnRectangleMouseLeaveHandler(Sender: TObject);
+
     procedure SetColor(const AColor: TAlphaColor);
     function GetColor: TAlphaColor;
   public
@@ -42,14 +51,25 @@ implementation
 {$R *.fmx}
 
 uses
-    FMX.ImageToolsUnit
+    System.UIConsts
+  , FMX.ImageToolsUnit
   ;
 
-procedure TSetCustomColorForm.ColorPanelChange(Sender: TObject);
+procedure TSetCustomColorForm.OnRectangleMouseEnterHandler(Sender: TObject);
+begin
+  TRectangle(Sender).Fill.Color := $FF4F4F4F;
+end;
+
+procedure TSetCustomColorForm.OnRectangleMouseLeaveHandler(Sender: TObject);
+begin
+  TRectangle(Sender).Fill.Color := $00000000;
+end;
+
+procedure TSetCustomColorForm.ColorQuadChange(Sender: TObject);
 begin
   TImageTools.ReplaceNotNullColor(
     SampleImage.Bitmap,
-    ColorPanel.Color);
+    ColorBox.Color);
 end;
 
 procedure TSetCustomColorForm.FormClose(Sender: TObject;
@@ -73,6 +93,12 @@ begin
       TAlphaColorRec.Lime,
       $FFADADAD);
   {$ENDIF}
+
+  OkButtonRectangle.OnMouseEnter := OnRectangleMouseEnterHandler;
+  OkButtonRectangle.OnMouseLeave := OnRectangleMouseLeaveHandler;
+
+  CancelButtonRectangle.OnMouseEnter := OnRectangleMouseEnterHandler;
+  CancelButtonRectangle.OnMouseLeave := OnRectangleMouseLeaveHandler;
 end;
 
 procedure TSetCustomColorForm.FormDestroy(Sender: TObject);
@@ -91,15 +117,23 @@ begin
 end;
 
 procedure TSetCustomColorForm.SetColor(const AColor: TAlphaColor);
+var
+  Lum, Sat, Hue: Single;
 begin
-  ColorPanel.Color := AColor;
+  RGBtoHSL(AColor, Hue, Sat, Lum);
 
-  Self.ColorPanelChange(nil);
+  ColorPicker.Hue := Hue;
+
+  ColorQuad.Lum := Lum;
+  ColorQuad.Sat := Sat;
+  ColorQuad.Hue := Hue;
+
+  Self.ColorQuadChange(nil);
 end;
 
 function TSetCustomColorForm.GetColor: TAlphaColor;
 begin
-  Result := ColorPanel.Color;
+  Result := ColorBox.Color;
 end;
 
 end.

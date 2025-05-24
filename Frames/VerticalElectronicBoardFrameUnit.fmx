@@ -10,7 +10,7 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
       inherited DigitsLayout: TLayout
         Position.Y = 10.500000000000000000
         Size.Width = 60.000000000000000000
-        Size.Height = 241.000000000000000000
+        Size.Height = 240.000000000000000000
         inherited HoursLayout: TLayout
           Align = Top
           Size.Height = 60.000000000000000000

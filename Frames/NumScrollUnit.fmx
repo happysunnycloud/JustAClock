@@ -14,6 +14,7 @@ object NumScrollFrame: TNumScrollFrame
     Stroke.Thickness = 0.000000000000000000
   end
   object NumsLayout: TLayout
+    Touch.GestureManager = GestureManager
     Align = Contents
     Size.Width = 131.000000000000000000
     Size.Height = 185.000000000000000000
@@ -74,5 +75,36 @@ object NumScrollFrame: TNumScrollFrame
       TextSettings.Font.StyleExt = {00070000000000000004000000}
       TextSettings.FontColor = claWhite
     end
+  end
+  object GestureManager: TGestureManager
+    Sensitivity = 80.000000000000000000
+    Left = 96
+    Top = 11
+    GestureData = <
+      item
+        Control = NumsLayout
+        Collection = <
+          item
+            GestureID = sgiDown
+          end
+          item
+            GestureID = sgiDownLeft
+          end
+          item
+            GestureID = sgiDownRight
+          end
+          item
+            GestureID = sgiLeftDown
+          end
+          item
+            GestureID = sgiRightDown
+          end
+          item
+            GestureID = sgiDownLeftLong
+          end
+          item
+            GestureID = sgiDownRightLong
+          end>
+      end>
   end
 end

@@ -27,13 +27,13 @@ object ElectronicBoardFrame: TElectronicBoardFrame
         Position.X = 10.000000000000000000
         Position.Y = 11.500000000000000000
         Size.Width = 240.000000000000000000
-        Size.Height = 57.000000000000000000
+        Size.Height = 60.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object HoursLayout: TLayout
           Align = Left
           Size.Width = 60.000000000000000000
-          Size.Height = 57.000000000000000000
+          Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
           object HHImage: TImage
@@ -45,7 +45,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end
@@ -59,7 +59,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end
@@ -68,7 +68,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
           Align = Left
           Position.X = 90.000000000000000000
           Size.Width = 60.000000000000000000
-          Size.Height = 57.000000000000000000
+          Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 1
           object MHImage: TImage
@@ -80,7 +80,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end
@@ -94,7 +94,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end
@@ -103,7 +103,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
           Align = Left
           Position.X = 180.000000000000000000
           Size.Width = 60.000000000000000000
-          Size.Height = 57.000000000000000000
+          Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 2
           object SHImage: TImage
@@ -115,7 +115,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end
@@ -129,7 +129,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end
@@ -138,7 +138,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
           Align = Left
           Position.X = 60.000000000000000000
           Size.Width = 30.000000000000000000
-          Size.Height = 57.000000000000000000
+          Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 3
           object HDelimImage: TImage
@@ -150,7 +150,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end
@@ -159,7 +159,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
           Align = Left
           Position.X = 150.000000000000000000
           Size.Width = 30.000000000000000000
-          Size.Height = 57.000000000000000000
+          Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 4
           object SDelimImage: TImage
@@ -171,7 +171,7 @@ object ElectronicBoardFrame: TElectronicBoardFrame
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 57.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             WrapMode = Stretch
           end

@@ -13,7 +13,7 @@ uses
   TextBoardFrameUnit
   , FMX.PopupMenuExtUnit
   {$IFDEF MSWINDOWS}
-  , BorderFrameUnit
+  , BorderFrameUnit, FMX.Gestures
   {$ENDIF}
   {$IFDEF ANDROID}
   , FMX.Platform, FMX.Gestures
@@ -78,9 +78,7 @@ type
       Shift: TShiftState; X, Y: Single);
     procedure ToolsLayoutTap(Sender: TObject; const Point: TPointF);
     procedure FormPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
-    procedure SettingsLayoutGesture(Sender: TObject;
-      const EventInfo: TGestureEventInfo; var Handled: Boolean);
-    procedure ToolsLayoutGesture(Sender: TObject;
+    procedure ContentLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
   strict private
     FTimeThread: TTimeThread;
@@ -122,6 +120,8 @@ type
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
 
     procedure SetCustomColorOkButtonClickHandler(Sender: TObject);
+    procedure SetCustomColorCancelButtonClickHandler(Sender: TObject);
+
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
 
     procedure GestureHandler(const EventInfo: TGestureEventInfo);
@@ -263,6 +263,12 @@ begin
   ShowWindow(ApplicationHWND, SW_HIDE);
 end;
 {$ENDIF}
+
+procedure TMainForm.ContentLayoutGesture(Sender: TObject;
+  const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+  GestureHandler(EventInfo);
+end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -684,18 +690,17 @@ begin
 end;
 
 procedure TMainForm.GestureHandler(const EventInfo: TGestureEventInfo);
-var
-  Ident: String;
 begin
-  GestureToIdent(EventInfo.GestureID, Ident);
-  if Ident = 'sgiDown' then
-    Close;
-end;
-
-procedure TMainForm.ToolsLayoutGesture(Sender: TObject;
-  const EventInfo: TGestureEventInfo; var Handled: Boolean);
-begin
-  GestureHandler(EventInfo);
+  case EventInfo.GestureID of
+    sgiDown,
+    sgiLeftDown,
+    sgiRightDown,
+    sgiDownLeft,
+    sgiDownRight,
+    sgiDownLeftLong,
+    sgiDownRightLong:
+      Close;
+  end;
 end;
 
 procedure TMainForm.ToolsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
@@ -705,7 +710,7 @@ begin
   // иначе не обработает собития жестов OnGesture
   {$IFDEF MSWINDOWS}
   GetCurPos(X, Y);
-  FSettingsPopupMenuExt.Open(X, Y);
+  FToolsPopupMenuExt.Open(X, Y);
   {$ENDIF}
 end;
 
@@ -718,8 +723,8 @@ function TMainForm.SetBoardOrientation(const AClass: TFrameClass): Pointer;
 begin
   Result := AClass.Create(nil);
 end;
-
 {$IFDEF MSWINDOWS}
+// Привордим размеры к дефолтным только когда меняем ориентацию экрана
 procedure TMainForm.SetBoardSize(
   const AMinWidth: Integer;
   const AMinHeight: Integer;
@@ -740,7 +745,6 @@ begin
   end;
 end;
 {$ENDIF}
-
 procedure TMainForm.GetElectronicBoard(
   const AOrientation: TOrientationKind;
   const AMinWidth: Integer;
@@ -1138,6 +1142,7 @@ begin
   SetCustomColorForm.Tag := CustomColorNumber;
   SetCustomColorForm.Color := CustomColorByNumber(SetCustomColorForm.Tag);
   SetCustomColorForm.OkButtonRectangle.OnClick := SetCustomColorOkButtonClickHandler;
+  SetCustomColorForm.CancelButtonRectangle.OnClick := SetCustomColorCancelButtonClickHandler;
   {$IFDEF MSWINDOWS}
   SetCustomColorForm.ShowModal;
   {$ELSE IFDEF ANDROID}
@@ -1319,12 +1324,6 @@ begin
   SetTimerForm.Close;
 end;
 
-procedure TMainForm.SettingsLayoutGesture(Sender: TObject;
-  const EventInfo: TGestureEventInfo; var Handled: Boolean);
-begin
-  GestureHandler(EventInfo);
-end;
-
 procedure TMainForm.SettingsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
@@ -1345,6 +1344,7 @@ procedure TMainForm.SetCustomColorOkButtonClickHandler(Sender: TObject);
 var
   CustomColorNumber: Byte;
   Color: TAlphaColor;
+  MenuItem: TItem;
 begin
   CustomColorNumber := SetCustomColorForm.Tag;
   Color := SetCustomColorForm.Color;
@@ -1358,8 +1358,18 @@ begin
 
   TState.Color := Color;
 
+  MenuItem := FSettingsPopupMenuExt.
+    FindItem(CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX + CustomColorNumber.ToString);
+  SetIsCheckedColorMenuItem(nil);
+  SetIsCheckedCustomColorMenuItem(MenuItem);
+
   CloseBoard;
   OpenBoard(TState.Board, TState.Color, TState.Orientation);
+end;
+
+procedure TMainForm.SetCustomColorCancelButtonClickHandler(Sender: TObject);
+begin
+  SetCustomColorForm.Close;
 end;
 
 procedure TMainForm.VerticalDetectedProc;

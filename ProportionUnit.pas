@@ -120,14 +120,12 @@ begin
   if FOrientation = okVertical then
   begin
     FDigitsLayout.Position.X := MinWidth / 16;
-    //5;
-    FDigitsLayout.Position.Y := MinHeight / 17.3;
-    //15;
+    FDigitsLayout.Position.Y := MinHeight / 52;
 
     FDigitsLayout.Width := MinWidth - (FDigitsLayout.Position.X * 2);
     FDigitsLayout.Height := MinHeight - (FDigitsLayout.Position.Y * 2);
 
-    FWidthRatio := FDigitsLayout.Width / AMinWidth;
+    FWidthRatio := FDigitsLayout.Width / MinWidth;
     FHeightRatio := FDigitsLayout.Width / FDigitsLayout.Height;
     FBottomMargin := MinHeight - (FDigitsLayout.Position.Y + FDigitsLayout.Height);
 
@@ -139,16 +137,12 @@ begin
   if FOrientation = okHorizontal then
   begin
     FDigitsLayout.Position.X := MinWidth / 52;
-    //FOrigin.Width / 44;
-    //5;
     FDigitsLayout.Position.Y := MinHeight / 8;
-    //FOrigin.Height / 3.6;
-    //15;
 
-    FDigitsLayout.Width := AMinWidth - (FDigitsLayout.Position.X * 2);
-    FDigitsLayout.Height := AMinHeight - (FDigitsLayout.Position.Y * 2);
+    FDigitsLayout.Width := MinWidth - (FDigitsLayout.Position.X * 2);
+    FDigitsLayout.Height := MinHeight - (FDigitsLayout.Position.Y * 2);
 
-    FWidthRatio := FDigitsLayout.Width / AMinWidth;
+    FWidthRatio := FDigitsLayout.Width / MinWidth;
     FHeightRatio := FDigitsLayout.Height / FDigitsLayout.Width;
     FBottomMargin := FDigitsLayout.Position.Y;
 
@@ -160,7 +154,7 @@ end;
 
 class function TProportion.ClientWidth: Single;
 begin
-  Result := Trunc(FOrigin.Width);
+  Result := FOrigin.Width;
 end;
 
 class function TProportion.ClientHeight: Single;
@@ -249,7 +243,7 @@ class procedure TProportion.Resize;
     FDigitsLayout.Align  := TAlignLayout.None;
 
     W0 := FDigitsLayout.Width / 4;
-    W1 := FDigitsLayout.Width / 4 / 2;
+    W1 := FDigitsLayout.Width / 8;
 
     _HorizontalAlign(FHoursLayout, W0);
     _HorizontalAlign(FHHControl, W0 / 2);

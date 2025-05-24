@@ -58,16 +58,21 @@ type
     class property ConfigFileName: String read GetConfigFileName;
     class procedure SetColor(const AAlphaColor: TAlphaColor); static;
     class procedure SetCustomColorNumber(const ANumber: Integer); static;
+
+    class procedure SetCustomColor0(const AAlphaColor: TAlphaColor); static;
+    class procedure SetCustomColor1(const AAlphaColor: TAlphaColor); static;
+    class procedure SetCustomColor2(const AAlphaColor: TAlphaColor); static;
+    class procedure SetCustomColor3(const AAlphaColor: TAlphaColor); static;
   public
     class constructor Initialize;
     class destructor Finalize;
 
     class property ColorIdent: String read FColorIdent write FColorIdent;
     class property Color: TAlphaColor read FColor write SetColor;
-    class property CustomColor0: TAlphaColor read FCustomColor0 write FCustomColor0;
-    class property CustomColor1: TAlphaColor read FCustomColor1 write FCustomColor1;
-    class property CustomColor2: TAlphaColor read FCustomColor2 write FCustomColor2;
-    class property CustomColor3: TAlphaColor read FCustomColor3 write FCustomColor3;
+    class property CustomColor0: TAlphaColor read FCustomColor0 write SetCustomColor0;
+    class property CustomColor1: TAlphaColor read FCustomColor1 write SetCustomColor1;
+    class property CustomColor2: TAlphaColor read FCustomColor2 write SetCustomColor2;
+    class property CustomColor3: TAlphaColor read FCustomColor3 write SetCustomColor3;
     class property CustomColorNumber: Integer read FCustomColorNumber write SetCustomColorNumber;
     class property Orientation: TOrientationKind read FOrientation write FOrientation;
     class property Board: TBoardKind read FBoard write SetBoard;
@@ -309,6 +314,30 @@ end;
 class procedure TState.SetCustomColorNumber(const ANumber: Integer);
 begin
   FCustomColorNumber := ANumber;
+end;
+
+class procedure TState.SetCustomColor0(const AAlphaColor: TAlphaColor);
+begin
+  FCustomColor0 := AAlphaColor;
+  CustomColorNumber := 0;
+end;
+
+class procedure TState.SetCustomColor1(const AAlphaColor: TAlphaColor);
+begin
+  FCustomColor1 := AAlphaColor;
+  CustomColorNumber := 1;
+end;
+
+class procedure TState.SetCustomColor2(const AAlphaColor: TAlphaColor);
+begin
+  FCustomColor2 := AAlphaColor;
+  CustomColorNumber := 2;
+end;
+
+class procedure TState.SetCustomColor3(const AAlphaColor: TAlphaColor);
+begin
+  FCustomColor3 := AAlphaColor;
+  CustomColorNumber := 3;
 end;
 
 initialization

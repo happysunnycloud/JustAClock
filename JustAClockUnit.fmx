@@ -20,6 +20,8 @@ object MainForm: TMainForm
   OnPaint = FormPaint
   DesignerMasterStyle = 0
   object ContentLayout: TLayout
+    Touch.GestureManager = GestureManager
+    OnGesture = ContentLayoutGesture
     Align = Contents
     Size.Width = 230.000000000000000000
     Size.Height = 85.000000000000000000
@@ -210,7 +212,6 @@ object MainForm: TMainForm
     end
     object ToolsLayout: TLayout
       Touch.GestureManager = GestureManager
-      OnGesture = ToolsLayoutGesture
       OnTap = ToolsLayoutTap
       HitTest = True
       Size.Width = 230.000000000000000000
@@ -221,7 +222,6 @@ object MainForm: TMainForm
     end
     object SettingsLayout: TLayout
       Touch.GestureManager = GestureManager
-      OnGesture = SettingsLayoutGesture
       OnTap = SettingsLayoutTap
       HitTest = True
       Size.Width = 230.000000000000000000
@@ -244,7 +244,32 @@ object MainForm: TMainForm
     Top = 2
     GestureData = <
       item
-        Control = SettingsLayout
+        Control = ContentLayout
+        Collection = <
+          item
+            GestureID = sgiDown
+          end
+          item
+            GestureID = sgiDownLeft
+          end
+          item
+            GestureID = sgiDownRight
+          end
+          item
+            GestureID = sgiLeftDown
+          end
+          item
+            GestureID = sgiRightDown
+          end
+          item
+            GestureID = sgiDownLeftLong
+          end
+          item
+            GestureID = sgiDownRightLong
+          end>
+      end
+      item
+        Control = ToolsLayout
         Collection = <
           item
             GestureID = sgiLeft
@@ -260,7 +285,7 @@ object MainForm: TMainForm
           end>
       end
       item
-        Control = ToolsLayout
+        Control = SettingsLayout
         Collection = <
           item
             GestureID = sgiLeft

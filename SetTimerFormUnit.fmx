@@ -3,8 +3,8 @@ object SetTimerForm: TSetTimerForm
   Top = 0
   BorderStyle = None
   Caption = 'Just a clock'
-  ClientHeight = 302
-  ClientWidth = 219
+  ClientHeight = 301
+  ClientWidth = 221
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
@@ -17,8 +17,8 @@ object SetTimerForm: TSetTimerForm
   DesignerMasterStyle = 0
   object loContent: TLayout
     Align = Contents
-    Size.Width = 219.000000000000000000
-    Size.Height = 302.000000000000000000
+    Size.Width = 221.000000000000000000
+    Size.Height = 301.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object CenterLayout: TLayout
@@ -59,11 +59,38 @@ object SetTimerForm: TSetTimerForm
             end
           end
           inherited CurrentNumText: TText
-            Locked = True
             Size.Width = 100.000000000000000000
-            Size.Height = 207.000000000000000000
+            Size.Height = 97.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
+        end
+        inherited GestureManager: TGestureManager
+          GestureData = <
+            item
+              Control = HoursNumScrollFrame.NumsLayout
+              Collection = <
+                item
+                  GestureID = sgiDown
+                end
+                item
+                  GestureID = sgiDownLeft
+                end
+                item
+                  GestureID = sgiDownRight
+                end
+                item
+                  GestureID = sgiLeftDown
+                end
+                item
+                  GestureID = sgiRightDown
+                end
+                item
+                  GestureID = sgiDownLeftLong
+                end
+                item
+                  GestureID = sgiDownRightLong
+                end>
+            end>
         end
       end
       inline MinutesNumScrollFrame: TNumScrollFrame
@@ -98,9 +125,37 @@ object SetTimerForm: TSetTimerForm
           end
           inherited CurrentNumText: TText
             Size.Width = 100.000000000000000000
-            Size.Height = 207.000000000000000000
+            Size.Height = 97.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
+        end
+        inherited GestureManager: TGestureManager
+          GestureData = <
+            item
+              Control = MinutesNumScrollFrame.NumsLayout
+              Collection = <
+                item
+                  GestureID = sgiDown
+                end
+                item
+                  GestureID = sgiDownLeft
+                end
+                item
+                  GestureID = sgiDownRight
+                end
+                item
+                  GestureID = sgiLeftDown
+                end
+                item
+                  GestureID = sgiRightDown
+                end
+                item
+                  GestureID = sgiDownLeftLong
+                end
+                item
+                  GestureID = sgiDownRightLong
+                end>
+            end>
         end
       end
       object ButtonsLayout: TLayout
