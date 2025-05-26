@@ -3,8 +3,8 @@ object SetTimerForm: TSetTimerForm
   Top = 0
   BorderStyle = None
   Caption = 'Just a clock'
-  ClientHeight = 301
-  ClientWidth = 221
+  ClientHeight = 516
+  ClientWidth = 305
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
@@ -17,14 +17,14 @@ object SetTimerForm: TSetTimerForm
   DesignerMasterStyle = 0
   object loContent: TLayout
     Align = Contents
-    Size.Width = 221.000000000000000000
-    Size.Height = 301.000000000000000000
+    Size.Width = 305.000000000000000000
+    Size.Height = 516.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object CenterLayout: TLayout
       Align = Center
       Size.Width = 200.000000000000000000
-      Size.Height = 280.000000000000000000
+      Size.Height = 434.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 3
       inline HoursNumScrollFrame: TNumScrollFrame
@@ -32,15 +32,15 @@ object SetTimerForm: TSetTimerForm
         HitTest = False
         Position.Y = 33.000000000000000000
         Size.Width = 100.000000000000000000
-        Size.Height = 207.000000000000000000
+        Size.Height = 276.000000000000000000
         Size.PlatformDefault = False
         inherited BackgroundRectangle: TRectangle
           Size.Width = 100.000000000000000000
-          Size.Height = 207.000000000000000000
+          Size.Height = 276.000000000000000000
         end
         inherited NumsLayout: TLayout
           Size.Width = 100.000000000000000000
-          Size.Height = 207.000000000000000000
+          Size.Height = 276.000000000000000000
           inherited TopNumText: TText
             Locked = True
             Size.Width = 100.000000000000000000
@@ -51,7 +51,7 @@ object SetTimerForm: TSetTimerForm
           end
           inherited BottomNumText: TText
             Locked = True
-            Position.Y = 152.000000000000000000
+            Position.Y = 221.000000000000000000
             Size.Width = 100.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             inherited Line1: TLine
@@ -60,7 +60,7 @@ object SetTimerForm: TSetTimerForm
           end
           inherited CurrentNumText: TText
             Size.Width = 100.000000000000000000
-            Size.Height = 97.000000000000000000
+            Size.Height = 166.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
         end
@@ -99,15 +99,15 @@ object SetTimerForm: TSetTimerForm
         Position.X = 100.000000000000000000
         Position.Y = 33.000000000000000000
         Size.Width = 100.000000000000000000
-        Size.Height = 207.000000000000000000
+        Size.Height = 276.000000000000000000
         Size.PlatformDefault = False
         inherited BackgroundRectangle: TRectangle
           Size.Width = 100.000000000000000000
-          Size.Height = 207.000000000000000000
+          Size.Height = 276.000000000000000000
         end
         inherited NumsLayout: TLayout
           Size.Width = 100.000000000000000000
-          Size.Height = 207.000000000000000000
+          Size.Height = 276.000000000000000000
           inherited TopNumText: TText
             Size.Width = 100.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
@@ -116,7 +116,7 @@ object SetTimerForm: TSetTimerForm
             end
           end
           inherited BottomNumText: TText
-            Position.Y = 152.000000000000000000
+            Position.Y = 221.000000000000000000
             Size.Width = 100.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             inherited Line1: TLine
@@ -125,7 +125,7 @@ object SetTimerForm: TSetTimerForm
           end
           inherited CurrentNumText: TText
             Size.Width = 100.000000000000000000
-            Size.Height = 97.000000000000000000
+            Size.Height = 166.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
         end
@@ -161,24 +161,23 @@ object SetTimerForm: TSetTimerForm
       object ButtonsLayout: TLayout
         Align = Bottom
         Margins.Top = 5.000000000000000000
-        Position.Y = 245.000000000000000000
+        Position.Y = 314.000000000000000000
         Size.Width = 200.000000000000000000
-        Size.Height = 35.000000000000000000
+        Size.Height = 120.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
         object CancelButtonRectangle: TRectangle
-          Align = Right
+          Align = Top
           Fill.Color = claBlack
-          Position.X = 100.000000000000000000
-          Position.Y = 6.000000000000000000
-          Size.Width = 100.000000000000000000
-          Size.Height = 29.000000000000000000
+          Position.Y = 61.000000000000000000
+          Size.Width = 200.000000000000000000
+          Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           object CancelButtonText: TText
-            Align = Client
+            Align = Bottom
             HitTest = False
-            Size.Width = 100.000000000000000000
-            Size.Height = 29.000000000000000000
+            Size.Width = 200.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             Text = 'Cancel'
             TextSettings.Font.Size = 14.000000000000000000
@@ -187,19 +186,18 @@ object SetTimerForm: TSetTimerForm
           end
         end
         object OkButtonRectangle: TRectangle
-          Align = Left
-          Anchors = []
+          Align = Top
           Fill.Color = claBlack
-          Position.Y = 6.000000000000000000
-          Size.Width = 100.000000000000000000
-          Size.Height = 29.000000000000000000
+          Position.Y = 1.000000000000000000
+          Size.Width = 200.000000000000000000
+          Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           Stroke.Kind = None
           object OkButtonText: TText
             Align = Client
             HitTest = False
-            Size.Width = 100.000000000000000000
-            Size.Height = 29.000000000000000000
+            Size.Width = 200.000000000000000000
+            Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             Text = 'Ok'
             TextSettings.Font.Size = 14.000000000000000000
@@ -210,7 +208,6 @@ object SetTimerForm: TSetTimerForm
         object ButtonsLine: TLine
           Align = Top
           LineType = Diagonal
-          Margins.Bottom = 5.000000000000000000
           Size.Width = 200.000000000000000000
           Size.Height = 1.000000000000000000
           Size.PlatformDefault = False
