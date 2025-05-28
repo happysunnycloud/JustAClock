@@ -527,7 +527,7 @@ begin
 
   SetIsCheckedColorMenuItem(nil);
   SetIsCheckedCustomColorMenuItem(nil);
-  if TState.CustomColorNumber > 0 then
+  if TState.CustomColorNumber >= 0 then
   begin
     MenuItem := FSettingsPopupMenuExt.
       FindItem(CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX + TState.CustomColorNumber.ToString);
