@@ -4,6 +4,7 @@ interface
 
 uses
     System.UITypes
+  , System.Classes
   , FMX.ThemeUnit
   ;
 
@@ -37,6 +38,7 @@ type
     class var
       FColorIdent: String;
       FColor: TAlphaColor;
+      FImageName: String;
       FCustomColor0: TAlphaColor;
       FCustomColor1: TAlphaColor;
       FCustomColor2: TAlphaColor;
@@ -69,6 +71,7 @@ type
 
     class property ColorIdent: String read FColorIdent write FColorIdent;
     class property Color: TAlphaColor read FColor write SetColor;
+    class property ImageName: String read FImageName write FImageName;
     class property CustomColor0: TAlphaColor read FCustomColor0 write SetCustomColor0;
     class property CustomColor1: TAlphaColor read FCustomColor1 write SetCustomColor1;
     class property CustomColor2: TAlphaColor read FCustomColor2 write SetCustomColor2;
@@ -93,13 +96,13 @@ function ColorByIdent(const AColorIdent: String): TAlphaColor;
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
 function GetDigitsPackFile: String;
 function GetImagesPackFile(const AImagePackName: String): String;
+procedure GetImagesPackFileList(const AImagesPackFileList: TStringList);
 procedure GetCurPos(var X, Y: Single);
 
 implementation
 
 uses
     System.SysUtils
-  , System.Classes
   , FileStreamToolsUnit
   {$IFDEF ANDROID}
   , System.IOUtils
@@ -107,6 +110,7 @@ uses
   {$IFDEF MSWINDOWS}
   , Winapi.Windows
   {$ENDIF}
+  , FileToolsUnit
   ;
 
 function ColorByIdent(const AColorIdent: String): TAlphaColor;
@@ -179,6 +183,29 @@ begin
   {$ENDIF}
 end;
 
+procedure GetImagesPackFileList(const AImagesPackFileList: TStringList);
+var
+  Path: String;
+begin
+  if not Assigned(AImagesPackFileList) then
+    raise Exception.Create('AImagesPackFileList is nil');
+
+  Path := '';
+
+  {$IFDEF ANDROID}
+  Path := System.IOUtils.TPath.GetDocumentsPath;
+  {$ELSE IF MSWINDOWS}
+    {$IFDEF DEBUG}
+    Path := '..\..\Arts';
+    {$ELSE}
+    Path := '';
+    {$ENDIF}
+  {$ENDIF}
+
+  TFileTools.GetFileNameListByDirAndExt(Path, 'pck', AImagesPackFileList);
+end;
+
+
 procedure GetCurPos(var X, Y: Single);
 {$IFDEF MSWINDOWS}
 var
@@ -236,6 +263,7 @@ begin
     FileStreamTools.Write(FBoard);
     FileStreamTools.Write(Orientation);
     FileStreamTools.Write(FColor);
+    FileStreamTools.Write(FImageName);
     FileStreamTools.Write(FCustomColor0);
     FileStreamTools.Write(FCustomColor1);
     FileStreamTools.Write(FCustomColor2);
@@ -266,6 +294,7 @@ begin
     FBoard              := TBoardKind(FileStreamTools.ReadAsByte);
     Orientation         := FileStreamTools.ReadAsInteger;
     FColor              := FileStreamTools.ReadAsUInt32;
+    FImageName          := FileStreamTools.ReadAsString;
     FCustomColor0       := FileStreamTools.ReadAsUInt32;
     FCustomColor1       := FileStreamTools.ReadAsUInt32;
     FCustomColor2       := FileStreamTools.ReadAsUInt32;
@@ -287,6 +316,7 @@ class procedure TState.Init;
 begin
   FColorIdent         := CHROMAKEY_COLOR_IDENT;
   FColor              := ColorByIdent(FColorIdent);
+  FImageName          := '';
   FCustomColor0       := FColor;
   FCustomColor1       := FColor;
   FCustomColor2       := FColor;
