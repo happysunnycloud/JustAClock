@@ -97,11 +97,11 @@ type
     FOrientationMenuItem: TItem;
     FColorsMenuItem: TItem;
     FCustomColorsMenuItem: TItem;
+    FHorizontalOrientationMenuItem: TItem;
+    FVerticalOrientationMenuItem: TItem;
     {$IFDEF ANDROID}
-    FAutoOrientation: TItem;
     FAutoOrientationMenuItem: TItem;
     {$ENDIF}
-
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt: TPopupMenuExt;
     FBorderFrame: TBorderFrame;
@@ -126,10 +126,7 @@ type
 
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
-    {$HINTS OFF}
-    procedure MenuAutoOrientationOnItemClickHandler(Sender: TObject);
-    procedure MenuAutoOrientationOffItemClickHandler(Sender: TObject);
-    {$HINTS ON}
+
     procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
 
@@ -142,12 +139,16 @@ type
 
     procedure RunTime;
     procedure RunTimer(const ATimerTime: TTime);
+    {$IFDEF ANDROID}
+    procedure MenuAutoOrientationOnItemClickHandler(Sender: TObject);
+    procedure MenuAutoOrientationOffItemClickHandler(Sender: TObject);
 
     procedure StartMotionSensorDataThread;
     procedure StopMotionSensorDataThread;
 
     procedure VerticalDetectedProc;
     procedure HorizontalDetectedProc;
+    {$ENDIF}
 
 //    procedure SetIsCheckedMenuItem(
 //      const AMenuItemsArray: TMenuItemsArray;
@@ -438,23 +439,23 @@ begin
   FOrientationMenuItem.Text := 'Orientation';
   FSettingsPopupMenuExt.Add(FOrientationMenuItem);
 
-  MenuItem := TItem.Create;
-  MenuItem.Name := HORIZONTAL_ORIENTATION_MENU_ITEM_NAME;
-  MenuItem.Parent := FOrientationMenuItem;
-  MenuItem.Text := 'Horizontal';
-  MenuItem.Tag := 0;
-  MenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
-  MenuItem.IsChecked := TState.Orientation = okHorizontal;
-  FSettingsPopupMenuExt.Add(MenuItem);
+  FHorizontalOrientationMenuItem := TItem.Create;
+  FHorizontalOrientationMenuItem.Name := HORIZONTAL_ORIENTATION_MENU_ITEM_NAME;
+  FHorizontalOrientationMenuItem.Parent := FOrientationMenuItem;
+  FHorizontalOrientationMenuItem.Text := 'Horizontal';
+  FHorizontalOrientationMenuItem.Tag := 0;
+  FHorizontalOrientationMenuItem.OnClick := MenuHorizontalOrientationItemClickHandler;
+  FHorizontalOrientationMenuItem.IsChecked := TState.Orientation = okHorizontal;
+  FSettingsPopupMenuExt.Add(FHorizontalOrientationMenuItem);
 
-  MenuItem := TItem.Create;
-  MenuItem.Name := VERTICAL_ORIENTATION_MENU_ITEM_NAME;
-  MenuItem.Parent := FOrientationMenuItem;
-  MenuItem.Text := 'Vertical';
-  MenuItem.Tag := 1;
-  MenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
-  MenuItem.IsChecked := TState.Orientation = okVertical;
-  FSettingsPopupMenuExt.Add(MenuItem);
+  FVerticalOrientationMenuItem := TItem.Create;
+  FVerticalOrientationMenuItem.Name := VERTICAL_ORIENTATION_MENU_ITEM_NAME;
+  FVerticalOrientationMenuItem.Parent := FOrientationMenuItem;
+  FVerticalOrientationMenuItem.Text := 'Vertical';
+  FVerticalOrientationMenuItem.Tag := 1;
+  FVerticalOrientationMenuItem.OnClick := MenuVerticalOrientationItemClickHandler;
+  FVerticalOrientationMenuItem.IsChecked := TState.Orientation = okVertical;
+  FSettingsPopupMenuExt.Add(FVerticalOrientationMenuItem);
 
   {$IFDEF ANDROID}
   MenuItem := TItem.Create;
@@ -463,15 +464,15 @@ begin
   MenuItem.Tag := -1;
   FSettingsPopupMenuExt.Add(MenuItem);
 
-  FAutoOrientation := TItem.Create;
-  FAutoOrientation.Parent := FOrientationMenuItem;
-  FAutoOrientation.Text := 'Auto';
-  FAutoOrientation.Tag := 0;
-  FSettingsPopupMenuExt.Add(FAutoOrientation);
+  FAutoOrientationMenuItem := TItem.Create;
+  FAutoOrientationMenuItem.Parent := FOrientationMenuItem;
+  FAutoOrientationMenuItem.Text := 'Auto';
+  FAutoOrientationMenuItem.Tag := 0;
+  FSettingsPopupMenuExt.Add(FAutoOrientationMenuItem);
 
   MenuItem := TItem.Create;
   MenuItem.Name := AUTO_ORIENTATION_ON_MENU_ITEM_NAME;
-  MenuItem.Parent := FAutoOrientation;
+  MenuItem.Parent := FAutoOrientationMenuItem;
   MenuItem.Text := 'On';
   MenuItem.Tag := 0;
   MenuItem.OnClick := MenuAutoOrientationOnItemClickHandler;
@@ -480,13 +481,14 @@ begin
 
   MenuItem := TItem.Create;
   MenuItem.Name := AUTO_ORIENTATION_OFF_MENU_ITEM_NAME;
-  MenuItem.Parent := FAutoOrientation;
+  MenuItem.Parent := FAutoOrientationMenuItem;
   MenuItem.Text := 'Off';
   MenuItem.Tag := 1;
   MenuItem.OnClick := MenuAutoOrientationOffItemClickHandler;
   MenuItem.IsChecked := not TState.AutoOrientation;
   FSettingsPopupMenuExt.Add(MenuItem);
   {$ENDIF}
+
   MenuItem := TItem.Create;
   MenuItem.Text := '-';
   MenuItem.Tag := -1;
@@ -609,6 +611,27 @@ var
 begin
   ReportMemoryLeaksOnShutdown := true;
 
+  FTimeThread := nil;
+  FElectronicBoardFrame := nil;
+  FTextBoardFrame := nil;
+  FCurrentElectronicBoardColor := '';
+  //FElectronicBoardColorArray
+  FSettingsPopupMenuExt := nil;
+  FToolsPopupMenuExt := nil;
+  FBoardsMenuItem := nil;
+  FImageBoardMenuItem := nil;
+  FOrientationMenuItem := nil;
+  FColorsMenuItem := nil;
+  FCustomColorsMenuItem := nil;
+  FHorizontalOrientationMenuItem := nil;
+  FVerticalOrientationMenuItem := nil;
+  {$IFDEF ANDROID}
+  FAutoOrientationMenuItem := nil;
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
+  FTrayPopupMenuExt := nil;
+  FBorderFrame := nil;
+  {$ENDIF}
   {$IFDEF ANDROID}
   if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, IInterface(aFMXApplicationEventService)) then
     aFMXApplicationEventService.SetApplicationEventHandler(HandleAppEvent)
@@ -677,9 +700,10 @@ begin
   RunTime;
 
   OpenBoard(TState.Board, 'Colored numbers', TState.Color, TState.Orientation);
-
+  {$IFDEF ANDROID}
   if TState.AutoOrientation then
     StartMotionSensorDataThread;
+  {$ENDIF}
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -1257,47 +1281,32 @@ end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
 begin
-//  SetIsCheckedMenuItem(
-//    [
-//      VERTICAL_ORIENTATION_MENU_ITEM_NAME,
-//      HORIZONTAL_ORIENTATION_MENU_ITEM_NAME
-//    ], Sender);
+  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
+  // Выставляем значение не через Sender,
+  // так как при авто повороте, Sender = nil
+  FVerticalOrientationMenuItem.IsChecked := true;
 
   OpenBoard(TState.Board, TState.ImageName, TState.Color, okVertical);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
-var
-  MenuItem: TItem absolute Sender;
 begin
   SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
-
-  MenuItem.IsChecked := true;
-
-//  SetIsCheckedMenuItem(
-//    [
-//      VERTICAL_ORIENTATION_MENU_ITEM_NAME,
-//      HORIZONTAL_ORIENTATION_MENU_ITEM_NAME
-//    ], Sender);
+  // Выставляем значение не через Sender,
+  // так как при авто повороте, Sender = nil
+  FHorizontalOrientationMenuItem.IsChecked := true;
 
   OpenBoard(TState.Board, TState.ImageName, TState.Color, okHorizontal);
 end;
-
+{$IFDEF ANDROID}
 procedure TMainForm.MenuAutoOrientationOnItemClickHandler(Sender: TObject);
 var
   MenuItem: TItem absolute Sender;
 begin
   SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
-  {$IFDEF ANDROID}
   SetIsCheckedForChildrenMenuItems(FAutoOrientationMenuItem, false);
-  {$ENDIF}
-  MenuItem.IsChecked := true;
 
-//  SetIsCheckedMenuItem(
-//    [
-//      AUTO_ORIENTATION_ON_MENU_ITEM_NAME,
-//      AUTO_ORIENTATION_OFF_MENU_ITEM_NAME
-//    ], Sender);
+  MenuItem.IsChecked := true;
 
   TState.AutoOrientation := true;
   StartMotionSensorDataThread;
@@ -1308,21 +1317,14 @@ var
   MenuItem: TItem absolute Sender;
 begin
   SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
-  {$IFDEF ANDROID}
   SetIsCheckedForChildrenMenuItems(FAutoOrientationMenuItem, false);
-  {$ENDIF}
-  MenuItem.IsChecked := true;
 
-//  SetIsCheckedMenuItem(
-//    [
-//      AUTO_ORIENTATION_ON_MENU_ITEM_NAME,
-//      AUTO_ORIENTATION_OFF_MENU_ITEM_NAME
-//    ], Sender);
+  MenuItem.IsChecked := true;
 
   TState.AutoOrientation := false;
   StopMotionSensorDataThread;
 end;
-
+{$ENDIF}
 procedure TMainForm.RunTime;
 var
   OutputControl: TControl;
@@ -1493,6 +1495,17 @@ begin
   SetCustomColorForm.Close;
 end;
 
+procedure TMainForm.SetIsCheckedForChildrenMenuItems(
+  const AParentMenuItem: TItem;
+  const AIsChecked: Boolean);
+var
+  MenuItem: TItem;
+begin
+  for MenuItem in AParentMenuItem.Children do
+    MenuItem.IsChecked := AIsChecked;
+end;
+
+{$IFDEF ANDROID}
 procedure TMainForm.VerticalDetectedProc;
 begin
   if TState.Orientation = okHorizontal then
@@ -1505,6 +1518,16 @@ begin
     MenuHorizontalOrientationItemClickHandler(nil);
 end;
 
+procedure TMainForm.StartMotionSensorDataThread;
+begin
+  TMotionSensorDataThread.Init(Self, VerticalDetectedProc, HorizontalDetectedProc);
+end;
+
+procedure TMainForm.StopMotionSensorDataThread;
+begin
+  TMotionSensorDataThread.UnInit;
+end;
+{$ENDIF}
 //procedure TMainForm.SetIsCheckedMenuItem(
 //  const AMenuItemsArray: TMenuItemsArray;
 //  const Sender: TObject);
@@ -1566,25 +1589,5 @@ end;
 //  if Assigned(Sender) then
 //    TItem(Sender).IsChecked := true;
 //end;
-
-procedure TMainForm.SetIsCheckedForChildrenMenuItems(
-  const AParentMenuItem: TItem;
-  const AIsChecked: Boolean);
-var
-  MenuItem: TItem;
-begin
-  for MenuItem in AParentMenuItem.Children do
-    MenuItem.IsChecked := AIsChecked;
-end;
-
-procedure TMainForm.StartMotionSensorDataThread;
-begin
-  TMotionSensorDataThread.Init(Self, VerticalDetectedProc, HorizontalDetectedProc);
-end;
-
-procedure TMainForm.StopMotionSensorDataThread;
-begin
-  TMotionSensorDataThread.UnInit;
-end;
 
 end.
