@@ -364,8 +364,7 @@ var
   i: Integer;
   ImageFileName: String;
   ImageFileNameList: TStringList;
-  FileName: String;
-  FileExtention: String;
+  ImageName: String;
 begin
   { SettingsPopupMenu }
 
@@ -404,24 +403,19 @@ begin
     i := 0;
     for ImageFileName in ImageFileNameList do
     begin
-      FileExtention := ExtractFileExt(ImageFileName);
-      FileName :=
-        StringReplace(
-          ExtractFileName(ImageFileName),
-          FileExtention,
-          '',
-          [rfReplaceAll, rfIgnoreCase]);
+      ImageName := GetImageNameFromFileName(ImageFileName);
 
-      if FileName = 'Digits' then
+      if ImageName = 'Digits' then
         Continue;
 
       MenuItem := TItem.Create;
       MenuItem.Name := COLORED_NUMBER_BOARD_MENU_ITEM_NAME + i.ToString;
       MenuItem.Parent := FImageBoardMenuItem;
-      MenuItem.Text := FileName;
+      MenuItem.Text := ImageName;
       MenuItem.Tag := 0;
       MenuItem.OnClick := MenuImageBoardItemClickHandler;
-      MenuItem.IsChecked := TState.Board = bkImage;
+      MenuItem.IsChecked :=
+        (TState.ImageName = ImageName) and (TState.Board = bkImage);
       FSettingsPopupMenuExt.Add(MenuItem);
 
       Inc(i);
@@ -656,16 +650,16 @@ begin
   TState.MenuTheme.LightBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
   TState.MenuTheme.DarkBackgroundColor := TAlphaColorRec.Cornflowerblue;
 
-  TState.MenuTheme.TextControl.Align := TAlignLayout.Client;
-  TState.MenuTheme.TextControl.HitTest := false;
-  TState.MenuTheme.TextControl.TextSettings.FontColor :=
+  TState.MenuTheme.CommonTextProps.Align := TAlignLayout.Client;
+  TState.MenuTheme.CommonTextProps.HitTest := false;
+  TState.MenuTheme.CommonTextProps.TextSettings.FontColor :=
     TAlphaColorRec.White;
-  TState.MenuTheme.TextControl.TextSettings.HorzAlign :=
+  TState.MenuTheme.CommonTextProps.TextSettings.HorzAlign :=
     TTextAlign.Leading;
-  TState.MenuTheme.TextControl.TextSettings.VertAlign :=
+  TState.MenuTheme.CommonTextProps.TextSettings.VertAlign :=
     TTextAlign.Center;
-  TState.MenuTheme.TextControl.Margins.Left := 5;
-  TState.MenuTheme.TextControl.WordWrap := false;
+  TState.MenuTheme.CommonTextProps.Margins.Left := 5;
+  TState.MenuTheme.CommonTextProps.WordWrap := false;
 
   FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
 
@@ -699,7 +693,7 @@ begin
 
   RunTime;
 
-  OpenBoard(TState.Board, 'Colored numbers', TState.Color, TState.Orientation);
+  OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
   {$IFDEF ANDROID}
   if TState.AutoOrientation then
     StartMotionSensorDataThread;
@@ -754,6 +748,7 @@ begin
   end;
 
   TProportion.Resize;
+  TShowTime.CheckBitmapsResolution(Single(Self.Width), Single(Self.Height));
 end;
 
 procedure TMainForm.TimeVoidEditOnChangeHandler(Sender: TObject);

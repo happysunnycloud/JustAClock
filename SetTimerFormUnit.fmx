@@ -3,8 +3,8 @@ object SetTimerForm: TSetTimerForm
   Top = 0
   BorderStyle = None
   Caption = 'Just a clock'
-  ClientHeight = 516
-  ClientWidth = 305
+  ClientHeight = 396
+  ClientWidth = 203
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
@@ -14,17 +14,18 @@ object SetTimerForm: TSetTimerForm
   OnCreate = FormCreate
   OnClose = FormClose
   OnDestroy = FormDestroy
+  OnResize = FormResize
   DesignerMasterStyle = 0
   object loContent: TLayout
     Align = Contents
-    Size.Width = 305.000000000000000000
-    Size.Height = 516.000000000000000000
+    Size.Width = 203.000000000000000000
+    Size.Height = 396.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object CenterLayout: TLayout
-      Align = Center
-      Size.Width = 200.000000000000000000
-      Size.Height = 434.000000000000000000
+      Align = Client
+      Size.Width = 203.000000000000000000
+      Size.Height = 396.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 3
       inline HoursNumScrollFrame: TNumScrollFrame
@@ -32,15 +33,15 @@ object SetTimerForm: TSetTimerForm
         HitTest = False
         Position.Y = 33.000000000000000000
         Size.Width = 100.000000000000000000
-        Size.Height = 276.000000000000000000
+        Size.Height = 238.000000000000000000
         Size.PlatformDefault = False
         inherited BackgroundRectangle: TRectangle
           Size.Width = 100.000000000000000000
-          Size.Height = 276.000000000000000000
+          Size.Height = 238.000000000000000000
         end
         inherited NumsLayout: TLayout
           Size.Width = 100.000000000000000000
-          Size.Height = 276.000000000000000000
+          Size.Height = 238.000000000000000000
           inherited TopNumText: TText
             Locked = True
             Size.Width = 100.000000000000000000
@@ -51,7 +52,7 @@ object SetTimerForm: TSetTimerForm
           end
           inherited BottomNumText: TText
             Locked = True
-            Position.Y = 221.000000000000000000
+            Position.Y = 183.000000000000000000
             Size.Width = 100.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             inherited Line1: TLine
@@ -60,11 +61,13 @@ object SetTimerForm: TSetTimerForm
           end
           inherited CurrentNumText: TText
             Size.Width = 100.000000000000000000
-            Size.Height = 166.000000000000000000
+            Size.Height = 128.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
         end
         inherited GestureManager: TGestureManager
+          Left = 6
+          Top = 7
           GestureData = <
             item
               Control = HoursNumScrollFrame.NumsLayout
@@ -89,6 +92,9 @@ object SetTimerForm: TSetTimerForm
                 end
                 item
                   GestureID = sgiDownRightLong
+                end
+                item
+                  GestureID = sgiUp
                 end>
             end>
         end
@@ -96,18 +102,18 @@ object SetTimerForm: TSetTimerForm
       inline MinutesNumScrollFrame: TNumScrollFrame
         Align = Right
         HitTest = False
-        Position.X = 100.000000000000000000
+        Position.X = 103.000000000000000000
         Position.Y = 33.000000000000000000
         Size.Width = 100.000000000000000000
-        Size.Height = 276.000000000000000000
+        Size.Height = 238.000000000000000000
         Size.PlatformDefault = False
         inherited BackgroundRectangle: TRectangle
           Size.Width = 100.000000000000000000
-          Size.Height = 276.000000000000000000
+          Size.Height = 238.000000000000000000
         end
         inherited NumsLayout: TLayout
           Size.Width = 100.000000000000000000
-          Size.Height = 276.000000000000000000
+          Size.Height = 238.000000000000000000
           inherited TopNumText: TText
             Size.Width = 100.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
@@ -116,7 +122,7 @@ object SetTimerForm: TSetTimerForm
             end
           end
           inherited BottomNumText: TText
-            Position.Y = 221.000000000000000000
+            Position.Y = 183.000000000000000000
             Size.Width = 100.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
             inherited Line1: TLine
@@ -125,11 +131,13 @@ object SetTimerForm: TSetTimerForm
           end
           inherited CurrentNumText: TText
             Size.Width = 100.000000000000000000
-            Size.Height = 166.000000000000000000
+            Size.Height = 128.000000000000000000
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
         end
         inherited GestureManager: TGestureManager
+          Left = 34
+          Top = 7
           GestureData = <
             item
               Control = MinutesNumScrollFrame.NumsLayout
@@ -154,6 +162,9 @@ object SetTimerForm: TSetTimerForm
                 end
                 item
                   GestureID = sgiDownRightLong
+                end
+                item
+                  GestureID = sgiUp
                 end>
             end>
         end
@@ -161,8 +172,8 @@ object SetTimerForm: TSetTimerForm
       object ButtonsLayout: TLayout
         Align = Bottom
         Margins.Top = 5.000000000000000000
-        Position.Y = 314.000000000000000000
-        Size.Width = 200.000000000000000000
+        Position.Y = 276.000000000000000000
+        Size.Width = 203.000000000000000000
         Size.Height = 120.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
@@ -170,13 +181,13 @@ object SetTimerForm: TSetTimerForm
           Align = Top
           Fill.Color = claBlack
           Position.Y = 61.000000000000000000
-          Size.Width = 200.000000000000000000
+          Size.Width = 203.000000000000000000
           Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           object CancelButtonText: TText
             Align = Bottom
             HitTest = False
-            Size.Width = 200.000000000000000000
+            Size.Width = 203.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             Text = 'Cancel'
@@ -189,14 +200,14 @@ object SetTimerForm: TSetTimerForm
           Align = Top
           Fill.Color = claBlack
           Position.Y = 1.000000000000000000
-          Size.Width = 200.000000000000000000
+          Size.Width = 203.000000000000000000
           Size.Height = 60.000000000000000000
           Size.PlatformDefault = False
           Stroke.Kind = None
           object OkButtonText: TText
             Align = Client
             HitTest = False
-            Size.Width = 200.000000000000000000
+            Size.Width = 203.000000000000000000
             Size.Height = 60.000000000000000000
             Size.PlatformDefault = False
             Text = 'Ok'
@@ -208,7 +219,7 @@ object SetTimerForm: TSetTimerForm
         object ButtonsLine: TLine
           Align = Top
           LineType = Diagonal
-          Size.Width = 200.000000000000000000
+          Size.Width = 203.000000000000000000
           Size.Height = 1.000000000000000000
           Size.PlatformDefault = False
           Stroke.Color = xFF616161
@@ -217,11 +228,11 @@ object SetTimerForm: TSetTimerForm
       end
       object TopLayout: TLayout
         Align = Top
-        Size.Width = 200.000000000000000000
+        Size.Width = 203.000000000000000000
         Size.Height = 33.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 3
-        object Text2: TText
+        object HoursText: TText
           Align = Left
           Size.Width = 100.000000000000000000
           Size.Height = 33.000000000000000000
@@ -231,9 +242,9 @@ object SetTimerForm: TSetTimerForm
           TextSettings.Font.StyleExt = {00070000000000000004000000}
           TextSettings.FontColor = claWhite
         end
-        object Text3: TText
+        object MinutsText: TText
           Align = Right
-          Position.X = 100.000000000000000000
+          Position.X = 103.000000000000000000
           Size.Width = 100.000000000000000000
           Size.Height = 33.000000000000000000
           Size.PlatformDefault = False

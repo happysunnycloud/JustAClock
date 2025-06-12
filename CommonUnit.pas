@@ -96,6 +96,7 @@ function ColorByIdent(const AColorIdent: String): TAlphaColor;
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
 function GetDigitsPackFile: String;
 function GetImagesPackFile(const AImagePackName: String): String;
+function GetImageNameFromFileName(const AImageFileName: String): String;
 procedure GetImagesPackFileList(const AImagesPackFileList: TStringList);
 procedure GetCurPos(var X, Y: Single);
 
@@ -205,6 +206,21 @@ begin
   TFileTools.GetFileNameListByDirAndExt(Path, 'pck', AImagesPackFileList);
 end;
 
+function GetImageNameFromFileName(const AImageFileName: String): String;
+var
+  FileName: String;
+  FileExtention: String;
+begin
+  FileExtention := ExtractFileExt(AImageFileName);
+  FileName :=
+    StringReplace(
+      ExtractFileName(AImageFileName),
+      FileExtention,
+      '',
+      [rfReplaceAll, rfIgnoreCase]);
+
+  Result := FileName;
+end;
 
 procedure GetCurPos(var X, Y: Single);
 {$IFDEF MSWINDOWS}

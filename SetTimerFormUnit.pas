@@ -19,8 +19,8 @@ type
     OkButtonRectangle: TRectangle;
     OkButtonText: TText;
     TopLayout: TLayout;
-    Text2: TText;
-    Text3: TText;
+    HoursText: TText;
+    MinutsText: TText;
     CancelButtonRectangle: TRectangle;
     ButtonsLayout: TLayout;
     CancelButtonText: TText;
@@ -29,6 +29,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormResize(Sender: TObject);
   private
     {$IFDEF MSWINDOWS}
     FBorderFrame: TBorderFrame;
@@ -91,6 +92,15 @@ end;
 procedure TSetTimerForm.FormDestroy(Sender: TObject);
 begin
   SetTimerForm := nil;
+end;
+
+procedure TSetTimerForm.FormResize(Sender: TObject);
+begin
+  HoursNumScrollFrame.Width := Self.Width / 2;
+  MinutesNumScrollFrame.Width := Self.Width / 2;
+
+  HoursText.Width := Self.Width / 2;
+  MinutsText.Width := Self.Width / 2;
 end;
 
 function TSetTimerForm.GetTime: TTime;

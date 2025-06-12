@@ -6,9 +6,9 @@ uses
     System.Generics.Collections
   , FMX.Objects
   , FMX.Graphics
-  , FilePackerUnit
   , CommonUnit
   , System.UITypes
+  , FMX.MultiResBitmapsUnit
   ;
 
 type
@@ -26,6 +26,17 @@ type
       FSH: TImage;
       FSL: TImage;
       FBitmapList: TBitMapList;
+      FMultiResBitmaps: TMultiResBitmaps;
+      FColor: TAlphaColor;
+      FOrientation: TOrientationKind;
+
+      FNearestResBitmapList: TResBitmapList;
+
+    class procedure LoadResBitmapListByIdent(
+      const AResBitmapList: TResBitmapList;
+      const ABitmapList: TBitmapList;
+      const AColor: TAlphaColor;
+      const AOrientation: TOrientationKind);
   public
     class procedure Init(
       const AImageFileName: String;
@@ -43,6 +54,8 @@ type
     class procedure UnInit;
 
     class procedure ShowTime(const ATime: String);
+    class procedure CheckBitmapsResolution(
+      const AWidth: Single; const AHeight: Single);
   end;
 
 implementation
@@ -50,9 +63,56 @@ implementation
 uses
     System.SysUtils
   , System.Classes
-  , FMX.ImageExtractorUnit
   , FMX.ImageToolsUnit
+  , FMX.MultiResBitmapExtractorUnit
   ;
+
+class procedure TShowTime.LoadResBitmapListByIdent(
+  const AResBitmapList: TResBitmapList;
+  const ABitmapList: TBitmapList;
+  const AColor: TAlphaColor;
+  const AOrientation: TOrientationKind);
+
+  function _GetBitmapByIdent(
+    const AResBitmapList: TResBitmapList;
+    const AIdent: String): TBitmap;
+  begin
+    Result := AResBitmapList.FindBitmapByIden(AIdent);
+    if not Assigned(Result) then
+      raise Exception.CreateFmt('BitMap with ident = "%s" not found', [AIdent]);
+  end;
+
+var
+  BitmapIdent: String;
+  BitMap: TBitMap;
+  OrientationPrefix: String;
+  i: Integer;
+begin
+  OrientationPrefix := '';
+  if AOrientation = okVertical then
+    OrientationPrefix := VERTICAL_ORIENTATION_IDENT;
+
+  ABitmapList.Clear;
+
+  for i := 0 to 9 do
+  begin
+    BitmapIdent := i.ToString;
+
+    BitMap := _GetBitmapByIdent(AResBitmapList, BitmapIdent);
+
+    if AColor <> NO_REPCALE_COLOR then
+      TImageTools.ReplaceNotNullColor(BitMap, AColor);
+
+    ABitmapList.Add(BitMap);
+  end;
+
+  BitMap := _GetBitmapByIdent(AResBitmapList, OrientationPrefix + 'Delimiter');
+
+  if AColor <> NO_REPCALE_COLOR then
+    TImageTools.ReplaceNotNullColor(BitMap, AColor);
+
+  ABitmapList.Add(BitMap);
+end;
 
 class procedure TShowTime.Init(
   const AImageFileName: String;
@@ -67,21 +127,12 @@ class procedure TShowTime.Init(
   const ASH: TImage;
   const ASL: TImage;
   const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
-var
-  i: Integer;
-  BitMap: TBitMap;
-  ImageFile: TFilePacker;
-  OrientationPrefix: String;
-  Color: TAlphaColor;
 begin
   if not FileExists(AImageFileName) then
     raise Exception.CreateFmt('File "%s" not exists', [AImageFileName]);
 
-  Color := AColor;
-
-  OrientationPrefix := '';
-  if AOrientation = okVertical then
-    OrientationPrefix := VERTICAL_ORIENTATION_IDENT;
+  FColor := AColor;
+  FOrientation := AOrientation;
 
   FHH := AHH;
   FHL := AHL;
@@ -92,55 +143,29 @@ begin
   FSH := ASH;
   FSL := ASL;
 
+  FMultiResBitmaps := TMultiResBitmaps.Create;
+
   FBitmapList := TBitMapList.Create;
 
-  ImageFile := TFilePacker.Create(AImageFileName, fmOpenRead);
-  try
-    for i := 0 to 9 do
-    begin
-      BitMap := TBitMap.Create;
+  TMultiResBitmapExtractor.Extract(
+    AImageFileName,
+    FMultiResBitmaps);
 
-      TImageExtractor.ExtractToBitmap(
-        ImageFile,
-        AImagesRootPath + i.ToString + '.png',
-        BitMap);
+  FNearestResBitmapList := FMultiResBitmaps.FindResBitmapListByIdent('');
 
-      if Color <> NO_REPCALE_COLOR then
-        TImageTools.ReplaceNotNullColor(BitMap, Color);
-
-      FBitmapList.Add(BitMap);
-    end;
-
-    BitMap := TBitMap.Create;
-    TImageExtractor.ExtractToBitmap(
-      ImageFile,
-      AImagesRootPath + OrientationPrefix + 'Delimiter.png',
-      BitMap);
-
-    if Color <> NO_REPCALE_COLOR then
-      TImageTools.ReplaceNotNullColor(BitMap, Color);
-
-    FBitmapList.Add(BitMap);
-  finally
-    FreeAndNil(ImageFile);
-  end;
+  LoadResBitmapListByIdent(
+    FNearestResBitmapList,
+    FBitmapList,
+    FColor,
+    FOrientation);
 end;
 
 class procedure TShowTime.UnInit;
-var
-  i: Integer;
 begin
   if Assigned(FBitmapList) then
-  begin
-    i := FBitmapList.Count;
-    while i > 0 do
-    begin
-      Dec(i);
-
-      FBitmapList[i].Free;
-    end;
     FreeAndNil(FBitmapList);
-  end;
+
+  FreeAndNil(FMultiResBitmaps);
 end;
 
 class procedure TShowTime.ShowTime(const ATime: String);
@@ -175,6 +200,20 @@ begin
   FSDelim.Bitmap.Assign(FBitmapList[10]);
   FSH.Bitmap.Assign(FBitmapList[_GetDigit(Time, 7)]);
   FSL.Bitmap.Assign(FBitmapList[_GetDigit(Time, 8)]);
+end;
+
+class procedure TShowTime.CheckBitmapsResolution(
+  const AWidth: Single; const AHeight: Single);
+var
+  ResBitmapList: TResBitmapList;
+begin
+  ResBitmapList := FMultiResBitmaps.FindNearestResBitmapList(AWidth, AHeight);
+  if FNearestResBitmapList <> ResBitmapList then
+    LoadResBitmapListByIdent(
+      ResBitmapList,
+      FBitmapList,
+      FColor,
+      FOrientation);
 end;
 
 end.

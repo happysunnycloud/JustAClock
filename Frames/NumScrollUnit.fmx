@@ -104,6 +104,9 @@ object NumScrollFrame: TNumScrollFrame
           end
           item
             GestureID = sgiDownRightLong
+          end
+          item
+            GestureID = sgiUp
           end>
       end>
   end

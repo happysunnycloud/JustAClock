@@ -15,9 +15,6 @@ program JustAClock;
 uses
   {$IFDEF ANDROID}
   Androidapi.Helpers,
-  Androidapi.JNI.GraphicsContentViewText,
-  Androidapi.JNI.App,
-  Android.JNI.PowerManager in '..\DevelopmentsCollection\Android.JNI.PowerManager.pas',
   {$ENDIF }
   System.SysUtils,
   System.StartUpCopy,
@@ -57,7 +54,9 @@ uses
   FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas',
   FMX.ThemeUnit in '..\DevelopmentsCollection\FMX.ThemeUnit.pas',
   ProportionUnit in 'ProportionUnit.pas',
-  MotionSensorDataThreadUnit in 'MotionSensorDataThreadUnit.pas';
+  MotionSensorDataThreadUnit in 'MotionSensorDataThreadUnit.pas',
+  FMX.MultiResBitmapsUnit in '..\DevelopmentsCollection\FMX.MultiResBitmapsUnit.pas',
+  FMX.MultiResBitmapExtractorUnit in '..\DevelopmentsCollection\FilePacker\FMX.MultiResBitmapExtractorUnit.pas';
 
 {$R *.res}
 

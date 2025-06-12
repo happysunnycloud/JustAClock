@@ -240,8 +240,8 @@ object MainForm: TMainForm
   end
   object GestureManager: TGestureManager
     Sensitivity = 80.000000000000000000
-    Left = 200
-    Top = 2
+    Left = 8
+    Top = 8
     GestureData = <
       item
         Control = ContentLayout
