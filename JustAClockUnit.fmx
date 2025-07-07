@@ -27,6 +27,35 @@ object MainForm: TMainForm
     Size.Height = 85.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
+    object ScreenLockerLayout: TLayout
+      Touch.GestureManager = GestureManager
+      OnGesture = ScreenLockerLayoutGesture
+      Align = Contents
+      Size.Width = 230.000000000000000000
+      Size.Height = 85.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+    end
+    object SettingsLayout: TLayout
+      Touch.GestureManager = GestureManager
+      OnTap = SettingsLayoutTap
+      HitTest = True
+      Size.Width = 230.000000000000000000
+      Size.Height = 85.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      OnMouseUp = SettingsLayoutMouseUp
+    end
+    object SignalRectangle: TRectangle
+      Align = Client
+      Fill.Kind = None
+      HitTest = False
+      Size.Width = 230.000000000000000000
+      Size.Height = 85.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = claWhite
+      Stroke.Thickness = 4.000000000000000000
+    end
     object TimeLayout: TLayout
       Align = Client
       Size.Width = 230.000000000000000000
@@ -200,16 +229,6 @@ object MainForm: TMainForm
         Visible = False
       end
     end
-    object SignalRectangle: TRectangle
-      Align = Client
-      Fill.Kind = None
-      HitTest = False
-      Size.Width = 230.000000000000000000
-      Size.Height = 85.000000000000000000
-      Size.PlatformDefault = False
-      Stroke.Color = claWhite
-      Stroke.Thickness = 4.000000000000000000
-    end
     object ToolsLayout: TLayout
       Touch.GestureManager = GestureManager
       OnTap = ToolsLayoutTap
@@ -219,16 +238,6 @@ object MainForm: TMainForm
       Size.PlatformDefault = False
       TabOrder = 2
       OnMouseUp = ToolsLayoutMouseUp
-    end
-    object SettingsLayout: TLayout
-      Touch.GestureManager = GestureManager
-      OnTap = SettingsLayoutTap
-      HitTest = True
-      Size.Width = 230.000000000000000000
-      Size.Height = 85.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 1
-      OnMouseUp = SettingsLayoutMouseUp
     end
   end
   object TimeVoidEdit: TEdit
@@ -269,7 +278,14 @@ object MainForm: TMainForm
           end>
       end
       item
-        Control = ToolsLayout
+        Control = ScreenLockerLayout
+        Collection = <
+          item
+            GestureID = sgiTriangle
+          end>
+      end
+      item
+        Control = SettingsLayout
         Collection = <
           item
             GestureID = sgiLeft
@@ -285,7 +301,7 @@ object MainForm: TMainForm
           end>
       end
       item
-        Control = SettingsLayout
+        Control = ToolsLayout
         Collection = <
           item
             GestureID = sgiLeft

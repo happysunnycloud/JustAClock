@@ -13,7 +13,7 @@ uses
   ;
 
 type
-  TTimeKind = (tkTime = 0 , tkTimer = 1);
+  TTimeKind = (tkTime = 0, tkTimer = 1, tkAlarm = 2);
 
   TTimeThread = class(TThreadExt)
   strict private

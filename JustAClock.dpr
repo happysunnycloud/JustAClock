@@ -15,6 +15,9 @@ program JustAClock;
 uses
   {$IFDEF ANDROID}
   Androidapi.Helpers,
+  Androidapi.JNI.GraphicsContentViewText,
+  Androidapi.JNI.App,
+  Android.JNI.PowerManager in '..\DevelopmentsCollection\Android.JNI.PowerManager.pas',
   {$ENDIF }
   System.SysUtils,
   System.StartUpCopy,

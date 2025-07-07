@@ -66,6 +66,7 @@ type
     SettingsLayout: TLayout;
     ToolsLayout: TLayout;
     GestureManager: TGestureManager;
+    ScreenLockerLayout: TLayout;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -79,6 +80,8 @@ type
     procedure ToolsLayoutTap(Sender: TObject; const Point: TPointF);
     procedure FormPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
     procedure ContentLayoutGesture(Sender: TObject;
+      const EventInfo: TGestureEventInfo; var Handled: Boolean);
+    procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
   strict private
     FTimeThread: TTimeThread;
@@ -119,6 +122,7 @@ type
     procedure MenuTextBoardItemClickHandler(Sender: TObject);
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
     procedure MenuImageBoardItemClickHandler(Sender: TObject);
+    procedure MenuCountUpItemClickHandler(Sender: TObject);
     procedure MenuCountDownItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
     procedure MenuSetCustomColorItemClickHandler(Sender: TObject);
@@ -127,7 +131,7 @@ type
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
 
-    procedure SetTimerFormOkButtonClickHandler(Sender: TObject);
+    procedure SetCountDownTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
 
     procedure SetCustomColorOkButtonClickHandler(Sender: TObject);
@@ -138,10 +142,11 @@ type
     procedure GestureHandler(const EventInfo: TGestureEventInfo);
 
     procedure RunTime;
-    procedure RunTimer(const ATimerTime: TTime);
+    procedure RunTimer(const ATimerTime: TTime; const ATimeKind: TTimeKind);
     {$IFDEF ANDROID}
     procedure MenuAutoOrientationOnItemClickHandler(Sender: TObject);
     procedure MenuAutoOrientationOffItemClickHandler(Sender: TObject);
+    procedure MenuScreenLockItemClickHandler(Sender: TObject);
 
     procedure StartMotionSensorDataThread;
     procedure StopMotionSensorDataThread;
@@ -564,10 +569,28 @@ begin
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
 
+  {$IFDEF ANDROID}
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Text := 'Screen lock';
+  MenuItem.Tag := -1;
+  MenuItem.OnClick := MenuScreenLockItemClickHandler;
+  FSettingsPopupMenuExt.Add(MenuItem);
+  {$ENDIF}
+
   { ToolsPopupMenu }
 
   FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
   TState.MenuTheme.CopyTo(FToolsPopupMenuExt.Theme);
+
+  MenuItem := TItem.Create;
+  MenuItem.Text := 'Set alarm';
+  MenuItem.OnClick := MenuCountUpItemClickHandler;
+  FToolsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Set timer';
@@ -698,6 +721,8 @@ begin
   if TState.AutoOrientation then
     StartMotionSensorDataThread;
   {$ENDIF}
+
+  ScreenLockerLayout.BringToFront;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -748,6 +773,10 @@ begin
   end;
 
   TProportion.Resize;
+
+  if TState.Board = bkText then
+    Exit;
+
   TShowTime.CheckBitmapsResolution(Single(Self.Width), Single(Self.Height));
 end;
 
@@ -790,6 +819,18 @@ end;
 procedure TMainForm.ToolsLayoutTap(Sender: TObject; const Point: TPointF);
 begin
   FToolsPopupMenuExt.Open(Point.X, Point.Y);
+end;
+
+procedure TMainForm.ScreenLockerLayoutGesture(Sender: TObject;
+  const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+  case EventInfo.GestureID of
+    sgiTriangle:
+      begin
+        ScreenLockerLayout.HitTest := false;
+        ScreenLockerLayout.SendToBack;
+      end;
+  end;
 end;
 
 function TMainForm.SetBoardOrientation(const AClass: TFrameClass): Pointer;
@@ -1211,12 +1252,26 @@ begin
   OpenBoard(bkImage, MenuItem.Text, TState.Color, TState.Orientation);
 end;
 
+procedure TMainForm.MenuCountUpItemClickHandler(Sender: TObject);
+begin
+  StopSignal;
+
+  SetTimerForm := TSetTimerForm.Create(Self);
+  SetTimerForm.OkButtonRectangle.OnClick := SetCountDownTimerFormOkButtonClickHandler;
+  SetTimerForm.CancelButtonRectangle.OnClick := SetTimerFormCancelButtonClickHandler;
+  {$IFDEF MSWINDOWS}
+  SetTimerForm.ShowModal;
+  {$ELSE IFDEF ANDROID}
+  SetTimerForm.Show;
+  {$ENDIF}
+end;
+
 procedure TMainForm.MenuCountDownItemClickHandler(Sender: TObject);
 begin
   StopSignal;
 
   SetTimerForm := TSetTimerForm.Create(Self);
-  SetTimerForm.OkButtonRectangle.OnClick := SetTimerFormOkButtonClickHandler;
+  SetTimerForm.OkButtonRectangle.OnClick := SetCountDownTimerFormOkButtonClickHandler;
   SetTimerForm.CancelButtonRectangle.OnClick := SetTimerFormCancelButtonClickHandler;
   {$IFDEF MSWINDOWS}
   SetTimerForm.ShowModal;
@@ -1343,7 +1398,9 @@ begin
     end);
 end;
 
-procedure TMainForm.RunTimer(const ATimerTime: TTime);
+procedure TMainForm.RunTimer(
+  const ATimerTime: TTime;
+  const ATimeKind: TTimeKind);
 var
   OutputControl: TControl;
 begin
@@ -1362,7 +1419,7 @@ begin
         TTimeThread.Create(
           AThreadFactory,
           ATimerTime,
-          TTimeKind.tkTimer,
+          ATimeKind,
           Self,
           OutputControl);
     end);
@@ -1414,7 +1471,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SetTimerFormOkButtonClickHandler(Sender: TObject);
+procedure TMainForm.SetCountDownTimerFormOkButtonClickHandler(Sender: TObject);
 var
   TimerTime: TTime;
 begin
@@ -1424,7 +1481,7 @@ begin
 
   SetTimerForm.Close;
 
-  RunTimer(TimerTime);
+  RunTimer(TimerTime, TTimeKind.tkTimer);
 end;
 
 procedure TMainForm.SetTimerFormCancelButtonClickHandler(Sender: TObject);
@@ -1436,7 +1493,7 @@ procedure TMainForm.SettingsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
   // Для Андроида специально должно глушиться,
-  // иначе не обработает собития жестов OnGesture
+  // иначе не обработает события жестов OnGesture
   {$IFDEF MSWINDOWS}
   GetCurPos(X, Y);
   FSettingsPopupMenuExt.Open(X, Y);
@@ -1501,6 +1558,12 @@ begin
 end;
 
 {$IFDEF ANDROID}
+procedure TMainForm.MenuScreenLockItemClickHandler(Sender: TObject);
+begin
+  ScreenLockerLayout.HitTest := true;
+  ScreenLockerLayout.BringToFront;
+end;
+
 procedure TMainForm.VerticalDetectedProc;
 begin
   if TState.Orientation = okHorizontal then
