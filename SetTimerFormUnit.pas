@@ -36,8 +36,11 @@ type
     {$ENDIF}
     procedure OnRectangleMouseEnterHandler(Sender: TObject);
     procedure OnRectangleMouseLeaveHandler(Sender: TObject);
-  public
+
     function GetTime: TTime;
+    procedure SetTime(const ATime: TTime);
+  public
+    property Time: TTime read GetTime write SetTime;
   end;
 
 var
@@ -111,6 +114,16 @@ begin
       MinutesNumScrollFrame.CurrentVal,
       0,
       0);
+end;
+
+procedure TSetTimerForm.SetTime(const ATime: TTime);
+var
+  Hour, Min, Sec, MSec: Word;
+begin
+  DecodeTime(ATime, Hour, Min, Sec, MSec);
+
+  HoursNumScrollFrame.CurrentVal := Hour;
+  MinutesNumScrollFrame.CurrentVal := Min;
 end;
 
 end.

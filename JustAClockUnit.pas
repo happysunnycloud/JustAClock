@@ -122,8 +122,8 @@ type
     procedure MenuTextBoardItemClickHandler(Sender: TObject);
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
     procedure MenuImageBoardItemClickHandler(Sender: TObject);
-    procedure MenuCountUpItemClickHandler(Sender: TObject);
-    procedure MenuCountDownItemClickHandler(Sender: TObject);
+    procedure MenuAlarmItemClickHandler(Sender: TObject);
+    procedure MenuTimerItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
     procedure MenuSetCustomColorItemClickHandler(Sender: TObject);
     procedure MenuGetCustomColorItemClickHandler(Sender: TObject);
@@ -131,7 +131,8 @@ type
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
 
-    procedure SetCountDownTimerFormOkButtonClickHandler(Sender: TObject);
+    procedure SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
+    procedure SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
 
     procedure SetCustomColorOkButtonClickHandler(Sender: TObject);
@@ -140,9 +141,12 @@ type
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
 
     procedure GestureHandler(const EventInfo: TGestureEventInfo);
-
+    // Часы
     procedure RunTime;
-    procedure RunTimer(const ATimerTime: TTime; const ATimeKind: TTimeKind);
+    // Таймер обратного отсчета
+    procedure RunTimer(const ATriggerTime: TTime);
+    // Будильник
+    procedure RunAlarm(const ATriggerTime: TTime);
     {$IFDEF ANDROID}
     procedure MenuAutoOrientationOnItemClickHandler(Sender: TObject);
     procedure MenuAutoOrientationOffItemClickHandler(Sender: TObject);
@@ -589,12 +593,12 @@ begin
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Set alarm';
-  MenuItem.OnClick := MenuCountUpItemClickHandler;
+  MenuItem.OnClick := MenuAlarmItemClickHandler;
   FToolsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Set timer';
-  MenuItem.OnClick := MenuCountDownItemClickHandler;
+  MenuItem.OnClick := MenuTimerItemClickHandler;
   FToolsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
@@ -658,6 +662,7 @@ begin
 
   SetTimerForm := nil;
   SignalRectangle.Visible := false;
+  SignalRectangle.SendToBack;
 
   FElectronicBoardColorArray := TElectronicBoardColorArray.Create(
     'Green',
@@ -1252,12 +1257,13 @@ begin
   OpenBoard(bkImage, MenuItem.Text, TState.Color, TState.Orientation);
 end;
 
-procedure TMainForm.MenuCountUpItemClickHandler(Sender: TObject);
+procedure TMainForm.MenuAlarmItemClickHandler(Sender: TObject);
 begin
   StopSignal;
 
   SetTimerForm := TSetTimerForm.Create(Self);
-  SetTimerForm.OkButtonRectangle.OnClick := SetCountDownTimerFormOkButtonClickHandler;
+  SetTimerForm.Time := Now;
+  SetTimerForm.OkButtonRectangle.OnClick := SetAlarmTimerFormOkButtonClickHandler;
   SetTimerForm.CancelButtonRectangle.OnClick := SetTimerFormCancelButtonClickHandler;
   {$IFDEF MSWINDOWS}
   SetTimerForm.ShowModal;
@@ -1266,12 +1272,16 @@ begin
   {$ENDIF}
 end;
 
-procedure TMainForm.MenuCountDownItemClickHandler(Sender: TObject);
+procedure TMainForm.MenuTimerItemClickHandler(Sender: TObject);
+var
+  Time: TTIme;
 begin
   StopSignal;
 
+  Time := EncodeTime(0, 0, 0, 0);
   SetTimerForm := TSetTimerForm.Create(Self);
-  SetTimerForm.OkButtonRectangle.OnClick := SetCountDownTimerFormOkButtonClickHandler;
+  SetTimerForm.Time := Time;
+  SetTimerForm.OkButtonRectangle.OnClick := SetTimerTimerFormOkButtonClickHandler;
   SetTimerForm.CancelButtonRectangle.OnClick := SetTimerFormCancelButtonClickHandler;
   {$IFDEF MSWINDOWS}
   SetTimerForm.ShowModal;
@@ -1399,8 +1409,7 @@ begin
 end;
 
 procedure TMainForm.RunTimer(
-  const ATimerTime: TTime;
-  const ATimeKind: TTimeKind);
+  const ATriggerTime: TTime);
 var
   OutputControl: TControl;
 begin
@@ -1418,8 +1427,34 @@ begin
       FTimeThread :=
         TTimeThread.Create(
           AThreadFactory,
-          ATimerTime,
-          ATimeKind,
+          ATriggerTime,
+          tkTimer,
+          Self,
+          OutputControl);
+    end);
+end;
+
+procedure TMainForm.RunAlarm(
+  const ATriggerTime: TTime);
+var
+  OutputControl: TControl;
+begin
+  OutputControl := TimeVoidEdit;
+  if Assigned(FElectronicBoardFrame) then
+    OutputControl := TimeVoidEdit;
+
+  if Assigned(FTimeThread) then
+    FTimeThread.Terminate;
+
+  ThreadFactory.CreateRegistredThread(
+    procedure (
+      const AThreadFactory: TThreadFactory)
+    begin
+      FTimeThread :=
+        TTimeThread.Create(
+          AThreadFactory,
+          ATriggerTime,
+          tkAlarm,
           Self,
           OutputControl);
     end);
@@ -1442,17 +1477,19 @@ begin
           procedure
           begin
             SignalRectangle.Visible := true;
+            SignalRectangle.BringToFront;
           end);
 
-        Sleep(400);
+        Sleep(600);
 
         TThread.ForceQueue(nil,
           procedure
           begin
             SignalRectangle.Visible := false;
+            SignalRectangle.SendToBack;
           end);
 
-        Sleep(400);
+        Sleep(600);
       end;
     end,
     false);
@@ -1471,17 +1508,30 @@ begin
   end;
 end;
 
-procedure TMainForm.SetCountDownTimerFormOkButtonClickHandler(Sender: TObject);
+procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
+var
+  AlarmTime: TTime;
+begin
+  StopSignal;
+
+  AlarmTime := SetTimerForm.Time;
+
+  SetTimerForm.Close;
+
+  RunAlarm(AlarmTime);
+end;
+
+procedure TMainForm.SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
 var
   TimerTime: TTime;
 begin
   StopSignal;
 
-  TimerTime := SetTimerForm.GetTime;
+  TimerTime := SetTimerForm.Time;
 
   SetTimerForm.Close;
 
-  RunTimer(TimerTime, TTimeKind.tkTimer);
+  RunTimer(TimerTime);
 end;
 
 procedure TMainForm.SetTimerFormCancelButtonClickHandler(Sender: TObject);

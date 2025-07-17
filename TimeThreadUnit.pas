@@ -21,7 +21,7 @@ type
     FForm: TFormExt;
     FOutputControl: TControl;
     FExecProc: TProc;
-    FTimerTime: TTime;
+    FTriggerTime: TTime;
 
     procedure OnTerminateHandler(Sender: TObject);
 
@@ -30,6 +30,9 @@ type
 
     procedure ExecTime;
     procedure ExecTimer;
+    procedure ExecAlarm;
+
+    procedure DisplayTime(const ATimeString: String);
   protected
     // Специально не перегружаем Execute,
     // чтобы выполнился на стороне родительского класса
@@ -38,7 +41,7 @@ type
   public
     constructor Create(
       const AThreadFactory: TThreadFactory;
-      const ATimerTime: TTime;
+      const ATriggerTime: TTime;
       const ATimeKind: TTimeKind;
       const AForm: TFormExt;
       const AOutputControl: TControl);
@@ -50,7 +53,8 @@ type
 implementation
 
 uses
-    FMX.ControlToolsUnit
+    System.DateUtils
+  , FMX.ControlToolsUnit
   , TimeCalcUnit
   , JustAClockUnit
   ;
@@ -85,7 +89,7 @@ end;
 
 constructor TTimeThread.Create(
   const AThreadFactory: TThreadFactory;
-  const ATimerTime: TTime;
+  const ATriggerTime: TTime;
   const ATimeKind: TTimeKind;
   const AForm: TFormExt;
   const AOutputControl: TControl);
@@ -98,11 +102,19 @@ begin
   FForm := AForm;
   FOutputControl := AOutputControl;
 
-  FExecProc := ExecTime;
-  if ATimeKind = tkTimer then
-    FExecProc := ExecTimer;
+  FTriggerTime := ATriggerTime;
 
-  FTimerTime := ATimerTime;
+  FExecProc := ExecTime;
+  case ATimeKind of
+    tkTimer:
+    begin
+      FExecProc := ExecTimer;
+    end;
+    tkAlarm:
+    begin
+      FExecProc := ExecAlarm;
+    end;
+  end;
 
   OnTerminate := OnTerminateHandler;
 
@@ -127,6 +139,18 @@ begin
   FExecProc;
 end;
 
+procedure TTimeThread.DisplayTime(const ATimeString: String);
+var
+  TimeString: String absolute ATimeString;
+begin
+  if Assigned(OutputControl) then
+    Synchronize(
+      procedure
+      begin
+        TControlTools.SetTextProperty(OutputControl, TimeString);
+      end);
+end;
+
 procedure TTimeThread.ExecTime;
 var
   TimeString: String;
@@ -134,12 +158,8 @@ begin
   while not Terminated do
   begin
     TimeString := FormatDateTime('hh:nn:ss', Now);
-    if Assigned(OutputControl) then
-      Synchronize(
-        procedure
-        begin
-          TControlTools.SetTextProperty(OutputControl, TimeString);
-        end);
+
+    DisplayTime(TimeString);
 
     Sleep(100);
   end;
@@ -153,7 +173,7 @@ var
   FinishTimeString: String;
   FinishTime: TTime;
 begin
-  CountdownTimeString := TimeToStr(FTimerTime);
+  CountdownTimeString := TimeToStr(FTriggerTime);
   CountdownTime := StrToTime(CountdownTimeString);
   FinishTime := TTimeCalc.CalcTime(Now, CountdownTime, true);
   FinishTimeString := TimeToStr(FinishTime);
@@ -161,12 +181,8 @@ begin
   while not Terminated do
   begin
     TimeString := FormatDateTime('hh:nn:ss', TTimeCalc.CalcTime(FinishTime, Now, false));
-    if Assigned(OutputControl) then
-      Synchronize(
-        procedure
-        begin
-          TControlTools.SetTextProperty(OutputControl, TimeString);
-        end);
+
+    DisplayTime(TimeString);
 
     if TimeString = '00:00:00' then
     begin
@@ -181,6 +197,33 @@ begin
   while not Terminated do
   begin
     Sleep(1000);
+  end;
+end;
+
+procedure TTimeThread.ExecAlarm;
+var
+  TimeString: String;
+  Year, Month, Day: Word;
+  Hour, Min, Sec, MSec: Word;
+  FullTriggerTime: TDateTime;
+begin
+  DecodeDate(Now, Year, Month, Day);
+  DecodeTime(FTriggerTime, Hour, Min, Sec, MSec);
+  FullTriggerTime := EncodeDateTime(Year, Month, Day, Hour, Min, Sec, MSec);
+
+  while not Terminated do
+  begin
+    TimeString := FormatDateTime('hh:nn:ss', Now);
+    DisplayTime(TimeString);
+
+    if Now >= FullTriggerTime then
+    begin
+      TMainForm(FForm).StartSignal;
+
+      Break;
+    end;
+
+    Sleep(100);
   end;
 end;
 

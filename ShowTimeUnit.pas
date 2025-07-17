@@ -209,11 +209,15 @@ var
 begin
   ResBitmapList := FMultiResBitmaps.FindNearestResBitmapList(AWidth, AHeight);
   if FNearestResBitmapList <> ResBitmapList then
+  begin
     LoadResBitmapListByIdent(
       ResBitmapList,
       FBitmapList,
       FColor,
       FOrientation);
+
+    FNearestResBitmapList := ResBitmapList; 
+  end;
 end;
 
 end.
