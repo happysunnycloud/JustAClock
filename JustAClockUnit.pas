@@ -409,6 +409,7 @@ begin
   ImageFileNameList := TStringList.Create;
   try
     GetImagesPackFileList(ImageFileNameList);
+    ImageFileNameList.Sort;
     i := 0;
     for ImageFileName in ImageFileNameList do
     begin
