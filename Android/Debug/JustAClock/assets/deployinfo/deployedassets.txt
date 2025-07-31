@@ -1,5 +1,5 @@
-.\assets\internal\BDSM girls inverted.pck
-.\assets\internal\Colored numbers.pck
-.\assets\internal\Electronic.pck
-.\assets\internal\BDSM girls.pck
-.\assets\internal\Digits.pck
+.\assets\internal\PCKs\Images\Colored numbers.pck
+.\assets\internal\PCKs\Patterns\Electronic.pck
+.\assets\internal\PCKs\Images\BDSM girls.pck
+.\assets\internal\PCKs\Patterns\Olympic.pck
+.\assets\internal\PCKs\Images\BDSM girls inverted.pck

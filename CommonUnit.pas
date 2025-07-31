@@ -32,6 +32,13 @@ const
 type
   TBoardKind = (bkText = 0, bkElectronic = 1, bkImage = 2);
   TOrientationKind = (okNone = -1, okHorizontal = 0, okVertical = 1);
+  TPCKFileKind = (pkNone = -1, pkPattern = 0, pkImage = 1);
+
+  TPCKFileKindHelper = record helper for TPCKFileKind
+  public
+    function ToString: String;
+    function ToPath: String;
+  end;
 
   TState = class
   strict private
@@ -94,9 +101,17 @@ type
 
 function ColorByIdent(const AColorIdent: String): TAlphaColor;
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
-function GetDigitsPackFile: String;
+function GetPackFile(
+  const AFileKind: TPCKFileKind;
+  const AImagePackName: String): String;
+function GetDigitsPackFile: String; deprecated;
+function GetPatternsPackFile(const AImagePackName: String): String;
 function GetImagesPackFile(const AImagePackName: String): String;
 function GetImageNameFromFileName(const AImageFileName: String): String;
+procedure GetPackFileList(
+  const AFileKind: TPCKFileKind;
+  const AImagesPackFileList: TStringList);
+procedure GetPatternsPackFileList(const AImagesPackFileList: TStringList);
 procedure GetImagesPackFileList(const AImagesPackFileList: TStringList);
 procedure GetCurPos(var X, Y: Single);
 
@@ -122,14 +137,20 @@ begin
   if AColorIdent = 'Green' then
     Color := $FB00FF1C
   else
+  if AColorIdent = 'Yellow' then
+    Color := $FFFFFF35
+  else
   if AColorIdent = 'Red' then
     Color := $FFCE0000
   else
   if AColorIdent = 'Orange' then
-    Color := $FBFF8C00
+    Color := $FFFFC96F
   else
   if AColorIdent = 'White' then
     Color := $FFFFFFFF
+  else
+  if AColorIdent = 'Pink' then
+    Color := $FFFF75E2
   else
   if AColorIdent = 'Blue' then
     Color := $FF00A7FF
@@ -158,52 +179,50 @@ begin
   Result := Color;
 end;
 
+function GetPackFile(
+  const AFileKind: TPCKFileKind;
+  const AImagePackName: String): String;
+begin
+  Result := Format('%s%s.pck', [AFileKind.ToPath, AImagePackName]);
+end;
+
 function GetDigitsPackFile: String;
 begin
-  {$IFDEF ANDROID}
-  Result := System.IOUtils.TPath.GetDocumentsPath + PATH_DELIMITER + 'Digits.pck';
-  {$ELSE IF MSWINDOWS}
-    {$IFDEF DEBUG}
-    Result := '..\..\Arts\Digits.pck';
-    {$ELSE}
-    Result := 'Digits.pck';
-    {$ENDIF}
-  {$ENDIF}
+  Result := GetPackFile(pkPattern, 'Digits');
+end;
+
+function GetPatternsPackFile(const AImagePackName: String): String;
+begin
+  Result := GetPackFile(pkPattern, AImagePackName);
 end;
 
 function GetImagesPackFile(const AImagePackName: String): String;
 begin
-  {$IFDEF ANDROID}
-  Result := System.IOUtils.TPath.GetDocumentsPath + PATH_DELIMITER + AImagePackName + '.pck';
-  {$ELSE IF MSWINDOWS}
-    {$IFDEF DEBUG}
-    Result := '..\..\Arts\' + AImagePackName + '.pck';
-    {$ELSE}
-    Result := AImagePackName + '.pck';
-    {$ENDIF}
-  {$ENDIF}
+  Result := GetPackFile(pkImage, AImagePackName);
 end;
 
-procedure GetImagesPackFileList(const AImagesPackFileList: TStringList);
+procedure GetPackFileList(
+  const AFileKind: TPCKFileKind;
+  const AImagesPackFileList: TStringList);
 var
   Path: String;
 begin
   if not Assigned(AImagesPackFileList) then
     raise Exception.Create('AImagesPackFileList is nil');
 
-  Path := '';
-
-  {$IFDEF ANDROID}
-  Path := System.IOUtils.TPath.GetDocumentsPath;
-  {$ELSE IF MSWINDOWS}
-    {$IFDEF DEBUG}
-    Path := '..\..\Arts';
-    {$ELSE}
-    Path := '';
-    {$ENDIF}
-  {$ENDIF}
+  Path := AFileKind.ToPath;
 
   TFileTools.GetFileNameListByDirAndExt(Path, 'pck', AImagesPackFileList);
+end;
+
+procedure GetPatternsPackFileList(const AImagesPackFileList: TStringList);
+begin
+  GetPackFileList(pkPattern, AImagesPackFileList);
+end;
+
+procedure GetImagesPackFileList(const AImagesPackFileList: TStringList);
+begin
+  GetPackFileList(pkImage, AImagesPackFileList);
 end;
 
 function GetImageNameFromFileName(const AImageFileName: String): String;
@@ -235,6 +254,35 @@ begin
   {$ELSE IF ANDROID}
   X := X;
   Y := Y;
+  {$ENDIF}
+end;
+
+{ TPCKFileKindHelper }
+
+function TPCKFileKindHelper.ToString: String;
+begin
+  Result := '';
+
+  case Self of
+    pkPattern: Result := 'Pattern';
+    pkImage: Result := 'Image';
+  end;
+end;
+
+function TPCKFileKindHelper.ToPath: String;
+var
+  RootName: String;
+begin
+  RootName := Format('%s%s%s%s', ['PCKs', PATH_SPLITTER, Self.ToString, 's']);
+  {$IFDEF ANDROID}
+  Result :=
+    Format('%s/%s/', [System.IOUtils.TPath.GetDocumentsPath, RootName]);
+  {$ELSE IF MSWINDOWS}
+    {$IFDEF DEBUG}
+    Result := Format('..\..\Arts\%s\', [RootName]);
+    {$ELSE}
+    Result := Format('%s', [RootName]);
+    {$ENDIF}
   {$ENDIF}
 end;
 
@@ -332,7 +380,7 @@ class procedure TState.Init;
 begin
   FColorIdent         := CHROMAKEY_COLOR_IDENT;
   FColor              := ColorByIdent(FColorIdent);
-  FImageName          := '';
+  FImageName          := 'Electronic';
   FCustomColor0       := FColor;
   FCustomColor1       := FColor;
   FCustomColor2       := FColor;
