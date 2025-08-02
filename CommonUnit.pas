@@ -144,7 +144,7 @@ begin
     Color := $FFCE0000
   else
   if AColorIdent = 'Orange' then
-    Color := $FFFFC96F
+    Color := $FBFF8C00
   else
   if AColorIdent = 'White' then
     Color := $FFFFFFFF
