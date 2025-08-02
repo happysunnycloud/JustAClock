@@ -34,13 +34,6 @@ const
 
 type
   TMenuItemsArray = TArray<String>;
-  TElectronicBoardColorArray = TArray<String>;
-  TElectronicBoardColorArrayHelper = record helper for TElectronicBoardColorArray
-  public
-    function FirstValue: String;
-    function LastValue: String;
-    function NextValue(const ACurrentValue: String): String;
-  end;
 
   TFrameClass = class of TFrame;
 
@@ -89,8 +82,7 @@ type
 
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
-    FCurrentElectronicBoardColor: String;
-    FElectronicBoardColorArray: TElectronicBoardColorArray;
+    FCurrentColorIdent: String;
     FSettingsPopupMenuExt: TPopupMenuExt;
     FToolsPopupMenuExt: TPopupMenuExt;
 
@@ -246,37 +238,6 @@ uses
   , ProportionUnit
   , MotionSensorDataThreadUnit
   ;
-
-{ TElectronicBoardColorArrayHelper }
-
-function TElectronicBoardColorArrayHelper.FirstValue: String;
-begin
-  Result := Self[0];
-end;
-
-function TElectronicBoardColorArrayHelper.LastValue: String;
-begin
-  Result := Self[High(Self)];
-end;
-
-function TElectronicBoardColorArrayHelper.NextValue(
-  const ACurrentValue: String): String;
-var
-  Index: Integer;
-  HighIndex: Integer;
-begin
-  HighIndex := High(Self);
-  for Index := 0 to HighIndex do
-    if Self[Index] = ACurrentValue then
-      Break;
-
-  if Index = HighIndex then
-    Index := 0
-  else
-    Inc(Index);
-
-  Result := Self[Index];
-end;
 
 { TMainForm }
 
@@ -527,11 +488,13 @@ begin
   FColorsMenuItem.Text := 'Colors';
   FSettingsPopupMenuExt.Add(FColorsMenuItem);
 
-  for i := 0 to Pred(Length(FElectronicBoardColorArray)) do
+  for i := 0 to Pred(Length(TColors.ColorArray)) do
   begin
-    ColorIdent := FElectronicBoardColorArray[i];
+    ColorIdent := TColors.ColorArray[i];
     MenuItem := TItem.Create;
-    MenuItem.Name := COLOR_MENU_ITEM_NAME_PREFIX + Cardinal(ColorByIdent(ColorIdent)).ToString;
+    MenuItem.Name :=
+      COLOR_MENU_ITEM_NAME_PREFIX +
+      Cardinal(TColors.ColorByIdent(ColorIdent)).ToString;
     MenuItem.Parent := FColorsMenuItem;
     MenuItem.Text := ColorIdent;
     MenuItem.Tag := i;
@@ -656,7 +619,7 @@ begin
   FTimeThread := nil;
   FElectronicBoardFrame := nil;
   FTextBoardFrame := nil;
-  FCurrentElectronicBoardColor := '';
+  FCurrentColorIdent := '';
   //FElectronicBoardColorArray
   FSettingsPopupMenuExt := nil;
   FToolsPopupMenuExt := nil;
@@ -685,16 +648,6 @@ begin
   SignalRectangle.Visible := false;
   SignalRectangle.SendToBack;
 
-  FElectronicBoardColorArray := TElectronicBoardColorArray.Create(
-    'Green',
-    'Yellow',
-    'Red',
-    'Orange',
-    'White',
-    'Pink',
-    'Blue',
-    'Violet');
-
   { MenuTheme}
 
   TState.MenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
@@ -712,7 +665,7 @@ begin
   TState.MenuTheme.CommonTextProps.Margins.Left := 5;
   TState.MenuTheme.CommonTextProps.WordWrap := false;
 
-  FCurrentElectronicBoardColor := FElectronicBoardColorArray.LastValue;
+  FCurrentColorIdent := TColors.ColorArray.LastValue;
 
   BuildPopupMenues;
 
@@ -1214,11 +1167,11 @@ begin
 
   SetIsCheckedColorMenuItem(MenuItem);
 
-  TState.ColorIdent := FElectronicBoardColorArray[MenuItem.Tag];
+  TState.ColorIdent := TColors.ColorArray[MenuItem.Tag];
   OpenBoard(
     TState.Board,
     TState.ImageName,
-    ColorByIdent(TState.ColorIdent),
+    TColors.ColorByIdent(TState.ColorIdent),
     TState.Orientation);
 end;
 

@@ -99,7 +99,49 @@ type
     class procedure Load;
   end;
 
-function ColorByIdent(const AColorIdent: String): TAlphaColor;
+  TColorArray = TArray<String>;
+  TColorArrayHelper = record helper for TColorArray
+  public
+    function FirstValue: String;
+    function LastValue: String;
+    function NextValue(const ACurrentValue: String): String;
+  end;
+
+  TColorRec = record
+    Ident: String;
+    Value: TAlphaColor;
+  end;
+
+  TColors = class
+  strict private
+    class var FGreen: TColorRec;
+    class var FYellow: TColorRec;
+    class var FRed: TColorRec;
+    class var FOrange: TColorRec;
+    class var FWhite: TColorRec;
+    class var FPink: TColorRec;
+    class var FBlue: TColorRec;
+    class var FViolet: TColorRec;
+
+    class var FColorArray: TColorArray;
+  public
+    class property Green: TColorRec read FGreen write FGreen;
+    class property Yellow: TColorRec read FYellow write FYellow;
+    class property Red: TColorRec read FRed write FRed;
+    class property Orange: TColorRec read FOrange write FOrange;
+    class property White: TColorRec read FWhite write FWhite;
+    class property Pink: TColorRec read FPink write FPink;
+    class property Blue: TColorRec read FBlue write FBlue;
+    class property Violet: TColorRec read FViolet write FViolet;
+
+    class property ColorArray: TColorArray
+      read FColorArray;
+
+    class function ColorByIdent(const AColorIdent: String): TAlphaColor;
+
+    class procedure Init;
+  end;
+
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
 function GetPackFile(
   const AFileKind: TPCKFileKind;
@@ -128,38 +170,6 @@ uses
   {$ENDIF}
   , FileToolsUnit
   ;
-
-function ColorByIdent(const AColorIdent: String): TAlphaColor;
-var
-  Color: TAlphaColor;
-begin
-  Color := $FB00FF1C;
-  if AColorIdent = 'Green' then
-    Color := $FB00FF1C
-  else
-  if AColorIdent = 'Yellow' then
-    Color := $FFFFFF35
-  else
-  if AColorIdent = 'Red' then
-    Color := $FFCE0000
-  else
-  if AColorIdent = 'Orange' then
-    Color := $FBFF8C00
-  else
-  if AColorIdent = 'White' then
-    Color := $FFFFFFFF
-  else
-  if AColorIdent = 'Pink' then
-    Color := $FFFF75E2
-  else
-  if AColorIdent = 'Blue' then
-    Color := $FF00A7FF
-  else
-  if AColorIdent = 'Violet' then
-    Color := $FF8600FF;
-
-  Result := Color;
-end;
 
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
 var
@@ -379,7 +389,7 @@ end;
 class procedure TState.Init;
 begin
   FColorIdent         := CHROMAKEY_COLOR_IDENT;
-  FColor              := ColorByIdent(FColorIdent);
+  FColor              := TColors.ColorByIdent(FColorIdent);
   FImageName          := 'Electronic';
   FCustomColor0       := FColor;
   FCustomColor1       := FColor;
@@ -434,7 +444,112 @@ begin
   CustomColorNumber := 3;
 end;
 
+{ TColorArrayHelper }
+
+function TColorArrayHelper.FirstValue: String;
+begin
+  Result := Self[0];
+end;
+
+function TColorArrayHelper.LastValue: String;
+begin
+  Result := Self[High(Self)];
+end;
+
+function TColorArrayHelper.NextValue(
+  const ACurrentValue: String): String;
+var
+  Index: Integer;
+  HighIndex: Integer;
+begin
+  HighIndex := High(Self);
+  for Index := 0 to HighIndex do
+    if Self[Index] = ACurrentValue then
+      Break;
+
+  if Index = HighIndex then
+    Index := 0
+  else
+    Inc(Index);
+
+  Result := Self[Index];
+end;
+
+{ TColors }
+
+class procedure TColors.Init;
+begin
+  FGreen.Ident := 'Green';
+  FGreen.Value := $FB00FF1C;
+
+  FYellow.Ident := 'Yellow';
+  FYellow.Value := $FFFFFF35;
+
+  FRed.Ident := 'Red';
+  FRed.Value := $FFCE0000;
+
+  FOrange.Ident := 'Orange';
+  FOrange.Value := $FBFF8C00;
+
+  FWhite.Ident := 'White';
+  FWhite.Value := $FFFFFFFF;
+
+  FPink.Ident := 'Pink';
+  FPink.Value := $FFFF75E2;
+
+  FBlue.Ident := 'Blue';
+  FBlue.Value := $FF00A7FF;
+
+  FViolet.Ident := 'Violet';
+  FViolet.Value := $FF8600FF;
+
+  FColorArray :=
+    TColorArray.Create(
+      Green.Ident,
+      Yellow.Ident,
+      Red.Ident,
+      Orange.Ident,
+      White.Ident,
+      Pink.Ident,
+      Blue.Ident,
+      Violet.Ident);
+end;
+
+class function TColors.ColorByIdent(const AColorIdent: String): TAlphaColor;
+var
+  Color: TAlphaColor;
+begin
+  Color := FGreen.Value;
+
+  if AColorIdent = FGreen.Ident then
+    Color := FGreen.Value
+  else
+  if AColorIdent = FYellow.Ident then
+    Color := FYellow.Value
+  else
+  if AColorIdent = FRed.Ident then
+    Color := FRed.Value
+  else
+  if AColorIdent = FOrange.Ident then
+    Color := FOrange.Value
+  else
+  if AColorIdent = FWhite.Ident then
+    Color := FWhite.Value
+  else
+  if AColorIdent = FPink.Ident then
+    Color := FPink.Value
+  else
+  if AColorIdent = FBlue.Ident then
+    Color := FBlue.Value
+  else
+  if AColorIdent = FViolet.Ident then
+    Color := FViolet.Value;
+
+  Result := Color;
+end;
+
 initialization
+  TColors.Init;
   try
     TState.Init;
     TState.Load;
