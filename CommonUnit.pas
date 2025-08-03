@@ -222,6 +222,9 @@ begin
 
   Path := AFileKind.ToPath;
 
+  if not DirectoryExists(Path) then
+    raise Exception.CreateFmt('Directory "%s" not exists', [Path]);
+
   TFileTools.GetFileNameListByDirAndExt(Path, 'pck', AImagesPackFileList);
 end;
 
@@ -291,7 +294,7 @@ begin
     {$IFDEF DEBUG}
     Result := Format('..\..\Arts\%s\', [RootName]);
     {$ELSE}
-    Result := Format('%s', [RootName]);
+    Result := Format('%s\', [RootName]);
     {$ENDIF}
   {$ENDIF}
 end;
