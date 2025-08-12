@@ -169,6 +169,8 @@ type
 
     procedure SetIsCheckedBoardMenuItem(const AMenuItem: TItem);
     procedure SetIsCheckedColorMenuItem(const AMenuItem: TItem);
+
+    procedure RaiseAppException(const AMethod: String; const AE: Exception);
   private
     {$IFDEF ANDROID}
     function HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
@@ -240,6 +242,19 @@ uses
   ;
 
 { TMainForm }
+
+procedure TMainForm.RaiseAppException(const AMethod: String; const AE: Exception);
+var
+  ExceptionMessage: String;
+begin
+  ExceptionMessage := AE.Message;
+
+  TThread.ForceQueue(nil,
+    procedure
+    begin
+      ShowMessage(ExceptionMessage);
+    end);
+end;
 
 {$IFDEF MSWINDOWS}
 procedure TMainForm.OnCloseTrayItemHandler(Sender: TObject);
@@ -608,6 +623,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 const
+  METHOD = 'TMainForm.FormCreate';
   SCALE_VALUE = 1;
 {$IFDEF ANDROID}
 var
@@ -615,95 +631,99 @@ var
 {$ENDIF}
 begin
   ReportMemoryLeaksOnShutdown := true;
+  try
+    FTimeThread := nil;
+    FElectronicBoardFrame := nil;
+    FTextBoardFrame := nil;
+    FCurrentColorIdent := '';
+    //FElectronicBoardColorArray
+    FSettingsPopupMenuExt := nil;
+    FToolsPopupMenuExt := nil;
+    FBoardsMenuItem := nil;
+    FImageBoardMenuItem := nil;
+    FOrientationMenuItem := nil;
+    FColorsMenuItem := nil;
+    FCustomColorsMenuItem := nil;
+    FHorizontalOrientationMenuItem := nil;
+    FVerticalOrientationMenuItem := nil;
+    {$IFDEF ANDROID}
+    FAutoOrientationMenuItem := nil;
+    {$ENDIF}
+    {$IFDEF MSWINDOWS}
+    FTrayPopupMenuExt := nil;
+    FBorderFrame := nil;
+    {$ENDIF}
+    {$IFDEF ANDROID}
+    if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, IInterface(aFMXApplicationEventService)) then
+      aFMXApplicationEventService.SetApplicationEventHandler(HandleAppEvent)
+    else
+      ShowMessage('Application Event Service is not supported');
+    {$ENDIF}
 
-  FTimeThread := nil;
-  FElectronicBoardFrame := nil;
-  FTextBoardFrame := nil;
-  FCurrentColorIdent := '';
-  //FElectronicBoardColorArray
-  FSettingsPopupMenuExt := nil;
-  FToolsPopupMenuExt := nil;
-  FBoardsMenuItem := nil;
-  FImageBoardMenuItem := nil;
-  FOrientationMenuItem := nil;
-  FColorsMenuItem := nil;
-  FCustomColorsMenuItem := nil;
-  FHorizontalOrientationMenuItem := nil;
-  FVerticalOrientationMenuItem := nil;
-  {$IFDEF ANDROID}
-  FAutoOrientationMenuItem := nil;
-  {$ENDIF}
-  {$IFDEF MSWINDOWS}
-  FTrayPopupMenuExt := nil;
-  FBorderFrame := nil;
-  {$ENDIF}
-  {$IFDEF ANDROID}
-  if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, IInterface(aFMXApplicationEventService)) then
-    aFMXApplicationEventService.SetApplicationEventHandler(HandleAppEvent)
-  else
-    ShowMessage('Application Event Service is not supported');
-  {$ENDIF}
+    SetTimerForm := nil;
+    SignalRectangle.Visible := false;
+    SignalRectangle.SendToBack;
 
-  SetTimerForm := nil;
-  SignalRectangle.Visible := false;
-  SignalRectangle.SendToBack;
+    { MenuTheme}
 
-  { MenuTheme}
+    TState.MenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
+    TState.MenuTheme.LightBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
+    TState.MenuTheme.DarkBackgroundColor := TAlphaColorRec.Cornflowerblue;
 
-  TState.MenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
-  TState.MenuTheme.LightBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
-  TState.MenuTheme.DarkBackgroundColor := TAlphaColorRec.Cornflowerblue;
+    TState.MenuTheme.CommonTextProps.Align := TAlignLayout.Client;
+    TState.MenuTheme.CommonTextProps.HitTest := false;
+    TState.MenuTheme.CommonTextProps.TextSettings.FontColor :=
+      TAlphaColorRec.White;
+    TState.MenuTheme.CommonTextProps.TextSettings.HorzAlign :=
+      TTextAlign.Leading;
+    TState.MenuTheme.CommonTextProps.TextSettings.VertAlign :=
+      TTextAlign.Center;
+    TState.MenuTheme.CommonTextProps.Margins.Left := 5;
+    TState.MenuTheme.CommonTextProps.WordWrap := false;
 
-  TState.MenuTheme.CommonTextProps.Align := TAlignLayout.Client;
-  TState.MenuTheme.CommonTextProps.HitTest := false;
-  TState.MenuTheme.CommonTextProps.TextSettings.FontColor :=
-    TAlphaColorRec.White;
-  TState.MenuTheme.CommonTextProps.TextSettings.HorzAlign :=
-    TTextAlign.Leading;
-  TState.MenuTheme.CommonTextProps.TextSettings.VertAlign :=
-    TTextAlign.Center;
-  TState.MenuTheme.CommonTextProps.Margins.Left := 5;
-  TState.MenuTheme.CommonTextProps.WordWrap := false;
+    FCurrentColorIdent := TColors.ColorArray.LastValue;
 
-  FCurrentColorIdent := TColors.ColorArray.LastValue;
+    BuildPopupMenues;
 
-  BuildPopupMenues;
+    {$IFDEF MSWINDOWS}
+    ShowWindow(ApplicationHWND, SW_HIDE);
 
-  {$IFDEF MSWINDOWS}
-  ShowWindow(ApplicationHWND, SW_HIDE);
+    FBorderFrame :=
+      TBorderFrame.Create(
+        Self,
+        ContentLayout,
+        'Just a clock',
+        Trunc(ContentLayout.Width),
+        Trunc(ContentLayout.Height),
+        $FF8D003A,
+        $FF2A001A,
+        TAlphaColorRec.Lime,
+        $FFADADAD);
 
-  FBorderFrame :=
-    TBorderFrame.Create(
-      Self,
-      ContentLayout,
-      'Just a clock',
-      Trunc(ContentLayout.Width),
-      Trunc(ContentLayout.Height),
-      $FF8D003A,
-      $FF2A001A,
-      TAlphaColorRec.Lime,
-      $FFADADAD);
+    FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
+    FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
 
-  FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
-  FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
+    Self.Left := TState.FormLeft;
+    Self.Top  := TState.FormTop;
 
-  Self.Left := TState.FormLeft;
-  Self.Top  := TState.FormTop;
+    {$ELSE IFDEF ANDROID}
+    Self.FullScreen := true;
+    {$ENDIF}
+    FElectronicBoardFrame := nil;
 
-  {$ELSE IFDEF ANDROID}
-  Self.FullScreen := true;
-  {$ENDIF}
-  FElectronicBoardFrame := nil;
+    RunTime;
 
-  RunTime;
+    OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
+    {$IFDEF ANDROID}
+    if TState.AutoOrientation then
+      StartMotionSensorDataThread;
+    {$ENDIF}
 
-  OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
-  {$IFDEF ANDROID}
-  if TState.AutoOrientation then
-    StartMotionSensorDataThread;
-  {$ENDIF}
-
-  ScreenLockerLayout.BringToFront;
+    ScreenLockerLayout.BringToFront;
+  except
+    on e: Exception do
+      RaiseAppException(METHOD, e);
+  end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
