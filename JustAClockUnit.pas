@@ -12,6 +12,7 @@ uses
   CommonUnit, FMX.Controls.Presentation, FMX.Edit,
   TextBoardFrameUnit
   , FMX.PopupMenuExtUnit
+  , FMX.SingleSoundUnit
   {$IFDEF MSWINDOWS}
   , BorderFrameUnit, FMX.Gestures
   {$ENDIF}
@@ -23,14 +24,23 @@ uses
 const
   AUTO_ORIENTATION_ON_MENU_ITEM_NAME = 'AutoOrientationOnMenuItem';
   AUTO_ORIENTATION_OFF_MENU_ITEM_NAME = 'AutoOrientationOffMenuItem';
-  ELECTRONIC_BOARD_MEUN_ITEM_NAME = 'ElectronicBoardMenuItem';
+  ELECTRONIC_BOARD_MENU_ITEM_NAME = 'ElectronicBoardMenuItem';
   TEXT_BOARD_MEUN_ITEM_NAME = 'TextBoardMenuItem';
   PATTERN_BOARD_MENU_ITEM_NAME = 'PatternMenuItem';
   IMAGE_BOARD_MENU_ITEM_NAME = 'ImageMenuItem';
+  RING_MENU_ITEM_NAME = 'RingMenuItem';
+  VIBRO_MENU_ITEM_NAME = 'VibroMenuItem';
   VERTICAL_ORIENTATION_MENU_ITEM_NAME = 'VerticalOrientationMenuItem';
   HORIZONTAL_ORIENTATION_MENU_ITEM_NAME = 'HorizontalOrientationMenuItem';
   COLOR_MENU_ITEM_NAME_PREFIX = 'ColorMenuItem';
   CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX = 'CustomColorMenuItem';
+
+  SINGLE_SOUND_THREAD = 'SingleSoundThread';
+  SIGNAL_THREAD = 'SignalThread';
+  VIBRO_THREAD = 'VibroThread';
+
+  VIBRO_NAME_OFF = 'Off';
+  VIBRO_NAME_ON = 'On';
 
 type
   TMenuItemsArray = TArray<String>;
@@ -65,7 +75,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure SettingsLayoutTap(Sender: TObject; const Point: TPointF);
     procedure SettingsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
@@ -78,13 +87,12 @@ type
     procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
   strict private
-    FTimeThread: TTimeThread;
-
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
     FCurrentColorIdent: String;
     FSettingsPopupMenuExt: TPopupMenuExt;
     FToolsPopupMenuExt: TPopupMenuExt;
+    FSingleSound: TSingleSound;
 
     { MenuItems }
 
@@ -96,6 +104,9 @@ type
     FCustomColorsMenuItem: TItem;
     FHorizontalOrientationMenuItem: TItem;
     FVerticalOrientationMenuItem: TItem;
+    FRingMenuItem: TItem;
+    FRingsMenuItem: TItem;
+    FVibroMenuItem: TItem;
     {$IFDEF ANDROID}
     FAutoOrientationMenuItem: TItem;
     {$ENDIF}
@@ -116,6 +127,8 @@ type
     procedure MenuTextBoardItemClickHandler(Sender: TObject);
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
     procedure MenuImageBoardItemClickHandler(Sender: TObject);
+    procedure MenuRingItemClickHandler(Sender: TObject);
+    procedure MenuVibroItemClickHandler(Sender: TObject);
     procedure MenuAlarmItemClickHandler(Sender: TObject);
     procedure MenuTimerItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
@@ -169,8 +182,15 @@ type
 
     procedure SetIsCheckedBoardMenuItem(const AMenuItem: TItem);
     procedure SetIsCheckedColorMenuItem(const AMenuItem: TItem);
+    procedure SetIsCheckedRingMenuItem(const AMenuItem: TItem);
+    procedure SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
 
     procedure RaiseAppException(const AMethod: String; const AE: Exception);
+
+    function GetTimeThread: TTimeThread;
+    procedure SetTimeThreadOutputControl(const AControl: TControl);
+
+    procedure SetRingFileName(const ARingFileName: String);
   private
     {$IFDEF ANDROID}
     function HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
@@ -209,6 +229,8 @@ type
       const AMinHeight: Integer;
       const AColor: TAlphaColor;
       const ALastOrientationIsEqual: Boolean);
+
+    property TimeThread: TTimeThread read GetTimeThread;
   public
     procedure StartSignal;
     procedure StopSignal;
@@ -239,9 +261,39 @@ uses
   , VerticalTextBoardFrameUnit
   , ProportionUnit
   , MotionSensorDataThreadUnit
+  , FMX.VibroUnit
   ;
 
 { TMainForm }
+
+function TMainForm.GetTimeThread: TTimeThread;
+//const
+//  METHOD = 'TMainForm.GetTimeThread';
+begin
+  Result := ThreadFactory.GetThreadByName('TTimeThread') as TTimeThread;
+end;
+
+procedure TMainForm.SetTimeThreadOutputControl(const AControl: TControl);
+begin
+  if not Assigned(TimeThread) then
+    Exit;
+
+  TimeThread.OutputControl := AControl;
+end;
+
+procedure TMainForm.SetRingFileName(const ARingFileName: String);
+var
+  RingName: String;
+begin
+  RingName := ARingFileName;
+
+  TState.RingName := RingName;
+
+  if RingName = RING_NAME_OFF then
+    Exit;
+
+  FSingleSound.FileName := GetRingFile(RingName);
+end;
 
 procedure TMainForm.RaiseAppException(const AMethod: String; const AE: Exception);
 var
@@ -284,17 +336,9 @@ begin
   GestureHandler(EventInfo);
 end;
 
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Action := TCloseAction.caFree;
-//{$IFDEF ANDROID}
-//  Action := TCloseAction.caFree;
-//{$ENDIF}
-end;
-
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  FTimeThread := nil;
+
 end;
 
 {$IFDEF ANDROID}
@@ -355,7 +399,10 @@ var
   i: Integer;
   PCKFileName: String;
   PCKFileNameList: TStringList;
+  RingFileNameList: TStringList;
+  RingFileName: String;
   ImageName: String;
+  RingName: String;
 begin
   { SettingsPopupMenu }
 
@@ -367,7 +414,7 @@ begin
   FSettingsPopupMenuExt.Add(FBoardsMenuItem);
 
   FPatternBoardMenuItem := TItem.Create;
-  FPatternBoardMenuItem.Name := ELECTRONIC_BOARD_MEUN_ITEM_NAME;
+  FPatternBoardMenuItem.Name := ELECTRONIC_BOARD_MENU_ITEM_NAME;
   FPatternBoardMenuItem.Parent := FBoardsMenuItem;
   FPatternBoardMenuItem.Text := 'Electronic';
   FSettingsPopupMenuExt.Add(FPatternBoardMenuItem);
@@ -379,7 +426,7 @@ begin
     i := 0;
     for PCKFileName in PCKFileNameList do
     begin
-      ImageName := GetImageNameFromFileName(PCKFileName);
+      ImageName := GetNameFromFileName(PCKFileName);
 
       MenuItem := TItem.Create;
       MenuItem.Name := PATTERN_BOARD_MENU_ITEM_NAME + i.ToString;
@@ -397,14 +444,6 @@ begin
     FreeAndNil(PCKFileNameList);
   end;
 
-  MenuItem := TItem.Create;
-  MenuItem.Name := TEXT_BOARD_MEUN_ITEM_NAME;
-  MenuItem.Parent := FBoardsMenuItem;
-  MenuItem.Text := 'Text';
-  MenuItem.OnClick := MenuTextBoardItemClickHandler;
-  MenuItem.IsChecked := TState.Board = bkText;
-  FSettingsPopupMenuExt.Add(MenuItem);
-
   FImageBoardMenuItem := TItem.Create;
   FImageBoardMenuItem.Parent := FBoardsMenuItem;
   FImageBoardMenuItem.Text := 'Image';
@@ -417,7 +456,7 @@ begin
     i := 0;
     for PCKFileName in PCKFileNameList do
     begin
-      ImageName := GetImageNameFromFileName(PCKFileName);
+      ImageName := GetNameFromFileName(PCKFileName);
 
       MenuItem := TItem.Create;
       MenuItem.Name := IMAGE_BOARD_MENU_ITEM_NAME + i.ToString;
@@ -434,6 +473,14 @@ begin
   finally
     FreeAndNil(PCKFileNameList);
   end;
+
+  MenuItem := TItem.Create;
+  MenuItem.Name := TEXT_BOARD_MEUN_ITEM_NAME;
+  MenuItem.Parent := FBoardsMenuItem;
+  MenuItem.Text := 'Text';
+  MenuItem.OnClick := MenuTextBoardItemClickHandler;
+  MenuItem.IsChecked := TState.Board = bkText;
+  FSettingsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
   MenuItem.Text := '-';
@@ -571,6 +618,77 @@ begin
     MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
+  //asd
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  FRingMenuItem := TItem.Create;
+  FRingMenuItem.Text := 'Ring';
+  FSettingsPopupMenuExt.Add(FRingMenuItem);
+
+  FRingsMenuItem := TItem.Create;
+  FRingsMenuItem.Parent := FRingMenuItem;
+  FRingsMenuItem.Text := 'Rings';
+  FSettingsPopupMenuExt.Add(FRingsMenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := FRingsMenuItem;
+  MenuItem.Text := RING_NAME_OFF;
+  MenuItem.OnClick := MenuRingItemClickHandler;
+  MenuItem.IsChecked := TState.RingName = RING_NAME_OFF;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  RingFileNameList := TStringList.Create;
+  try
+    GetRingFileList(RingFileNameList);
+    RingFileNameList.Sort;
+    i := 0;
+    for RingFileName in RingFileNameList do
+    begin
+      RingName := GetNameFromFileName(RingFileName);
+
+      MenuItem := TItem.Create;
+//      MenuItem.Name := RING_MENU_ITEM_NAME + i.ToString;
+      MenuItem.Parent := FRingsMenuItem;
+      MenuItem.Text := RingName;
+//      MenuItem.Tag := 0;
+      MenuItem.OnClick := MenuRingItemClickHandler;
+      MenuItem.IsChecked := TState.RingName = RingName;
+      FSettingsPopupMenuExt.Add(MenuItem);
+
+      Inc(i);
+    end;
+  finally
+    FreeAndNil(RingFileNameList);
+  end;
+  {$IFDEF ANDROID}
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  FVibroMenuItem := TItem.Create;
+  FVibroMenuItem.Parent := FRingMenuItem;
+  FVibroMenuItem.Text := 'Vibration';
+  FSettingsPopupMenuExt.Add(FVibroMenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := FVibroMenuItem;
+  MenuItem.Text := VIBRO_NAME_OFF;
+  MenuItem.OnClick := MenuVibroItemClickHandler;
+  MenuItem.IsChecked := TState.Vibration = false;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := FVibroMenuItem;
+  MenuItem.Text := VIBRO_NAME_ON;
+  MenuItem.OnClick := MenuVibroItemClickHandler;
+  MenuItem.IsChecked := TState.Vibration = true;
+  FSettingsPopupMenuExt.Add(MenuItem);
+  {$ENDIF}
+  //asd
 
   {$IFDEF ANDROID}
   MenuItem := TItem.Create;
@@ -632,7 +750,6 @@ var
 begin
   ReportMemoryLeaksOnShutdown := true;
   try
-    FTimeThread := nil;
     FElectronicBoardFrame := nil;
     FTextBoardFrame := nil;
     FCurrentColorIdent := '';
@@ -659,6 +776,9 @@ begin
     else
       ShowMessage('Application Event Service is not supported');
     {$ENDIF}
+
+    FSingleSound := TSingleSound.Create;
+    SetRingFileName(TState.RingName);
 
     SetTimerForm := nil;
     SignalRectangle.Visible := false;
@@ -728,9 +848,9 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  TShowTextTime.UnInit;
-
   CloseBoard;
+
+  FreeAndNil(FSingleSound);
 end;
 
 procedure TMainForm.FormPaint(Sender: TObject; Canvas: TCanvas;
@@ -1066,9 +1186,10 @@ var
   MinHeight: Integer;
   LastOrientationIsEqual: Boolean;
 begin
+  TextTimeLayout.Visible := false;
+
+  SetTimeThreadOutputControl(nil);
   TimeVoidEdit.OnChange := nil;
-  if Assigned(FTimeThread) then
-    FTimeThread.OutputControl := nil;
 
   CloseBoard;
 
@@ -1123,6 +1244,8 @@ begin
     end;
     bkText:
     begin
+      TextTimeLayout.Visible := true;
+
       GetTextBoard(
         TState.Orientation,
         MinWidth,
@@ -1153,7 +1276,7 @@ begin
     LastOrientationIsEqual);
   {$ENDIF}
 
-  FTimeThread.OutputControl := TimeVoidEdit;
+  SetTimeThreadOutputControl(TimeVoidEdit);
   TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
 
   Self.Resize;
@@ -1161,9 +1284,8 @@ end;
 
 procedure TMainForm.CloseBoard;
 begin
+  SetTimeThreadOutputControl(nil);
   TimeVoidEdit.OnChange := nil;
-  if Assigned(FTimeThread) then
-    FTimeThread.OutputControl := nil;
 
   TShowTime.UnInit;
   TShowTextTime.UnInit;
@@ -1220,6 +1342,26 @@ begin
   SetIsCheckedBoardMenuItem(MenuItem);
 
   OpenBoard(bkImage, MenuItem.Text, TState.Color, TState.Orientation);
+end;
+
+procedure TMainForm.MenuRingItemClickHandler(Sender: TObject);
+var
+  MenuItem: TItem absolute Sender;
+begin
+  SetIsCheckedRingMenuItem(MenuItem);
+
+  SetRingFileName(MenuItem.Text);
+end;
+
+procedure TMainForm.MenuVibroItemClickHandler(Sender: TObject);
+var
+  MenuItem: TItem absolute Sender;
+begin
+  SetIsCheckedVibroMenuItem(MenuItem);
+
+  TState.Vibration := false;
+  if MenuItem.Text = VIBRO_NAME_ON then
+    TState.Vibration := true;
 end;
 
 procedure TMainForm.MenuAlarmItemClickHandler(Sender: TObject);
@@ -1348,20 +1490,19 @@ var
 begin
   OutputControl := TimeVoidEdit;
 
-  if Assigned(FTimeThread) then
-    FTimeThread.Terminate;
+  if Assigned(TimeThread) then
+    TimeThread.Terminate;
 
   ThreadFactory.CreateRegistredThread(
     procedure (
       const AThreadFactory: TThreadFactory)
     begin
-      FTimeThread :=
-        TTimeThread.Create(
-          AThreadFactory,
-          StrToTime('00:00:00'),
-          TTimeKind.tkTime,
-          Self,
-          OutputControl);
+      TTimeThread.Create(
+        AThreadFactory,
+        StrToTime('00:00:00'),
+        TTimeKind.tkTime,
+        Self,
+        OutputControl);
     end);
 end;
 
@@ -1374,20 +1515,19 @@ begin
   if Assigned(FElectronicBoardFrame) then
     OutputControl := TimeVoidEdit;
 
-  if Assigned(FTimeThread) then
-    FTimeThread.Terminate;
+  if Assigned(TimeThread) then
+    TimeThread.Terminate;
 
   ThreadFactory.CreateRegistredThread(
     procedure (
       const AThreadFactory: TThreadFactory)
     begin
-      FTimeThread :=
-        TTimeThread.Create(
-          AThreadFactory,
-          ATriggerTime,
-          tkTimer,
-          Self,
-          OutputControl);
+      TTimeThread.Create(
+        AThreadFactory,
+        ATriggerTime,
+        tkTimer,
+        Self,
+        OutputControl);
     end);
 end;
 
@@ -1400,26 +1540,72 @@ begin
   if Assigned(FElectronicBoardFrame) then
     OutputControl := TimeVoidEdit;
 
-  if Assigned(FTimeThread) then
-    FTimeThread.Terminate;
+  if Assigned(TimeThread) then
+    TimeThread.Terminate;
 
   ThreadFactory.CreateRegistredThread(
     procedure (
       const AThreadFactory: TThreadFactory)
     begin
-      FTimeThread :=
-        TTimeThread.Create(
-          AThreadFactory,
-          ATriggerTime,
-          tkAlarm,
-          Self,
-          OutputControl);
+      TTimeThread.Create(
+        AThreadFactory,
+        ATriggerTime,
+        tkAlarm,
+        Self,
+        OutputControl);
     end);
 end;
 
 procedure TMainForm.StartSignal;
 begin
-  ThreadFactory.CreateFreeOnTerminateThread('SignalThread',
+  if TState.RingName <> RING_NAME_OFF then
+    ThreadFactory.CreateFreeOnTerminateThread(SINGLE_SOUND_THREAD,
+      procedure (const AThread: TThreadExt)
+      var
+        CurrentTime: Int64;
+        FileName: String;
+      begin
+        AThread.Synchronize(nil,
+          procedure
+          begin
+            FSingleSound.Play(0);
+          end);
+        while not AThread.Terminated do
+        begin
+          CurrentTime := FSingleSound.CurrentTime;
+          if CurrentTime >= FSingleSound.Duration then
+          begin
+            AThread.Synchronize(nil,
+              procedure
+              begin
+                FSingleSound.Play(0);
+              end);
+          end;
+
+          Sleep(100);
+        end;
+
+        AThread.Synchronize(nil,
+          procedure
+          begin
+            FSingleSound.Stop;
+          end);
+      end,
+      false);
+
+  if TState.Vibration then
+    ThreadFactory.CreateFreeOnTerminateThread(VIBRO_THREAD,
+      procedure (const AThread: TThreadExt)
+      begin
+        while not AThread.Terminated do
+        begin
+          TVibro.Vibrate(200);
+          Sleep(600);
+        end;
+      end,
+      false);
+
+  ThreadFactory.CreateFreeOnTerminateThread(SIGNAL_THREAD,
     procedure (const AThread: TThreadExt)
     begin
       TThread.ForceQueue(nil,
@@ -1430,7 +1616,8 @@ begin
 
       while not AThread.Terminated do
       begin
-        TThread.ForceQueue(nil,
+        //TThread.ForceQueue(nil,
+        AThread.Synchronize(nil,
           procedure
           begin
             SignalRectangle.Visible := true;
@@ -1439,7 +1626,8 @@ begin
 
         Sleep(600);
 
-        TThread.ForceQueue(nil,
+        //TThread.ForceQueue(nil,
+        AThread.Synchronize(nil,
           procedure
           begin
             SignalRectangle.Visible := false;
@@ -1456,13 +1644,17 @@ procedure TMainForm.StopSignal;
 var
   Thread: TThreadExt;
 begin
-  Thread := ThreadFactory.GetThreadByName('SignalThread');
+  Thread := ThreadFactory.GetThreadByName(SINGLE_SOUND_THREAD);
   if Assigned(Thread) then
-  begin
     Thread.Terminate;
 
-    FTimeThread := nil;
-  end;
+  Thread := ThreadFactory.GetThreadByName(SIGNAL_THREAD);
+  if Assigned(Thread) then
+    Thread.Terminate;
+
+  Thread := ThreadFactory.GetThreadByName(VIBRO_THREAD);
+  if Assigned(Thread) then
+    Thread.Terminate;
 end;
 
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
@@ -1569,6 +1761,20 @@ begin
   SetIsCheckedForChildrenMenuItems(FColorsMenuItem, false);
   SetIsCheckedForChildrenMenuItems(FCustomColorsMenuItem, false);
   SetIsCheckedForChildrenMenuItems(FImageBoardMenuItem, false);
+
+  AMenuItem.IsChecked := true;
+end;
+
+procedure TMainForm.SetIsCheckedRingMenuItem(const AMenuItem: TItem);
+begin
+  SetIsCheckedForChildrenMenuItems(FRingsMenuItem, false);
+
+  AMenuItem.IsChecked := true;
+end;
+
+procedure TMainForm.SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
+begin
+  SetIsCheckedForChildrenMenuItems(FVibroMenuItem, false);
 
   AMenuItem.IsChecked := true;
 end;

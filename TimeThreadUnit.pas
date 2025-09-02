@@ -143,12 +143,12 @@ procedure TTimeThread.DisplayTime(const ATimeString: String);
 var
   TimeString: String absolute ATimeString;
 begin
-  if Assigned(OutputControl) then
-    Synchronize(
-      procedure
-      begin
+  Synchronize(
+    procedure
+    begin
+      if Assigned(OutputControl) then
         TControlTools.SetTextProperty(OutputControl, TimeString);
-      end);
+    end);
 end;
 
 procedure TTimeThread.ExecTime;

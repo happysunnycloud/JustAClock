@@ -23,6 +23,8 @@ const
 
   CUSTOM_COLOR_COUNT = 4;
 
+  RING_NAME_OFF = 'Off';
+
   {$IFDEF ANDROID}
   PATH_DELIMITER = '/';
   {$ELSE IF MSWINDOWS}
@@ -54,6 +56,8 @@ type
       FOrientation: TOrientationKind;
       FBoard: TBoardKind;
       FAutoOrientation: Boolean;
+      FRingName: String;
+      FVibration: Boolean;
       FFormLeft: Integer;
       FFormTop: Integer;
       FFormWidth: Integer;
@@ -85,6 +89,8 @@ type
     class property CustomColor3: TAlphaColor read FCustomColor3 write SetCustomColor3;
     class property CustomColorNumber: Integer read FCustomColorNumber write SetCustomColorNumber;
     class property Orientation: TOrientationKind read FOrientation write FOrientation;
+    class property RingName: String read FRingName write FRingName;
+    class property Vibration: Boolean read FVibration write FVibration;
     class property Board: TBoardKind read FBoard write SetBoard;
     class property AutoOrientation: Boolean read FAutoOrientation write FAutoOrientation;
     class property FormLeft: Integer read FFormLeft write FFormLeft;
@@ -149,12 +155,15 @@ function GetPackFile(
 function GetDigitsPackFile: String; deprecated;
 function GetPatternsPackFile(const AImagePackName: String): String;
 function GetImagesPackFile(const AImagePackName: String): String;
-function GetImageNameFromFileName(const AImageFileName: String): String;
+function GetNameFromFileName(const AImageFileName: String): String;
 procedure GetPackFileList(
   const AFileKind: TPCKFileKind;
   const AImagesPackFileList: TStringList);
 procedure GetPatternsPackFileList(const AImagesPackFileList: TStringList);
 procedure GetImagesPackFileList(const AImagesPackFileList: TStringList);
+function GetRingFile(const ARingName: String): String;
+function GetRingsFilesPath: String;
+procedure GetRingFileList(const ARingFileList: TStringList);
 procedure GetCurPos(var X, Y: Single);
 
 implementation
@@ -238,7 +247,45 @@ begin
   GetPackFileList(pkImage, AImagesPackFileList);
 end;
 
-function GetImageNameFromFileName(const AImageFileName: String): String;
+function GetRingFile(const ARingName: String): String;
+begin
+  Result := Format('%s%s%s.%s', [GetRingsFilesPath, PATH_DELIMITER, ARingName, 'mp3']);
+end;
+
+function GetRingsFilesPath: String;
+var
+  RootName: String;
+begin
+  RootName := 'Rings';
+  //Format('%s%s', ['Rings', '']);//, PATH_SPLITTER]);
+  {$IFDEF ANDROID}
+  Result :=
+    Format('%s/%s', [System.IOUtils.TPath.GetDocumentsPath, RootName]);
+  {$ELSE IF MSWINDOWS}
+    {$IFDEF DEBUG}
+    Result := Format('..\..\Arts\%s', [RootName]);
+    {$ELSE}
+    Result := Format('%s', [RootName]);
+    {$ENDIF}
+  {$ENDIF}
+end;
+
+procedure GetRingFileList(const ARingFileList: TStringList);
+var
+  Path: String;
+begin
+  if not Assigned(ARingFileList) then
+    raise Exception.Create('ARingFileList is nil');
+
+  Path := GetRingsFilesPath;
+
+  if not DirectoryExists(Path) then
+    raise Exception.CreateFmt('Directory "%s" not exists', [Path]);
+
+  TFileTools.GetFileNameListByDirAndExt(Path, 'mp3', ARingFileList);
+end;
+
+function GetNameFromFileName(const AImageFileName: String): String;
 var
   FileName: String;
   FileExtention: String;
@@ -253,6 +300,22 @@ begin
 
   Result := FileName;
 end;
+
+//function GetRingFromFileName(const ARingFileName: String): String;
+//var
+//  FileName: String;
+//  FileExtention: String;
+//begin
+//  FileExtention := ExtractFileExt(ARingFileName);
+//  FileName :=
+//    StringReplace(
+//      ExtractFileName(ARingFileName),
+//      FileExtention,
+//      '',
+//      [rfReplaceAll, rfIgnoreCase]);
+//
+//  Result := FileName;
+//end;
 
 procedure GetCurPos(var X, Y: Single);
 {$IFDEF MSWINDOWS}
@@ -347,6 +410,8 @@ begin
     FileStreamTools.Write(FCustomColor3);
     FileStreamTools.Write(FCustomColorNumber);
     FileStreamTools.Write(FAutoOrientation);
+    FileStreamTools.Write(FRingName);
+    FileStreamTools.Write(FVibration);
     FileStreamTools.Write(FFormLeft);
     FileStreamTools.Write(FFormTop);
     FileStreamTools.Write(FFormWidth);
@@ -378,6 +443,8 @@ begin
     FCustomColor3       := FileStreamTools.ReadAsUInt32;
     FCustomColorNumber  := FileStreamTools.ReadAsInteger;
     FAutoOrientation    := FileStreamTools.ReadAsBoolean;
+    FRingName           := FileStreamTools.ReadAsString;
+    FVibration          := FileStreamTools.ReadAsBoolean;
     FFormLeft           := FileStreamTools.ReadAsInteger;
     FFormTop            := FileStreamTools.ReadAsInteger;
     FFormWidth          := FileStreamTools.ReadAsInteger;
@@ -400,14 +467,17 @@ begin
   FCustomColor3       := FColor;
   FCustomColorNumber  := -1;
   FBoard              := TBoardKind.bkElectronic;
+  FRingName           := RING_NAME_OFF;
   FFormLeft           := 100;
   FFormTop            := 100;
   FFormWidth          := HORIZONTAL_MIN_WIDTH;
   FFormHeight         := HORIZONTAL_MIN_HEIGHT;
   {$IFDEF MSWINDOWS}
+  FVibration          := false;
   FAutoOrientation    := false;
   FOrientation        := TOrientationKind.okNone;
   {$ELSE IFDEF ANDROID}
+  FVibration          := true;
   FAutoOrientation    := true;
   FOrientation        := TOrientationKind.okNone;
   {$ENDIF}

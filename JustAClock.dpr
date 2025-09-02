@@ -59,7 +59,9 @@ uses
   ProportionUnit in 'ProportionUnit.pas',
   MotionSensorDataThreadUnit in 'MotionSensorDataThreadUnit.pas',
   FMX.MultiResBitmapsUnit in '..\DevelopmentsCollection\FMX.MultiResBitmapsUnit.pas',
-  FMX.MultiResBitmapExtractorUnit in '..\DevelopmentsCollection\FilePacker\FMX.MultiResBitmapExtractorUnit.pas';
+  FMX.MultiResBitmapExtractorUnit in '..\DevelopmentsCollection\FilePacker\FMX.MultiResBitmapExtractorUnit.pas',
+  FMX.VibroUnit in '..\DevelopmentsCollection\FMX.VibroUnit.pas',
+  FMX.SingleSoundUnit in '..\DevelopmentsCollection\FMX.SingleSoundUnit.pas';
 
 {$R *.res}
 
