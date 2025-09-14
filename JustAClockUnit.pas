@@ -106,8 +106,8 @@ type
     FVerticalOrientationMenuItem: TItem;
     FRingMenuItem: TItem;
     FRingsMenuItem: TItem;
-    FVibroMenuItem: TItem;
     {$IFDEF ANDROID}
+    FVibroMenuItem: TItem;
     FAutoOrientationMenuItem: TItem;
     {$ENDIF}
     {$IFDEF MSWINDOWS}
@@ -128,7 +128,9 @@ type
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
     procedure MenuImageBoardItemClickHandler(Sender: TObject);
     procedure MenuRingItemClickHandler(Sender: TObject);
+    {$IFDEF ANDROID}
     procedure MenuVibroItemClickHandler(Sender: TObject);
+    {$ENDIF}
     procedure MenuAlarmItemClickHandler(Sender: TObject);
     procedure MenuTimerItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
@@ -183,8 +185,9 @@ type
     procedure SetIsCheckedBoardMenuItem(const AMenuItem: TItem);
     procedure SetIsCheckedColorMenuItem(const AMenuItem: TItem);
     procedure SetIsCheckedRingMenuItem(const AMenuItem: TItem);
+    {$IFDEF ANDROID}
     procedure SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
-
+    {$ENDIF}
     procedure RaiseAppException(const AMethod: String; const AE: Exception);
 
     function GetTimeThread: TTimeThread;
@@ -1352,7 +1355,7 @@ begin
 
   SetRingFileName(MenuItem.Text);
 end;
-
+{$IFDEF ANDROID}
 procedure TMainForm.MenuVibroItemClickHandler(Sender: TObject);
 var
   MenuItem: TItem absolute Sender;
@@ -1363,7 +1366,7 @@ begin
   if MenuItem.Text = VIBRO_NAME_ON then
     TState.Vibration := true;
 end;
-
+{$ENDIF}
 procedure TMainForm.MenuAlarmItemClickHandler(Sender: TObject);
 begin
   StopSignal;
@@ -1563,7 +1566,6 @@ begin
       procedure (const AThread: TThreadExt)
       var
         CurrentTime: Int64;
-        FileName: String;
       begin
         AThread.Synchronize(nil,
           procedure
@@ -1771,14 +1773,14 @@ begin
 
   AMenuItem.IsChecked := true;
 end;
-
+{$IFDEF ANDROID}
 procedure TMainForm.SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
 begin
   SetIsCheckedForChildrenMenuItems(FVibroMenuItem, false);
 
   AMenuItem.IsChecked := true;
 end;
-
+{$ENDIF}
 {$IFDEF ANDROID}
 procedure TMainForm.MenuScreenLockItemClickHandler(Sender: TObject);
 begin
