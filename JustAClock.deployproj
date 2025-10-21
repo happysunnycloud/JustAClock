@@ -44,6 +44,15 @@
     <ItemGroup Condition="'$(Platform)'=='Linux64'"/>
     <ItemGroup Condition="'$(Platform)'=='OSX64'"/>
     <ItemGroup Condition="'$(Platform)'=='Android'">
+        <DeployFile Include="Arts\PCKs\Patterns\Predator 1.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
+            <RemoteName>Predator 1.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Arts\Rings\Uwu.mp3" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\assets\internal\Rings\</RemoteDir>
             <RemoteName>Uwu.mp3</RemoteName>
@@ -108,10 +117,10 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Android\Debug\splash_image_def.xml" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\res\drawable\</RemoteDir>
-            <RemoteName>splash_image_def.xml</RemoteName>
-            <DeployClass>AndroidSplashImageDef</DeployClass>
+        <DeployFile Include="Arts\Splash640x480.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\res\drawable-large\</RemoteDir>
+            <RemoteName>splash_image.png</RemoteName>
+            <DeployClass>Android_SplashImage640</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -135,10 +144,10 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\Splash640x480.png" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\res\drawable-large\</RemoteDir>
-            <RemoteName>splash_image.png</RemoteName>
-            <DeployClass>Android_SplashImage640</DeployClass>
+        <DeployFile Include="Android\Debug\splash_image_def.xml" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\res\drawable\</RemoteDir>
+            <RemoteName>splash_image_def.xml</RemoteName>
+            <DeployClass>AndroidSplashImageDef</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -189,6 +198,15 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="Arts\PCKs\Patterns\Predator 3.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
+            <RemoteName>Predator 3.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Android\Debug\strings.xml" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\res\values\</RemoteDir>
             <RemoteName>strings.xml</RemoteName>
@@ -228,6 +246,15 @@
         <DeployFile Include="Arts\PCKs\Patterns\Electronic.pck" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
             <RemoteName>Electronic.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="Arts\PCKs\Patterns\Predator 5.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
+            <RemoteName>Predator 5.pck</RemoteName>
             <DeployClass>File</DeployClass>
             <Operation>0</Operation>
             <LocalCommand/>
@@ -279,6 +306,15 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="Arts\PCKs\Patterns\Predator 2.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
+            <RemoteName>Predator 2.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Arts\Clock96x96.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\res\drawable-xxxhdpi\</RemoteDir>
             <RemoteName>ic_notification.png</RemoteName>
@@ -291,6 +327,24 @@
         <DeployFile Include="Arts\Rings\Wow.mp3" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\assets\internal\Rings\</RemoteDir>
             <RemoteName>Wow.mp3</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="Arts\PCKs\Images\Neon numbers.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Images\</RemoteDir>
+            <RemoteName>Neon numbers.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="Arts\PCKs\Patterns\Predator 4.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
+            <RemoteName>Predator 4.pck</RemoteName>
             <DeployClass>File</DeployClass>
             <Operation>0</Operation>
             <LocalCommand/>

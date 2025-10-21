@@ -621,77 +621,6 @@ begin
     MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
-  //asd
-  MenuItem := TItem.Create;
-  MenuItem.Text := '-';
-  MenuItem.Tag := -1;
-  FSettingsPopupMenuExt.Add(MenuItem);
-
-  FRingMenuItem := TItem.Create;
-  FRingMenuItem.Text := 'Ring';
-  FSettingsPopupMenuExt.Add(FRingMenuItem);
-
-  FRingsMenuItem := TItem.Create;
-  FRingsMenuItem.Parent := FRingMenuItem;
-  FRingsMenuItem.Text := 'Rings';
-  FSettingsPopupMenuExt.Add(FRingsMenuItem);
-
-  MenuItem := TItem.Create;
-  MenuItem.Parent := FRingsMenuItem;
-  MenuItem.Text := RING_NAME_OFF;
-  MenuItem.OnClick := MenuRingItemClickHandler;
-  MenuItem.IsChecked := TState.RingName = RING_NAME_OFF;
-  FSettingsPopupMenuExt.Add(MenuItem);
-
-  RingFileNameList := TStringList.Create;
-  try
-    GetRingFileList(RingFileNameList);
-    RingFileNameList.Sort;
-    i := 0;
-    for RingFileName in RingFileNameList do
-    begin
-      RingName := GetNameFromFileName(RingFileName);
-
-      MenuItem := TItem.Create;
-//      MenuItem.Name := RING_MENU_ITEM_NAME + i.ToString;
-      MenuItem.Parent := FRingsMenuItem;
-      MenuItem.Text := RingName;
-//      MenuItem.Tag := 0;
-      MenuItem.OnClick := MenuRingItemClickHandler;
-      MenuItem.IsChecked := TState.RingName = RingName;
-      FSettingsPopupMenuExt.Add(MenuItem);
-
-      Inc(i);
-    end;
-  finally
-    FreeAndNil(RingFileNameList);
-  end;
-  {$IFDEF ANDROID}
-  MenuItem := TItem.Create;
-  MenuItem.Text := '-';
-  MenuItem.Tag := -1;
-  FSettingsPopupMenuExt.Add(MenuItem);
-
-  FVibroMenuItem := TItem.Create;
-  FVibroMenuItem.Parent := FRingMenuItem;
-  FVibroMenuItem.Text := 'Vibration';
-  FSettingsPopupMenuExt.Add(FVibroMenuItem);
-
-  MenuItem := TItem.Create;
-  MenuItem.Parent := FVibroMenuItem;
-  MenuItem.Text := VIBRO_NAME_OFF;
-  MenuItem.OnClick := MenuVibroItemClickHandler;
-  MenuItem.IsChecked := TState.Vibration = false;
-  FSettingsPopupMenuExt.Add(MenuItem);
-
-  MenuItem := TItem.Create;
-  MenuItem.Parent := FVibroMenuItem;
-  MenuItem.Text := VIBRO_NAME_ON;
-  MenuItem.OnClick := MenuVibroItemClickHandler;
-  MenuItem.IsChecked := TState.Vibration = true;
-  FSettingsPopupMenuExt.Add(MenuItem);
-  {$ENDIF}
-  //asd
 
   {$IFDEF ANDROID}
   MenuItem := TItem.Create;
@@ -710,6 +639,84 @@ begin
 
   FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
   TState.MenuTheme.CopyTo(FToolsPopupMenuExt.Theme);
+
+  //asd
+//  MenuItem := TItem.Create;
+//  MenuItem.Text := '-';
+//  MenuItem.Tag := -1;
+//  FSettingsPopupMenuExt.Add(MenuItem);
+
+  FRingMenuItem := TItem.Create;
+  FRingMenuItem.Text := 'Ring';
+  FToolsPopupMenuExt.Add(FRingMenuItem);
+
+  FRingsMenuItem := TItem.Create;
+  FRingsMenuItem.Parent := FRingMenuItem;
+  FRingsMenuItem.Text := 'Rings';
+  FToolsPopupMenuExt.Add(FRingsMenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := FRingsMenuItem;
+  MenuItem.Text := RING_NAME_OFF;
+  MenuItem.OnClick := MenuRingItemClickHandler;
+  MenuItem.IsChecked := TState.RingName = RING_NAME_OFF;
+  FToolsPopupMenuExt.Add(MenuItem);
+
+  RingFileNameList := TStringList.Create;
+  try
+    GetRingFileList(RingFileNameList);
+    RingFileNameList.Sort;
+    i := 0;
+    for RingFileName in RingFileNameList do
+    begin
+      RingName := GetNameFromFileName(RingFileName);
+
+      MenuItem := TItem.Create;
+//      MenuItem.Name := RING_MENU_ITEM_NAME + i.ToString;
+      MenuItem.Parent := FRingsMenuItem;
+      MenuItem.Text := RingName;
+//      MenuItem.Tag := 0;
+      MenuItem.OnClick := MenuRingItemClickHandler;
+      MenuItem.IsChecked := TState.RingName = RingName;
+      FToolsPopupMenuExt.Add(MenuItem);
+
+      Inc(i);
+    end;
+  finally
+    FreeAndNil(RingFileNameList);
+  end;
+
+  {$IFDEF ANDROID}
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FToolsPopupMenuExt.Add(MenuItem);
+
+  FVibroMenuItem := TItem.Create;
+  FVibroMenuItem.Parent := FRingMenuItem;
+  FVibroMenuItem.Text := 'Vibration';
+  FToolsPopupMenuExt.Add(FVibroMenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := FVibroMenuItem;
+  MenuItem.Text := VIBRO_NAME_OFF;
+  MenuItem.OnClick := MenuVibroItemClickHandler;
+  MenuItem.IsChecked := TState.Vibration = false;
+  FToolsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := FVibroMenuItem;
+  MenuItem.Text := VIBRO_NAME_ON;
+  MenuItem.OnClick := MenuVibroItemClickHandler;
+  MenuItem.IsChecked := TState.Vibration = true;
+  FToolsPopupMenuExt.Add(MenuItem);
+  {$ENDIF}
+
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FToolsPopupMenuExt.Add(MenuItem);
+  //asd
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Set alarm';
