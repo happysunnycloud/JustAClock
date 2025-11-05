@@ -32,6 +32,7 @@ const
   VIBRO_MENU_ITEM_NAME = 'VibroMenuItem';
   VERTICAL_ORIENTATION_MENU_ITEM_NAME = 'VerticalOrientationMenuItem';
   HORIZONTAL_ORIENTATION_MENU_ITEM_NAME = 'HorizontalOrientationMenuItem';
+  CANCEL_MENU_ITEM_NAME = 'CancelMenuItem';
   COLOR_MENU_ITEM_NAME_PREFIX = 'ColorMenuItem';
   CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX = 'CustomColorMenuItem';
 
@@ -734,8 +735,10 @@ begin
   FToolsPopupMenuExt.Add(MenuItem);
 
   MenuItem := TItem.Create;
+  MenuItem.Name := CANCEL_MENU_ITEM_NAME;
   MenuItem.Text := 'Cancel';
   MenuItem.OnClick := MenuCancelTimerItemClickHandler;
+  MenuItem.Visible := false;
   FToolsPopupMenuExt.Add(MenuItem);
 
   {$IFDEF MSWINDOWS}
@@ -1567,7 +1570,12 @@ begin
 end;
 
 procedure TMainForm.StartSignal;
+var
+  MenuItem: TItem;
 begin
+  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
+  MenuItem.Visible := true;
+
   if TState.RingName <> RING_NAME_OFF then
     ThreadFactory.CreateFreeOnTerminateThread(SINGLE_SOUND_THREAD,
       procedure (const AThread: TThreadExt)
@@ -1652,7 +1660,11 @@ end;
 procedure TMainForm.StopSignal;
 var
   Thread: TThreadExt;
+  MenuItem: TItem;
 begin
+  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
+  MenuItem.Visible := false;
+
   Thread := ThreadFactory.GetThreadByName(SINGLE_SOUND_THREAD);
   if Assigned(Thread) then
     Thread.Terminate;

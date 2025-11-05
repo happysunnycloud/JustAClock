@@ -13,46 +13,37 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
         Size.Height = 240.000000000000000000
         inherited HoursLayout: TLayout
           Align = Top
-          Size.Height = 60.000000000000000000
           inherited HHImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Size.Height = 60.000000000000000000
           end
           inherited HLImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Size.Height = 60.000000000000000000
           end
         end
         inherited MinutesLayout: TLayout
           Align = Top
           Position.Y = 90.000000000000000000
-          Size.Height = 60.000000000000000000
           inherited MHImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Size.Height = 60.000000000000000000
           end
           inherited MLImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Size.Height = 60.000000000000000000
           end
         end
         inherited SecondsLayout: TLayout
           Align = Top
           Position.Y = 180.000000000000000000
-          Size.Height = 60.000000000000000000
           inherited SHImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Size.Height = 60.000000000000000000
           end
           inherited SLImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Size.Height = 60.000000000000000000
           end
         end
         inherited HoursDelimLayout: TLayout
@@ -66,15 +57,6 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
             Align = Client
             Size.Width = 60.000000000000000000
             Size.Height = 30.000000000000000000
-          end
-          object Rectangle1: TRectangle
-            Align = Contents
-            Fill.Color = xFFF8FF40
-            Opacity = 0.500000000000000000
-            Size.Width = 60.000000000000000000
-            Size.Height = 30.000000000000000000
-            Size.PlatformDefault = False
-            Visible = False
           end
         end
         inherited SecondsDelimLayout: TLayout

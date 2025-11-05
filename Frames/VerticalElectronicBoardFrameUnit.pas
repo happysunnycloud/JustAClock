@@ -10,7 +10,6 @@ uses
 
 type
   TVerticalElectronicBoardFrame = class(TElectronicBoardFrame)
-    Rectangle1: TRectangle;
   private
     { Private declarations }
   public
