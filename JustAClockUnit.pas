@@ -756,8 +756,9 @@ procedure TMainForm.FormCreate(Sender: TObject);
 const
   METHOD = 'TMainForm.FormCreate';
   SCALE_VALUE = 1;
-{$IFDEF ANDROID}
 var
+  Board: TBoardKind;
+{$IFDEF ANDROID}
   aFMXApplicationEventService: IFMXApplicationEventService;
 {$ENDIF}
 begin
@@ -814,6 +815,9 @@ begin
     TState.MenuTheme.CommonTextProps.Margins.Left := 5;
     TState.MenuTheme.CommonTextProps.WordWrap := false;
 
+    Board := TState.Board;
+    TState.Board := bkNone;
+
     FCurrentColorIdent := TColors.ColorArray.LastValue;
 
     BuildPopupMenues;
@@ -842,7 +846,7 @@ begin
     {$ELSE IFDEF ANDROID}
     Self.FullScreen := true;
     {$ENDIF}
-    FElectronicBoardFrame := nil;
+//    FElectronicBoardFrame := nil;
 
     RunTime;
 
@@ -853,6 +857,19 @@ begin
     {$ENDIF}
 
     ScreenLockerLayout.BringToFront;
+
+    TThread.CreateAnonymousThread(
+      procedure
+      begin
+        Sleep(1000);
+        TThread.Queue(nil,
+          procedure
+          begin
+            TState.Board := Board;
+            OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
+          end);
+      end
+      ).Start;
   except
     on e: Exception do
       RaiseAppException(METHOD, e);
@@ -880,6 +897,9 @@ end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
+  if TState.Board = bkNone then
+    Exit;
+
   if TState.Orientation = okHorizontal then
   begin
     SettingsLayout.Width := ContentLayout.Width / 2;
@@ -1275,6 +1295,9 @@ begin
         MinHeight,
         AColor,
         LastOrientationIsEqual);
+    end;
+    bkNone:
+    begin
     end
     else
       raise Exception.Create('TMainForm.OpenBoard: Unknown board kind');
@@ -1288,6 +1311,9 @@ begin
     MinHeight,
     LastOrientationIsEqual);
   {$ENDIF}
+
+  if TState.Board = bkNone then
+    Exit;
 
   SetTimeThreadOutputControl(TimeVoidEdit);
   TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;

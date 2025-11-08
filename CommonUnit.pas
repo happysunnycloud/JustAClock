@@ -32,7 +32,7 @@ const
   {$ENDIF}
 
 type
-  TBoardKind = (bkText = 0, bkElectronic = 1, bkImage = 2);
+  TBoardKind = (bkNone = -1, bkText = 0, bkElectronic = 1, bkImage = 2);
   TOrientationKind = (okNone = -1, okHorizontal = 0, okVertical = 1);
   TPCKFileKind = (pkNone = -1, pkPattern = 0, pkImage = 1);
 
@@ -392,15 +392,17 @@ class procedure TState.Save;
 var
   FileStreamTools: TFileStreamTools;
   FileName: String;
+  Board: Integer;
   Orientation: Integer;
 begin
   FileName := ConfigFileName;
 
+  Board := Integer(FBoard);
   Orientation := Integer(FOrientation);
 
   FileStreamTools := TFileStreamTools.Create(FileName, fmCreate);
   try
-    FileStreamTools.Write(FBoard);
+    FileStreamTools.Write(Board);
     FileStreamTools.Write(Orientation);
     FileStreamTools.Write(FColor);
     FileStreamTools.Write(FImageName);
@@ -425,6 +427,7 @@ class procedure TState.Load;
 var
   FileStreamTools: TFileStreamTools;
   FileName: String;
+  Board: Integer;
   Orientation: Integer;
 begin
   FileName := ConfigFileName;
@@ -433,7 +436,7 @@ begin
 
   FileStreamTools := TFileStreamTools.Create(FileName, fmOpenRead);
   try
-    FBoard              := TBoardKind(FileStreamTools.ReadAsByte);
+    Board               := FileStreamTools.ReadAsInteger;
     Orientation         := FileStreamTools.ReadAsInteger;
     FColor              := FileStreamTools.ReadAsUInt32;
     FImageName          := FileStreamTools.ReadAsString;
@@ -450,6 +453,7 @@ begin
     FFormWidth          := FileStreamTools.ReadAsInteger;
     FFormHeight         := FileStreamTools.ReadAsInteger;
 
+    FBoard := TBoardKind(Board);
     FOrientation := TOrientationKind(Orientation);
   finally
     FreeAndNil(FileStreamTools);

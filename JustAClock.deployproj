@@ -117,10 +117,10 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\Splash640x480.png" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\res\drawable-large\</RemoteDir>
-            <RemoteName>splash_image.png</RemoteName>
-            <DeployClass>Android_SplashImage640</DeployClass>
+        <DeployFile Include="Android\Debug\splash_image_def.xml" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\res\drawable\</RemoteDir>
+            <RemoteName>splash_image_def.xml</RemoteName>
+            <DeployClass>AndroidSplashImageDef</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -135,19 +135,19 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Android\Debug\splash_image_def.xml" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\res\drawable\</RemoteDir>
-            <RemoteName>splash_image_def.xml</RemoteName>
-            <DeployClass>AndroidSplashImageDef</DeployClass>
+        <DeployFile Include="Arts\Clock144x144.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\res\drawable-xxhdpi\</RemoteDir>
+            <RemoteName>ic_launcher.png</RemoteName>
+            <DeployClass>Android_LauncherIcon144</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\Clock144x144.png" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\res\drawable-xxhdpi\</RemoteDir>
-            <RemoteName>ic_launcher.png</RemoteName>
-            <DeployClass>Android_LauncherIcon144</DeployClass>
+        <DeployFile Include="Arts\Splash640x480.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\res\drawable-large\</RemoteDir>
+            <RemoteName>splash_image.png</RemoteName>
+            <DeployClass>Android_SplashImage640</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -482,19 +482,19 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="$(BDS)\bin\Artwork\Android\FM_NotificationIcon_36x36.png" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\res\drawable-hdpi\</RemoteDir>
-            <RemoteName>ic_notification.png</RemoteName>
-            <DeployClass>Android_NotificationIcon36</DeployClass>
+        <DeployFile Include="Android64\Debug\styles.xml" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\res\values\</RemoteDir>
+            <RemoteName>styles.xml</RemoteName>
+            <DeployClass>AndroidSplashStyles</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Android64\Debug\styles.xml" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\res\values\</RemoteDir>
-            <RemoteName>styles.xml</RemoteName>
-            <DeployClass>AndroidSplashStyles</DeployClass>
+        <DeployFile Include="$(BDS)\bin\Artwork\Android\FM_NotificationIcon_36x36.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\res\drawable-hdpi\</RemoteDir>
+            <RemoteName>ic_notification.png</RemoteName>
+            <DeployClass>Android_NotificationIcon36</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>

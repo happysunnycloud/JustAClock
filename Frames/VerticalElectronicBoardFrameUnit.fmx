@@ -1,14 +1,14 @@
 inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
-  Size.Width = 80.000000000000000000
-  Size.Height = 260.000000000000000000
+  Size.Width = 81.000000000000000000
+  Size.Height = 257.000000000000000000
   inherited BackgroundLayout: TLayout
-    Size.Width = 80.000000000000000000
-    Size.Height = 260.000000000000000000
+    Size.Width = 81.000000000000000000
+    Size.Height = 257.000000000000000000
     inherited BackgroundRectangle: TRectangle
-      Size.Width = 80.000000000000000000
-      Size.Height = 260.000000000000000000
+      Size.Width = 81.000000000000000000
+      Size.Height = 257.000000000000000000
       inherited DigitsLayout: TLayout
-        Position.Y = 10.500000000000000000
+        Position.Y = 8.994230270385742000
         Size.Width = 60.000000000000000000
         Size.Height = 240.000000000000000000
         inherited HoursLayout: TLayout
@@ -54,7 +54,6 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
           inherited HDelimImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Align = Client
             Size.Width = 60.000000000000000000
             Size.Height = 30.000000000000000000
           end
@@ -67,7 +66,6 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
           inherited SDelimImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
-            Align = Client
             Size.Width = 60.000000000000000000
             Size.Height = 30.000000000000000000
           end

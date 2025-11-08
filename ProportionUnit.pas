@@ -33,8 +33,8 @@ type
     class var FSHControl: TControl;
     class var FSLControl: TControl;
   private
-    class function ClientWidth: Single;
-    class function ClientHeight: Single;
+//    class function ClientWidth: Single;
+//    class function ClientHeight: Single;
   public
     class procedure Init(
       const AOrientation: TOrientationKind;
@@ -71,6 +71,7 @@ uses
   , System.Types
   , FMX.Platform
   {$ENDIF}
+  , FMX.ControlToolsUnit
   ;
 
 class procedure TProportion.Init(
@@ -152,15 +153,15 @@ begin
   end;
 end;
 
-class function TProportion.ClientWidth: Single;
-begin
-  Result := FOrigin.Width;
-end;
-
-class function TProportion.ClientHeight: Single;
-begin
-  Result := FOrigin.Height;
-end;
+//class function TProportion.ClientWidth: Single;
+//begin
+//  Result := FOrigin.Width;
+//end;
+//
+//class function TProportion.ClientHeight: Single;
+//begin
+//  Result := FOrigin.Height;
+//end;
 
 class procedure TProportion.Resize;
 
@@ -168,26 +169,25 @@ class procedure TProportion.Resize;
   begin
     TText(AControl).TextSettings.Font.Size :=
       Trunc((FHHControl.Height * 50) / 60);
-//    if FOrientation = okVertical then
-//      TText(AControl).TextSettings.Font.Size :=
-//        Trunc((FHHControl.Height * 50) / 60)
-//    else
-//    if FOrientation = okVertical then
-//      TText(AControl).TextSettings.Font.Size :=
-//        Trunc((FDigitsLayout.Height * 50) / 60)
   end;
 
-  procedure ResizeVerticalBoardFrame;
+  procedure ResizeVerticalBoardFrame(const AParentFrame: TFrame);
   var
     W0: Single;
     H0: Single;
     H1: Single;
+    H: Single;
   begin
-    FDigitsLayout.Align  := TAlignLayout.None;
+    FDigitsLayout.Width := AParentFrame.Width - 10;
+    FDigitsLayout.Height := AParentFrame.Height - 10;
 
-    W0 := FDigitsLayout.Width  / 2;
-    H0 := FDigitsLayout.Height / 4;
-    H1 := FDigitsLayout.Height / 8;
+    if (FDigitsLayout.Height / FDigitsLayout.Width) >= 4 then
+      W0 := FDigitsLayout.Width / 2
+    else
+      W0 := FDigitsLayout.Height / 8;
+
+    H0 := W0 * 2;
+    H1 := H0 / 2;
 
     FHoursLayout.Align         := TAlignLayout.None;
     FHoursDelimLayout.Align    := TAlignLayout.None;
@@ -215,32 +215,64 @@ class procedure TProportion.Resize;
 
     FHHControl.Width     := W0;
     FHLControl.Width     := W0;
-    FHDelimControl.Width := W0;
+    FHDelimControl.Width := FHHControl.Height;
     FMHControl.Width     := W0;
     FMLControl.Width     := W0;
-    FSDelimControl.Width := W0;
+    FSDelimControl.Width := FHHControl.Height;
     FSHControl.Width     := W0;
     FSLControl.Width     := W0;
 
-    FDigitsLayout.Position.X := (TProportion.ClientWidth / 2) - (FDigitsLayout.Width / 2);
-    FDigitsLayout.Position.Y := (TProportion.ClientHeight / 2) - (FDigitsLayout.Height / 2);
+    FHHControl.Position.X := (FHoursLayout.Width / 2) - FHHControl.Width;
+    FHLControl.Position.X := (FHoursLayout.Width / 2);
 
-    FDigitsLayout.Align  := TAlignLayout.Center;
+    FMHControl.Position.X := (FHoursLayout.Width / 2) - FMHControl.Width;
+    FMLControl.Position.X := (FHoursLayout.Width / 2);
+
+    FSHControl.Position.X := (FHoursLayout.Width / 2) - FSHControl.Width;
+    FSLControl.Position.X := (FHoursLayout.Width / 2);
+
+    FHDelimControl.Position.X := (FHoursLayout.Width / 2) - (FHDelimControl.Width / 2);
+    FSDelimControl.Position.X := (FHoursLayout.Width / 2) - (FSDelimControl.Width / 2);
+
+    H :=
+      FHoursLayout.Height +
+      FHoursDelimLayout.Height +
+      FMinutesLayout.Height +
+      FSecondsDelimLayout.Height +
+      FSecondsLayout.Height;
+
+    FHoursLayout.Margins.Top := (FDigitsLayout.Height - H) / 2;
   end;
 
-  procedure ResizeHorizontalBoardFrame;
+  procedure ResizeHorizontalBoardFrame(const AParentFrame: TFrame);
 
-    procedure _HorizontalAlign(const AControl: TControl; const AWidth: Single);
+    procedure _HorizontalAlign(
+      const AControl: TControl;
+      const AWidth: Single);
     begin
       AControl.Width := AWidth;
       AControl.Align := TAlignLayout.Left;
     end;
 
   var
+    W: Single;
+    H: Single;
     W0: Single;
     W1: Single;
   begin
-    FDigitsLayout.Align  := TAlignLayout.None;
+    if AParentFrame.Height / AParentFrame.Width >= 0.25 then
+    begin
+      W := AParentFrame.Width - 10;
+      FDigitsLayout.Width := W;
+      FDigitsLayout.Height := W / 4;
+    end
+    else
+    begin
+      H := AParentFrame.Height - 10;
+      W := H / 2;
+      FDigitsLayout.Height := H;
+      FDigitsLayout.Width := (W * 6) + (W * 2);
+    end;
 
     W0 := FDigitsLayout.Width / 4;
     W1 := FDigitsLayout.Width / 8;
@@ -270,87 +302,24 @@ class procedure TProportion.Resize;
     FMinutesLayout.Align := TAlignLayout.Left;
     FSecondsDelimLayout.Align := TAlignLayout.Left;
     FSecondsLayout.Align := TAlignLayout.Left;
-
-    FDigitsLayout.Position.X := (TProportion.ClientWidth / 2) - (FDigitsLayout.Width / 2);
-    FDigitsLayout.Position.Y := (TProportion.ClientHeight / 2) - (FDigitsLayout.Height / 2);
-
-    FDigitsLayout.Align  := TAlignLayout.Center;
   end;
 
-  procedure _ProportionalAligment(
-    const AClientFormWidth: Single;
-    const AClientFormHeight: Single);
-
-    procedure _ResizeBoardFrame(const AOrientation: TOrientationKind);
-    begin
-      if AOrientation = okVertical then
-      begin
-        ResizeVerticalBoardFrame;
-      end
-      else
-      if AOrientation = okHorizontal then
-      begin
-        ResizeHorizontalBoardFrame;
-      end;
-    end;
-
-  var
-    H, W: Single;
-    NewProportion: Single;
-  begin
-    if FOrientation = okVertical then
-    begin
-      W := AClientFormWidth * FWidthRatio;
-      H := W / FHeightRatio;
-
-      FDigitsLayout.Width := W;
-      FDigitsLayout.Height := H;
-
-      _ResizeBoardFrame(FOrientation);
-
-      if FDigitsLayout.Position.Y < FBottomMargin then
-      begin
-        FDigitsLayout.Height := TProportion.ClientHeight - (FBottomMargin * 2);
-
-        _ResizeBoardFrame(FOrientation);
-      end;
-
-      NewProportion := FDigitsLayout.Width / FDigitsLayout.Height;
-
-      if NewProportion > FBeginProportion then
-      begin
-        FDigitsLayout.Width := FDigitsLayout.Height * FBeginProportion;
-
-        _ResizeBoardFrame(FOrientation);
-      end;
-    end
-    else
-    if FOrientation = okHorizontal then
-    begin
-      W := AClientFormWidth * FWidthRatio;
-      H := W * FHeightRatio;
-
-      FDigitsLayout.Width := W;
-      FDigitsLayout.Height := H;
-
-      _ResizeBoardFrame(FOrientation);
-
-      if FDigitsLayout.Position.Y < FBottomMargin then
-      begin
-        FDigitsLayout.Height := TProportion.ClientHeight - (FBottomMargin * 2);
-        FDigitsLayout.Width := FDigitsLayout.Height / FHeightRatio;
-
-        _ResizeBoardFrame(FOrientation);
-      end;
-    end;
-  end;
-
+var
+  ParentFrame: TFrame;
 begin
   FDigitsLayout.Align := TAlignLayout.None;
 
-  _ProportionalAligment(
-    TProportion.ClientWidth,
-    TProportion.ClientHeight);
+  ParentFrame := TControlTools.FindParentFrame(FDigitsLayout);
+
+  if FOrientation = okVertical then
+  begin
+    ResizeVerticalBoardFrame(ParentFrame);
+  end
+  else
+  if FOrientation = okHorizontal then
+  begin
+    ResizeHorizontalBoardFrame(ParentFrame);
+  end;
 
   if FHDelimControl is TText then
   begin
@@ -363,6 +332,8 @@ begin
     _SetTextSize(FSHControl);
     _SetTextSize(FSLControl);
   end;
+
+  FDigitsLayout.Align  := TAlignLayout.Center;
 end;
 
 end.
