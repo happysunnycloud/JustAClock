@@ -12,11 +12,6 @@ type
   TProportion = class
   strict private
     class var FOrientation: TOrientationKind;
-    class var FBeginProportion: Single;
-    class var FBottomMargin: Single;
-    class var FWidthRatio: Single;
-    class var FHeightRatio: Single;
-
     class var FOrigin: TLayout;
     class var FDigitsLayout: TLayout;
     class var FHoursLayout: TLayout;
@@ -93,10 +88,6 @@ class procedure TProportion.Init(
   const ASDelimControl: TControl;
   const ASHControl: TControl;
   const ASLControl: TControl);
-
-var
-  MinWidth: Integer;
-  MinHeight: Integer;
 begin
   FOrientation := AOrientation;
   FOrigin := AOrigin;
@@ -114,43 +105,6 @@ begin
   FSDelimControl := ASDelimControl;
   FSHControl := ASHControl;
   FSLControl := ASLControl;
-
-  MinWidth := AMinWidth;
-  MinHeight := AMinHeight;
-
-  if FOrientation = okVertical then
-  begin
-    FDigitsLayout.Position.X := MinWidth / 16;
-    FDigitsLayout.Position.Y := MinHeight / 52;
-
-    FDigitsLayout.Width := MinWidth - (FDigitsLayout.Position.X * 2);
-    FDigitsLayout.Height := MinHeight - (FDigitsLayout.Position.Y * 2);
-
-    FWidthRatio := FDigitsLayout.Width / MinWidth;
-    FHeightRatio := FDigitsLayout.Width / FDigitsLayout.Height;
-    FBottomMargin := MinHeight - (FDigitsLayout.Position.Y + FDigitsLayout.Height);
-
-    FBeginProportion := FDigitsLayout.Width / FDigitsLayout.Height;
-
-    FDigitsLayout.Align := TAlignLayout.Center;
-  end
-  else
-  if FOrientation = okHorizontal then
-  begin
-    FDigitsLayout.Position.X := MinWidth / 52;
-    FDigitsLayout.Position.Y := MinHeight / 8;
-
-    FDigitsLayout.Width := MinWidth - (FDigitsLayout.Position.X * 2);
-    FDigitsLayout.Height := MinHeight - (FDigitsLayout.Position.Y * 2);
-
-    FWidthRatio := FDigitsLayout.Width / MinWidth;
-    FHeightRatio := FDigitsLayout.Height / FDigitsLayout.Width;
-    FBottomMargin := FDigitsLayout.Position.Y;
-
-    FBeginProportion := FDigitsLayout.Height / FDigitsLayout.Width;
-
-    FDigitsLayout.Align := TAlignLayout.Center;
-  end;
 end;
 
 //class function TProportion.ClientWidth: Single;
