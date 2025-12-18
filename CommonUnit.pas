@@ -234,7 +234,7 @@ begin
   if not DirectoryExists(Path) then
     raise Exception.CreateFmt('Directory "%s" not exists', [Path]);
 
-  TFileTools.GetFileNameListByDirAndExt(Path, 'pck', AImagesPackFileList);
+  TFileTools.GetFileNameList(Path, ['pck'], AImagesPackFileList);
 end;
 
 procedure GetPatternsPackFileList(const AImagesPackFileList: TStringList);
@@ -282,7 +282,7 @@ begin
   if not DirectoryExists(Path) then
     raise Exception.CreateFmt('Directory "%s" not exists', [Path]);
 
-  TFileTools.GetFileNameListByDirAndExt(Path, 'mp3', ARingFileList);
+  TFileTools.GetFileNameList(Path, ['mp3'], ARingFileList);
 end;
 
 function GetNameFromFileName(const AImageFileName: String): String;

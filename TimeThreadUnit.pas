@@ -23,8 +23,6 @@ type
     FExecProc: TProc;
     FTriggerTime: TTime;
 
-    procedure OnTerminateHandler(Sender: TObject);
-
     procedure SetOutputControl(const AOutputControl: TControl);
     function GetOutputControl: TControl;
 
@@ -60,12 +58,6 @@ uses
   ;
 
 { TTimeThread }
-
-procedure TTimeThread.OnTerminateHandler(Sender: TObject);
-begin
-  OutputControl := nil;
-//  FForm.Close;
-end;
 
 procedure TTimeThread.SetOutputControl(const AOutputControl: TControl);
 begin
@@ -115,8 +107,6 @@ begin
       FExecProc := ExecAlarm;
     end;
   end;
-
-  OnTerminate := OnTerminateHandler;
 
   FreeOnTerminate := true;
 
@@ -198,6 +188,8 @@ begin
   begin
     Sleep(1000);
   end;
+
+  OutputControl := nil;
 end;
 
 procedure TTimeThread.ExecAlarm;
@@ -225,6 +217,8 @@ begin
 
     Sleep(100);
   end;
+
+  OutputControl := nil;
 end;
 
 end.

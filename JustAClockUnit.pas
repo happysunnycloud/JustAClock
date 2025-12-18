@@ -271,8 +271,6 @@ uses
 { TMainForm }
 
 function TMainForm.GetTimeThread: TTimeThread;
-//const
-//  METHOD = 'TMainForm.GetTimeThread';
 begin
   Result := ThreadFactory.GetThreadByName('TTimeThread') as TTimeThread;
 end;
@@ -342,7 +340,9 @@ end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-
+  // Борды нужно закрывать раньше, чем умрут все потоки
+  // Так как при закрытии бордов есть обращение к потоку таймера
+  CloseBoard;
 end;
 
 {$IFDEF ANDROID}
@@ -785,7 +785,9 @@ begin
     FBorderFrame := nil;
     {$ENDIF}
     {$IFDEF ANDROID}
-    if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService, IInterface(aFMXApplicationEventService)) then
+    if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService,
+      IInterface(aFMXApplicationEventService))
+    then
       aFMXApplicationEventService.SetApplicationEventHandler(HandleAppEvent)
     else
       ShowMessage('Application Event Service is not supported');
@@ -878,8 +880,6 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  CloseBoard;
-
   FreeAndNil(FSingleSound);
 end;
 
