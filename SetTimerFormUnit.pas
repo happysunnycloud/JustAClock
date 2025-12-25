@@ -94,7 +94,8 @@ end;
 
 procedure TSetTimerForm.FormDestroy(Sender: TObject);
 begin
-  SetTimerForm := nil;
+  //asd нужно ли нилить?
+//  SetTimerForm := nil;
 end;
 
 procedure TSetTimerForm.FormResize(Sender: TObject);

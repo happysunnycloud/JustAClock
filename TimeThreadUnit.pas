@@ -184,10 +184,10 @@ begin
     Sleep(100);
   end;
 
-  while not Terminated do
-  begin
-    Sleep(1000);
-  end;
+//  while not Terminated do
+//  begin
+//    Sleep(1000);
+//  end;
 
   OutputControl := nil;
 end;

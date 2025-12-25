@@ -1596,32 +1596,30 @@ begin
 end;
 
 procedure TMainForm.StartSignal;
-var
-  MenuItem: TItem;
+const
+  VOLUME_VALUE = 1.0;
+//var
+//  MenuItem: TItem;
 begin
-  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
-  MenuItem.Visible := true;
-
   if TState.RingName <> RING_NAME_OFF then
     ThreadFactory.CreateFreeOnTerminateThread(SINGLE_SOUND_THREAD,
       procedure (const AThread: TThreadExt)
       var
         CurrentTime: Int64;
       begin
-        AThread.Synchronize(nil,
-          procedure
-          begin
-            FSingleSound.Play(0);
-          end);
+        FSingleSound.CurrentTime := 0;
         while not AThread.Terminated do
         begin
           CurrentTime := FSingleSound.CurrentTime;
-          if CurrentTime >= FSingleSound.Duration then
+          if (CurrentTime >= FSingleSound.Duration) or
+             (CurrentTime = 0)
+          then
           begin
             AThread.Synchronize(nil,
               procedure
               begin
                 FSingleSound.Play(0);
+                FSingleSound.Volume := VOLUME_VALUE;
               end);
           end;
 
@@ -1631,7 +1629,7 @@ begin
         AThread.Synchronize(nil,
           procedure
           begin
-            FSingleSound.Stop;
+            FSingleSound.Pause;
           end);
       end,
       false);
@@ -1707,32 +1705,55 @@ end;
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
 var
   AlarmTime: TTime;
+  MenuItem: TItem;
 begin
   StopSignal;
 
   AlarmTime := SetTimerForm.Time;
 
-  SetTimerForm.Close;
-
   RunAlarm(AlarmTime);
+
+  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
+  MenuItem.Visible := true;
+
+  TThread.Queue(nil,
+    procedure
+    begin
+      SetTimerForm.Close;
+    end
+  );
 end;
 
 procedure TMainForm.SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
 var
   TimerTime: TTime;
+  MenuItem: TItem;
 begin
   StopSignal;
 
   TimerTime := SetTimerForm.Time;
 
-  SetTimerForm.Close;
-
   RunTimer(TimerTime);
+
+  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
+  MenuItem.Visible := true;
+
+  TThread.Queue(nil,
+    procedure
+    begin
+      SetTimerForm.Close;
+    end
+  );
 end;
 
 procedure TMainForm.SetTimerFormCancelButtonClickHandler(Sender: TObject);
 begin
-  SetTimerForm.Close;
+  TThread.Queue(nil,
+    procedure
+    begin
+      SetTimerForm.Close;
+    end
+  );
 end;
 
 procedure TMainForm.SettingsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
