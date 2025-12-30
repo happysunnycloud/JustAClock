@@ -559,6 +559,15 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="Arts\PCKs\Images\Gzhel.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Images\</RemoteDir>
+            <RemoteName>Gzhel.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Android\Debug\styles-v21.xml" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\res\values-v21\</RemoteDir>
             <RemoteName>styles.xml</RemoteName>

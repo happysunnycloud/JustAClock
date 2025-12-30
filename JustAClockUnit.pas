@@ -13,11 +13,11 @@ uses
   TextBoardFrameUnit
   , FMX.PopupMenuExtUnit
   , FMX.SingleSoundUnit
+  , FMX.Gestures
   {$IFDEF MSWINDOWS}
-  , BorderFrameUnit, FMX.Gestures
-  {$ENDIF}
-  {$IFDEF ANDROID}
-  , FMX.Platform, FMX.Gestures
+  , BorderFrameUnit
+  {$ELSE IFDEF ANDROID}
+  , FMX.Platform
   {$ENDIF}
   ;
 
@@ -1606,12 +1606,22 @@ begin
       procedure (const AThread: TThreadExt)
       var
         CurrentTime: Int64;
+        Duration: Int64;
       begin
-        FSingleSound.CurrentTime := 0;
+        AThread.Synchronize(nil,
+          procedure
+          begin
+            FSingleSound.CurrentTime := 0;
+            Duration := FSingleSound.Duration;
+          end);
         while not AThread.Terminated do
         begin
-          CurrentTime := FSingleSound.CurrentTime;
-          if (CurrentTime >= FSingleSound.Duration) or
+          AThread.Synchronize(nil,
+            procedure
+            begin
+              CurrentTime := FSingleSound.CurrentTime;
+            end);
+          if (CurrentTime >= Duration) or
              (CurrentTime = 0)
           then
           begin

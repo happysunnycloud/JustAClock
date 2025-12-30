@@ -49,11 +49,6 @@ uses
   SetCustomColorUnit in 'SetCustomColorUnit.pas' {SetCustomColorForm},
   FileStreamToolsUnit in '..\DevelopmentsCollection\FileStreamToolsUnit.pas',
   FMX.PopupMenuExtUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtUnit.pas',
-  {$IFDEF MSWINDOWS}
-  FMX.PopupMenuExtThreadUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtThreadUnit.pas',
-  FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas',
-  BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
-  {$ENDIF }
   FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas',
   FMX.ThemeUnit in '..\DevelopmentsCollection\FMX.ThemeUnit.pas',
   ProportionUnit in 'ProportionUnit.pas',
@@ -61,7 +56,14 @@ uses
   FMX.MultiResBitmapsUnit in '..\DevelopmentsCollection\FMX.MultiResBitmapsUnit.pas',
   FMX.MultiResBitmapExtractorUnit in '..\DevelopmentsCollection\FilePacker\FMX.MultiResBitmapExtractorUnit.pas',
   FMX.VibroUnit in '..\DevelopmentsCollection\FMX.VibroUnit.pas',
-  FMX.SingleSoundUnit in '..\DevelopmentsCollection\FMX.SingleSoundUnit.pas';
+  FMX.SingleSoundUnit in '..\DevelopmentsCollection\FMX.SingleSoundUnit.pas'
+  {$IFDEF MSWINDOWS}
+  ,
+  FMX.PopupMenuExtThreadUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtThreadUnit.pas',
+  BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
+  FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas'
+  {$ENDIF }
+  ;
 
 {$R *.res}
 

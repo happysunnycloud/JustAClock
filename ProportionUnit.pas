@@ -60,13 +60,13 @@ uses
   , FMX.Forms
   , System.SysUtils
   , FMX.Objects
+  , FMX.ControlToolsUnit
   {$IFDEF MSWINDOWS}
   , BorderFrameUnit
   {$ELSE IFDEF ANDROID}
   , System.Types
   , FMX.Platform
   {$ENDIF}
-  , FMX.ControlToolsUnit
   ;
 
 class procedure TProportion.Init(

@@ -13,4 +13,5 @@
 .\assets\internal\PCKs\Images\Neon numbers.pck
 .\assets\internal\PCKs\Patterns\Predator 4.pck
 .\assets\internal\PCKs\Images\BDSM girls inverted.pck
+.\assets\internal\PCKs\Images\Gzhel.pck
 .\assets\internal\Rings\YameteKudasai.mp3
