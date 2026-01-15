@@ -5,14 +5,15 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Colors,
-  FMX.Layouts, FMX.Objects, FMX.Controls.Presentation, FMX.StdCtrls
-  {$IFDEF MSWINDOWS}
-  , BorderFrameUnit
-  {$ENDIF}
+  FMX.Layouts, FMX.Objects, FMX.Controls.Presentation, FMX.StdCtrls,
+  FMX.FormExtUnit
+//  {$IFDEF MSWINDOWS}
+//  , BorderFrameUnit
+//  {$ENDIF}
   ;
 
 type
-  TSetCustomColorForm = class(TForm)
+  TSetCustomColorForm = class(TFormExt)
     SampleImage: TImage;
     loContent: TLayout;
     OkButtonRectangle: TRectangle;
@@ -37,9 +38,9 @@ type
     procedure SetColor(const AColor: TAlphaColor);
     function GetColor: TAlphaColor;
   public
-    {$IFDEF MSWINDOWS}
-    FBorderFrame: TBorderFrame;
-    {$ENDIF}
+//    {$IFDEF MSWINDOWS}
+//    FBorderFrame: TBorderFrame;
+//    {$ENDIF}
     property Color: TAlphaColor read GetColor write SetColor;
   end;
 
@@ -81,18 +82,25 @@ end;
 procedure TSetCustomColorForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF MSWINDOWS}
-  FBorderFrame :=
-    TBorderFrame.Create(
-      Self,
-      loContent,
-      'Just a clock',
-      Trunc(loContent.Width),
-      Trunc(loContent.Height),
-      $FF8D003A,
-      $FF2A001A,
-      TAlphaColorRec.Lime,
-      $FFADADAD);
+//  FBorderFrame :=
+//    TBorderFrame.Create(
+//      Self,
+//      loContent,
+//      'Just a clock',
+//      Trunc(loContent.Width),
+//      Trunc(loContent.Height),
+//      $FF8D003A,
+//      $FF2A001A,
+//      TAlphaColorRec.Lime,
+//      $FFADADAD);
+
+  BorderFrame.BorderFrameKind := TBorderFrameKind.bfkNormal;
+  BorderFrame.CaptionColor := $FF8D003A;
+  BorderFrame.BorderColor := $FF2A001A;
+  BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
+  BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
   {$ENDIF}
+
 
   OkButtonRectangle.OnMouseEnter := OnRectangleMouseEnterHandler;
   OkButtonRectangle.OnMouseLeave := OnRectangleMouseLeaveHandler;

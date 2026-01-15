@@ -35,7 +35,8 @@ type
     // Специально не перегружаем Execute,
     // чтобы выполнился на стороне родительского класса
     // В родителе ловятся исключения
-    procedure Execute(const AThread: TThreadExt); reintroduce; // override;
+    procedure InnerExecute; override;
+//    procedure Execute(const AThread: TThreadExt); reintroduce; // override;
   public
     constructor Create(
       const AThreadFactory: TThreadFactory;
@@ -112,8 +113,7 @@ begin
 
   inherited Create(
     AThreadFactory,
-    'TTimeThread',
-    Self.Execute);
+    'TTimeThread');
 end;
 
 destructor TTimeThread.Destroy;
@@ -124,7 +124,7 @@ begin
   inherited;
 end;
 
-procedure TTimeThread.Execute(const AThread: TThreadExt);
+procedure TTimeThread.InnerExecute;
 begin
   FExecProc;
 end;
@@ -184,11 +184,6 @@ begin
     Sleep(100);
   end;
 
-//  while not Terminated do
-//  begin
-//    Sleep(1000);
-//  end;
-
   OutputControl := nil;
 end;
 
@@ -211,6 +206,13 @@ begin
     if Now >= FullTriggerTime then
     begin
       TMainForm(FForm).StartSignal;
+
+
+//      TThread.Queue(nil,
+//        procedure
+//        begin
+//          TMainForm(FForm).StartSignal;
+//        end);
 
       Break;
     end;

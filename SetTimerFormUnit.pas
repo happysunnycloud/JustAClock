@@ -5,9 +5,9 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, NumScrollUnit,
-  {$IFDEF MSWINDOWS}
-  BorderFrameUnit,
-  {$ENDIF}
+//  {$IFDEF MSWINDOWS}
+//  BorderFrameUnit,
+//  {$ENDIF}
   FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls,
   FMX.Objects, FMX.Effects, FMX.FormExtUnit;
 
@@ -31,9 +31,9 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormResize(Sender: TObject);
   private
-    {$IFDEF MSWINDOWS}
-    FBorderFrame: TBorderFrame;
-    {$ENDIF}
+//    {$IFDEF MSWINDOWS}
+//    FBorderFrame: TBorderFrame;
+//    {$ENDIF}
     procedure OnRectangleMouseEnterHandler(Sender: TObject);
     procedure OnRectangleMouseLeaveHandler(Sender: TObject);
 
@@ -68,17 +68,30 @@ end;
 procedure TSetTimerForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF MSWINDOWS}
-  FBorderFrame :=
-    TBorderFrame.Create(
-      Self,
-      loContent,
-      'Just a clock',
-      Trunc(loContent.Width),
-      Trunc(loContent.Height),
-      $FF8D003A,
-      $FF2A001A,
-      TAlphaColorRec.Lime,
-      $FFADADAD);
+//  FBorderFrame :=
+//    TBorderFrame.Create(
+//      Self,
+//      loContent,
+//      'Just a clock',
+//      Trunc(loContent.Width),
+//      Trunc(loContent.Height),
+//      $FF8D003A,
+//      $FF2A001A,
+//      TAlphaColorRec.Lime,
+//      $FFADADAD);
+
+  BorderFrame.BorderFrameKind := TBorderFrameKind.bfkNormal;
+  BorderFrame.CaptionColor := $FF8D003A;
+  BorderFrame.BorderColor := $FF2A001A;
+  BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
+  BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
+
+{
+//  ACaptionColor: TAlphaColor = TAlphaColorRec.White;
+//  ABorderColor: TAlphaColor = TAlphaColorRec.Cornflowerblue;
+//  ACloseButtonColor: TAlphaColor = TAlphaColorRec.White;
+//  ACloseButtonMouseOverColor: TAlphaColor = TAlphaColorRec.Lime
+}
   {$ENDIF}
   HoursNumScrollFrame.Init(0, 23, 1);
   HoursNumScrollFrame.CurrentVal := 0;

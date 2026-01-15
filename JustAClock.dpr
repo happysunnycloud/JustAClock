@@ -18,7 +18,7 @@ uses
   Androidapi.JNI.GraphicsContentViewText,
   Androidapi.JNI.App,
   Android.JNI.PowerManager in '..\DevelopmentsCollection\Android.JNI.PowerManager.pas',
-  {$ENDIF }
+  {$ENDIF}
   System.SysUtils,
   System.StartUpCopy,
   FMX.Forms,
@@ -59,6 +59,7 @@ uses
   FMX.SingleSoundUnit in '..\DevelopmentsCollection\FMX.SingleSoundUnit.pas'
   {$IFDEF MSWINDOWS}
   ,
+  BorderFrameTypesUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameTypesUnit.pas',
   FMX.PopupMenuExtThreadUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtThreadUnit.pas',
   BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
   FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas'

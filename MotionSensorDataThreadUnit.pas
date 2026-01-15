@@ -1,4 +1,4 @@
-unit MotionSensorDataThreadUnit;
+п»їunit MotionSensorDataThreadUnit;
 
 interface
 
@@ -10,7 +10,7 @@ uses
   ;
 
 const
-  FACTORY_NAME = 'TMotionSensorDataThread';
+  THREAD_NAME = 'TMotionSensorDataThread';
 
 type
   TDetectOrientationProc = reference to procedure;
@@ -26,10 +26,11 @@ type
     FSensor: TCustomMotionSensor;
 
   protected
-    // Специально не перегружаем Execute,
-    // чтобы выполнился на стороне родительского класса
-    // В родителе ловятся исключения
-    procedure Execute(const AThread: TThreadExt); reintroduce; // override;
+    // РЎРїРµС†РёР°Р»СЊРЅРѕ РЅРµ РїРµСЂРµРіСЂСѓР¶Р°РµРј Execute,
+    // С‡С‚РѕР±С‹ РІС‹РїРѕР»РЅРёР»СЃСЏ РЅР° СЃС‚РѕСЂРѕРЅРµ СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ РєР»Р°СЃСЃР°
+    // Р’ СЂРѕРґРёС‚РµР»Рµ Р»РѕРІСЏС‚СЃСЏ РёСЃРєР»СЋС‡РµРЅРёСЏ
+    procedure InnerExecute; override;
+//    procedure Execute(const AThread: TThreadExt); reintroduce; // override;
   public
     constructor Create(
       const AThreadFactory: TThreadFactory;
@@ -71,8 +72,7 @@ begin
 
   inherited Create(
     AThreadFactory,
-    AThreadName,
-    Self.Execute);
+    AThreadName);
 end;
 
 destructor TMotionSensorDataThread.Destroy;
@@ -128,29 +128,32 @@ begin
   if not HasProperties then
     Exit;
 
-  FForm.ThreadFactory.CreateRegistredThread(
-    procedure (
-      const AThreadFactory: TThreadFactory)
-    begin
-      TMotionSensorDataThread.Create(
-        AThreadFactory,
-        FACTORY_NAME,
-        Sensor,
-        AVerticalDetectedProc,
-        AHorizontalDetectedProc);
-    end);
+  TMotionSensorDataThread.Create(
+    FForm.ThreadFactory,
+    THREAD_NAME,
+    Sensor,
+    AVerticalDetectedProc,
+    AHorizontalDetectedProc);
+
+//  FForm.ThreadFactory.CreateRegistredThread(
+//    procedure (
+//      const AThreadFactory: TThreadFactory)
+//    begin
+//      TMotionSensorDataThread.Create(
+//        AThreadFactory,
+//        THREAD_NAME,
+//        Sensor,
+//        AVerticalDetectedProc,
+//        AHorizontalDetectedProc);
+//    end);
 end;
 
 class procedure TMotionSensorDataThread.UnInit;
-var
-  ThreadExt: TThreadExt;
 begin
-  ThreadExt := FForm.ThreadFactory.GetThreadByName(FACTORY_NAME);
-  if Assigned(ThreadExt) then
-    ThreadExt.Terminate;
+  FForm.ThreadFactory.TerminateThread(THREAD_NAME);
 end;
 
-procedure TMotionSensorDataThread.Execute(const AThread: TThreadExt);
+procedure TMotionSensorDataThread.InnerExecute;
 var
   AccelerationX: Double;
   AccelerationY: Double;

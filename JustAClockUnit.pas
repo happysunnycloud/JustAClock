@@ -14,9 +14,7 @@ uses
   , FMX.PopupMenuExtUnit
   , FMX.SingleSoundUnit
   , FMX.Gestures
-  {$IFDEF MSWINDOWS}
-  , BorderFrameUnit
-  {$ELSE IFDEF ANDROID}
+  {$IFDEF ANDROID}
   , FMX.Platform
   {$ENDIF}
   ;
@@ -113,11 +111,11 @@ type
     {$ENDIF}
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt: TPopupMenuExt;
-    FBorderFrame: TBorderFrame;
+    //FBorderFrame: TBorderFrame;
 
-    procedure TrayIconMouseRightButtonDown(
+    procedure TrayIconMouseRightButtonDownHandler(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-    procedure TrayIconMouseLeftButtonDown(
+    procedure TrayIconMouseLeftButtonDownHandler(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure OnCloseTrayItemHandler(Sender: TObject);
     {$ENDIF}
@@ -239,7 +237,7 @@ type
     procedure StartSignal;
     procedure StopSignal;
     {$IFDEF MSWINDOWS}
-    property BorderFrame: TBorderFrame read FBorderFrame;
+//    property BorderFrame: TBorderFrame read FBorderFrame;
     {$ENDIF}
   end;
 
@@ -272,7 +270,7 @@ uses
 
 function TMainForm.GetTimeThread: TTimeThread;
 begin
-  Result := ThreadFactory.GetThreadByName('TTimeThread') as TTimeThread;
+  Result := ThreadFactory.FindThread('TTimeThread') as TTimeThread;
 end;
 
 procedure TMainForm.SetTimeThreadOutputControl(const AControl: TControl);
@@ -286,6 +284,7 @@ end;
 procedure TMainForm.SetRingFileName(const ARingFileName: String);
 var
   RingName: String;
+  RingFileName: String;
 begin
   RingName := ARingFileName;
 
@@ -294,7 +293,8 @@ begin
   if RingName = RING_NAME_OFF then
     Exit;
 
-  FSingleSound.FileName := GetRingFile(RingName);
+  RingFileName := GetRingFile(RingName);
+  FSingleSound.FileName := RingFileName;
 end;
 
 procedure TMainForm.RaiseAppException(const AMethod: String; const AE: Exception);
@@ -313,11 +313,12 @@ end;
 {$IFDEF MSWINDOWS}
 procedure TMainForm.OnCloseTrayItemHandler(Sender: TObject);
 begin
-  MainForm.BorderFrame.CloseButtonRectangle.
-    OnClick(MainForm.BorderFrame.CloseButtonRectangle);
+  Close;
+//  MainForm.BorderFrame.CloseButtonRectangle.
+//    OnClick(MainForm.BorderFrame.CloseButtonRectangle);
 end;
 
-procedure TMainForm.TrayIconMouseRightButtonDown(
+procedure TMainForm.TrayIconMouseRightButtonDownHandler(
   Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
   GetCurPos(X, Y);
@@ -325,7 +326,7 @@ begin
   FTrayPopupMenuExt.Open(Trunc(X), Trunc(Y));
 end;
 
-procedure TMainForm.TrayIconMouseLeftButtonDown(
+procedure TMainForm.TrayIconMouseLeftButtonDownHandler(
   Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
   ShowWindow(ApplicationHWND, SW_HIDE);
@@ -782,7 +783,7 @@ begin
     {$ENDIF}
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt := nil;
-    FBorderFrame := nil;
+    //FBorderFrame := nil;
     {$ENDIF}
     {$IFDEF ANDROID}
     if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService,
@@ -793,7 +794,7 @@ begin
       ShowMessage('Application Event Service is not supported');
     {$ENDIF}
 
-    FSingleSound := TSingleSound.Create;
+    FSingleSound := TSingleSound.Create(ThreadFactory);
     SetRingFileName(TState.RingName);
 
     SetTimerForm := nil;
@@ -805,70 +806,60 @@ begin
     TState.MenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
     TState.MenuTheme.LightBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
     TState.MenuTheme.DarkBackgroundColor := TAlphaColorRec.Cornflowerblue;
-
-    TState.MenuTheme.CommonTextProps.Align := TAlignLayout.Client;
-    TState.MenuTheme.CommonTextProps.HitTest := false;
-    TState.MenuTheme.CommonTextProps.TextSettings.FontColor :=
-      TAlphaColorRec.White;
-    TState.MenuTheme.CommonTextProps.TextSettings.HorzAlign :=
-      TTextAlign.Leading;
-    TState.MenuTheme.CommonTextProps.TextSettings.VertAlign :=
-      TTextAlign.Center;
-    TState.MenuTheme.CommonTextProps.Margins.Left := 5;
-    TState.MenuTheme.CommonTextProps.WordWrap := false;
-
-    Board := TState.Board;
-    TState.Board := bkNone;
+    TState.MenuTheme.TextSettings.FontColor := TAlphaColorRec.White;
+    TState.MenuTheme.TextSettings.HorzAlign := TTextAlign.Leading;
+    TState.MenuTheme.TextSettings.VertAlign := TTextAlign.Center;
+    TState.MenuTheme.TextSettings.WordWrap := false;
 
     FCurrentColorIdent := TColors.ColorArray.LastValue;
 
     BuildPopupMenues;
 
     {$IFDEF MSWINDOWS}
+    BorderFrame.BorderFrameKind := TBorderFrameKind.bfkNormal;
+    BorderFrame.CaptionColor := $FF8D003A;
+    BorderFrame.BorderColor := $FF2A001A;
+    BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
+    BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
+
+    TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDownHandler;
+    TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDownHandler;
+    {$ENDIF}
+
+    Board := TState.Board;
+    TState.Board := bkNone;
+
+    {$IFDEF MSWINDOWS}
     ShowWindow(ApplicationHWND, SW_HIDE);
-
-    FBorderFrame :=
-      TBorderFrame.Create(
-        Self,
-        ContentLayout,
-        'Just a clock',
-        Trunc(ContentLayout.Width),
-        Trunc(ContentLayout.Height),
-        $FF8D003A,
-        $FF2A001A,
-        TAlphaColorRec.Lime,
-        $FFADADAD);
-
-    FBorderFrame.TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDown;
-    FBorderFrame.TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDown;
 
     Self.Left := TState.FormLeft;
     Self.Top  := TState.FormTop;
-
+    Self.ClientWidth := TState.FormWidth;
+    Self.ClientHeight := TState.FormHeight;
     {$ELSE IFDEF ANDROID}
     Self.FullScreen := true;
     {$ENDIF}
-//    FElectronicBoardFrame := nil;
+
+    OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
 
     RunTime;
 
-    OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
     {$IFDEF ANDROID}
     if TState.AutoOrientation then
       StartMotionSensorDataThread;
     {$ENDIF}
 
-    ScreenLockerLayout.BringToFront;
-
     TThread.CreateAnonymousThread(
       procedure
       begin
-        Sleep(1000);
+        Sleep(200);
+
         TThread.Queue(nil,
           procedure
           begin
             TState.Board := Board;
             OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
+            ScreenLockerLayout.BringToFront;
           end);
       end
       ).Start;
@@ -886,12 +877,20 @@ end;
 procedure TMainForm.FormPaint(Sender: TObject; Canvas: TCanvas;
   const ARect: TRectF);
 begin
+  if Application.Terminated then
+    Exit;
+
+  if TState.Board = bkNone then
+    Exit;
+
   PaintRects(ARect);
   {$IFDEF MSWINDOWS}
   TState.FormLeft     := Self.Left;
   TState.FormTop      := Self.Top;
-  TState.FormWidth    := FBorderFrame.ClientWidth;
-  TState.FormHeight   := FBorderFrame.ClientHeight;
+  TState.FormWidth    := Self.ClientWidth;
+  TState.FormHeight   := Self.ClientHeight;
+//  TState.FormWidth    := FBorderFrame.ClientWidth;
+//  TState.FormHeight   := FBorderFrame.ClientHeight;
   {$ENDIF}
 end;
 
@@ -998,18 +997,18 @@ procedure TMainForm.SetBoardSize(
   const AMinHeight: Integer;
   const ALastOrientationIsEqual: Boolean);
 begin
-  FBorderFrame.MinClientWidth := AMinWidth;
-  FBorderFrame.MinClientHeight := AMinHeight;
+  MinClientWidth := AMinWidth;
+  MinClientHeight := AMinHeight;
 
   if not ALastOrientationIsEqual then
   begin
-    FBorderFrame.ClientWidth := FBorderFrame.MinClientWidth;
-    FBorderFrame.ClientHeight := FBorderFrame.MinClientHeight;
+    ClientWidth := MinClientWidth;
+    ClientHeight := MinClientHeight;
   end
   else
   begin
-    FBorderFrame.ClientWidth  := TState.FormWidth;
-    FBorderFrame.ClientHeight := TState.FormHeight;
+    ClientWidth  := TState.FormWidth;
+    ClientHeight := TState.FormHeight;
   end;
 end;
 {$ENDIF}
@@ -1532,17 +1531,24 @@ begin
   if Assigned(TimeThread) then
     TimeThread.Terminate;
 
-  ThreadFactory.CreateRegistredThread(
-    procedure (
-      const AThreadFactory: TThreadFactory)
-    begin
-      TTimeThread.Create(
-        AThreadFactory,
-        StrToTime('00:00:00'),
-        TTimeKind.tkTime,
-        Self,
-        OutputControl);
-    end);
+  TTimeThread.Create(
+    ThreadFactory,
+    StrToTime('00:00:00'),
+    TTimeKind.tkTime,
+    Self,
+    OutputControl);
+
+//  ThreadFactory.CreateRegistredThread(
+//    procedure (
+//      const AThreadFactory: TThreadFactory)
+//    begin
+//      TTimeThread.Create(
+//        AThreadFactory,
+//        StrToTime('00:00:00'),
+//        TTimeKind.tkTime,
+//        Self,
+//        OutputControl);
+//    end);
 end;
 
 procedure TMainForm.RunTimer(
@@ -1598,51 +1604,27 @@ end;
 procedure TMainForm.StartSignal;
 const
   VOLUME_VALUE = 1.0;
-//var
-//  MenuItem: TItem;
 begin
   if TState.RingName <> RING_NAME_OFF then
-    ThreadFactory.CreateFreeOnTerminateThread(SINGLE_SOUND_THREAD,
-      procedure (const AThread: TThreadExt)
-      var
-        CurrentTime: Int64;
-        Duration: Int64;
+  begin
+    FSingleSound.OnFinished :=
+      procedure
       begin
-        AThread.Synchronize(nil,
+        TThread.ForceQueue(nil,
           procedure
           begin
-            FSingleSound.CurrentTime := 0;
-            Duration := FSingleSound.Duration;
+            FSingleSound.Play(0);
+            FSingleSound.Volume := VOLUME_VALUE;
           end);
-        while not AThread.Terminated do
-        begin
-          AThread.Synchronize(nil,
-            procedure
-            begin
-              CurrentTime := FSingleSound.CurrentTime;
-            end);
-          if (CurrentTime >= Duration) or
-             (CurrentTime = 0)
-          then
-          begin
-            AThread.Synchronize(nil,
-              procedure
-              begin
-                FSingleSound.Play(0);
-                FSingleSound.Volume := VOLUME_VALUE;
-              end);
-          end;
+      end;
 
-          Sleep(100);
-        end;
-
-        AThread.Synchronize(nil,
-          procedure
-          begin
-            FSingleSound.Pause;
-          end);
-      end,
-      false);
+    TThread.ForceQueue(nil,
+      procedure
+      begin
+        FSingleSound.Play(0);
+        FSingleSound.Volume := VOLUME_VALUE;
+      end);
+  end;
 
   if TState.Vibration then
     ThreadFactory.CreateFreeOnTerminateThread(VIBRO_THREAD,
@@ -1693,23 +1675,18 @@ end;
 
 procedure TMainForm.StopSignal;
 var
-  Thread: TThreadExt;
   MenuItem: TItem;
 begin
   MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
   MenuItem.Visible := false;
 
-  Thread := ThreadFactory.GetThreadByName(SINGLE_SOUND_THREAD);
-  if Assigned(Thread) then
-    Thread.Terminate;
+  FSingleSound.Pause;
 
-  Thread := ThreadFactory.GetThreadByName(SIGNAL_THREAD);
-  if Assigned(Thread) then
-    Thread.Terminate;
+//  ThreadFactory.TerminateThread(SINGLE_SOUND_THREAD);
 
-  Thread := ThreadFactory.GetThreadByName(VIBRO_THREAD);
-  if Assigned(Thread) then
-    Thread.Terminate;
+  ThreadFactory.TerminateThread(SIGNAL_THREAD);
+
+  ThreadFactory.TerminateThread(VIBRO_THREAD);
 end;
 
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
