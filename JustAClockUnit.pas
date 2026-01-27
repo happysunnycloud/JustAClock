@@ -11,9 +11,10 @@ uses
   FMX.FormExtUnit,
   CommonUnit, FMX.Controls.Presentation, FMX.Edit,
   TextBoardFrameUnit
-  , FMX.PopupMenuExtUnit
+  , FMX.PopupMenuExt
   , FMX.SingleSoundUnit
   , FMX.Gestures
+  , PopupMenuExt.Item
   {$IFDEF ANDROID}
   , FMX.Platform
   {$ENDIF}
@@ -411,7 +412,14 @@ var
 begin
   { SettingsPopupMenu }
 
-  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self);
+  FSettingsPopupMenuExt := TPopupMenuExt.Create(ContentLayout);
+//  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self, ThreadFactory);
+
+//  {$IFDEF MSWINDOWS}
+//  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self, ThreadFactory);
+//  {$ELSE IFDEF ANDROID}
+//  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self);
+//  {$ENDIF}
   TState.MenuTheme.CopyTo(FSettingsPopupMenuExt.Theme);
 
   FBoardsMenuItem := TItem.Create;
@@ -639,14 +647,14 @@ begin
 
   { ToolsPopupMenu }
 
-  FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
-  TState.MenuTheme.CopyTo(FToolsPopupMenuExt.Theme);
+  FToolsPopupMenuExt := TPopupMenuExt.Create(ContentLayout);
 
-  //asd
-//  MenuItem := TItem.Create;
-//  MenuItem.Text := '-';
-//  MenuItem.Tag := -1;
-//  FSettingsPopupMenuExt.Add(MenuItem);
+//  {$IFDEF MSWINDOWS}
+//  FToolsPopupMenuExt := TPopupMenuExt.Create(Self, ThreadFactory);
+//  {$ELSE IFDEF ANDROID}
+//  FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
+//  {$ENDIF}
+  TState.MenuTheme.CopyTo(FToolsPopupMenuExt.Theme);
 
   FRingMenuItem := TItem.Create;
   FRingMenuItem.Text := 'Ring';
@@ -718,7 +726,6 @@ begin
   MenuItem.Text := '-';
   MenuItem.Tag := -1;
   FToolsPopupMenuExt.Add(MenuItem);
-  //asd
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Set alarm';
@@ -741,6 +748,8 @@ begin
   MenuItem.OnClick := MenuCancelTimerItemClickHandler;
   MenuItem.Visible := false;
   FToolsPopupMenuExt.Add(MenuItem);
+
+  { Tray menu}
 
   {$IFDEF MSWINDOWS}
   FTrayPopupMenuExt := TPopupMenuExt.Create(Self);
@@ -765,6 +774,13 @@ var
 begin
   ReportMemoryLeaksOnShutdown := true;
   try
+    // Пусть остается SystemDefault
+    // В некоторых эмуляторах при установке в HighQuality
+    // зависает на экране заставки
+    // На хардовом железе HighQuality отрабатывается
+    // Визуально разница не замечена
+    Self.Quality := TCanvasQuality.SystemDefault;
+
     FElectronicBoardFrame := nil;
     FTextBoardFrame := nil;
     FCurrentColorIdent := '';
@@ -829,6 +845,8 @@ begin
     Board := TState.Board;
     TState.Board := bkNone;
 
+    OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
+
     {$IFDEF MSWINDOWS}
     ShowWindow(ApplicationHWND, SW_HIDE);
 
@@ -840,19 +858,17 @@ begin
     Self.FullScreen := true;
     {$ENDIF}
 
-    OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
-
-    RunTime;
-
     {$IFDEF ANDROID}
     if TState.AutoOrientation then
       StartMotionSensorDataThread;
     {$ENDIF}
 
+    RunTime;
+
     TThread.CreateAnonymousThread(
       procedure
       begin
-        Sleep(200);
+        Sleep(100);
 
         TThread.Queue(nil,
           procedure
@@ -896,6 +912,9 @@ end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
+  if Application.Terminated then
+    Exit;
+
   if TState.Board = bkNone then
     Exit;
 

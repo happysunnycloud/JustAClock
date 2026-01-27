@@ -1,4 +1,4 @@
-program JustAClock;
+п»їprogram JustAClock;
 //  {$IFDEF ANDROID}
 //  Androidapi.Helpers,
 //  Androidapi.JNI.GraphicsContentViewText,
@@ -7,7 +7,7 @@ program JustAClock;
 //  {$ENDIF}
 //  Application.Initialize;
 //  {$IFDEF ANDROID}
-//  //отключаем гашение экрана
+//  //РѕС‚РєР»СЋС‡Р°РµРј РіР°С€РµРЅРёРµ СЌРєСЂР°РЅР°
 //  TAndroidHelper.Activity.GetWindow.addFlags(TJWindowManager_LayoutParams.JavaClass.FLAG_KEEP_SCREEN_ON);
 //  {$ENDIF}
 //  Application.CreateForm(TMainForm, MainForm);
@@ -18,7 +18,7 @@ uses
   Androidapi.JNI.GraphicsContentViewText,
   Androidapi.JNI.App,
   Android.JNI.PowerManager in '..\DevelopmentsCollection\Android.JNI.PowerManager.pas',
-  {$ENDIF}
+  {$ENDIF }
   System.SysUtils,
   System.StartUpCopy,
   FMX.Forms,
@@ -48,22 +48,28 @@ uses
   FMX.ControlToolsUnit in '..\DevelopmentsCollection\FMX.ControlToolsUnit.pas',
   SetCustomColorUnit in 'SetCustomColorUnit.pas' {SetCustomColorForm},
   FileStreamToolsUnit in '..\DevelopmentsCollection\FileStreamToolsUnit.pas',
-  FMX.PopupMenuExtUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtUnit.pas',
-  FMX.PopupMenuExtFormUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtFormUnit.pas',
+  FMX.PopupMenuExt in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.pas',
   FMX.ThemeUnit in '..\DevelopmentsCollection\FMX.ThemeUnit.pas',
   ProportionUnit in 'ProportionUnit.pas',
   MotionSensorDataThreadUnit in 'MotionSensorDataThreadUnit.pas',
   FMX.MultiResBitmapsUnit in '..\DevelopmentsCollection\FMX.MultiResBitmapsUnit.pas',
   FMX.MultiResBitmapExtractorUnit in '..\DevelopmentsCollection\FilePacker\FMX.MultiResBitmapExtractorUnit.pas',
   FMX.VibroUnit in '..\DevelopmentsCollection\FMX.VibroUnit.pas',
-  FMX.SingleSoundUnit in '..\DevelopmentsCollection\FMX.SingleSoundUnit.pas'
+  PopupMenuExt.Item in 'C:\Desktop\DevelopmentsCollection\FMX.PopupMenuExt\PopupMenuExt.Item.pas',
+  FMX.SingleSoundUnit in '..\DevelopmentsCollection\FMX.SingleSoundUnit.pas',
+  FMX.PopupMenuExt.BaseClass in 'C:\Desktop\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.BaseClass.pas',
+  FMX.PopupMenuExt.Constants in 'C:\Desktop\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Constants.pas',
+  FMX.PopupMenuExt.Layout in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Layout.pas',
   {$IFDEF MSWINDOWS}
-  ,
   BorderFrameTypesUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameTypesUnit.pas',
-  FMX.PopupMenuExtThreadUnit in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExtThreadUnit.pas',
+  FMX.PopupMenuExt.Form in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Form.pas',
+  FMX.PopupMenuExt.Thread in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Thread.pas',
+  FMX.PopupMenuExt.Windows in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Windows.pas',
   BorderFrameUnit in '..\DevelopmentsCollection\BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
   FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas'
-  {$ENDIF }
+  {$ELSE IFDEF ANDROID}
+  FMX.PopupMenuExt.Android in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Android.pas'
+  {$ENDIF}
   ;
 
 {$R *.res}
@@ -71,7 +77,7 @@ uses
 begin
   Application.Initialize;
   {$IFDEF ANDROID}
-  //отключаем гашение экрана
+  //РѕС‚РєР»СЋС‡Р°РµРј РіР°С€РµРЅРёРµ СЌРєСЂР°РЅР°
   TAndroidHelper.Activity.GetWindow.addFlags(TJWindowManager_LayoutParams.JavaClass.FLAG_KEEP_SCREEN_ON);
   {$ENDIF}
   Application.CreateForm(TMainForm, MainForm);

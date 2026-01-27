@@ -8,7 +8,6 @@ object MainForm: TMainForm
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
-  Quality = HighQuality
   FormStyle = StayOnTop
   FormFactor.Width = 320
   FormFactor.Height = 480
