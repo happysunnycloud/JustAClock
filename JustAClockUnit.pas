@@ -1647,7 +1647,7 @@ begin
   end;
 
   if TState.Vibration then
-    ThreadFactory.CreateFreeOnTerminateThread(VIBRO_THREAD,
+    ThreadFactory.CreateFreeOnTerminateInlineThread(VIBRO_THREAD,
       procedure (const AThread: TThreadExt)
       begin
         while not AThread.Terminated do
@@ -1658,7 +1658,7 @@ begin
       end,
       false);
 
-  ThreadFactory.CreateFreeOnTerminateThread(SIGNAL_THREAD,
+  ThreadFactory.CreateFreeOnTerminateInlineThread(SIGNAL_THREAD,
     procedure (const AThread: TThreadExt)
     begin
       TThread.ForceQueue(nil,
