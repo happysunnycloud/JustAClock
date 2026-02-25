@@ -50,6 +50,10 @@ implementation
 
 {$R *.fmx}
 
+uses
+    FMX.Theme.Types
+  ;
+
 procedure TSetTimerForm.OnRectangleMouseEnterHandler(Sender: TObject);
 begin
   TRectangle(Sender).Fill.Color := $FF4F4F4F;
@@ -80,9 +84,9 @@ begin
 //      TAlphaColorRec.Lime,
 //      $FFADADAD);
 
-  BorderFrame.BorderFrameKind := TBorderFrameKind.bfkNormal;
+  BorderFrame.Kind := TBorderFrameKind.bfkNormal;
   BorderFrame.CaptionColor := $FF8D003A;
-  BorderFrame.BorderColor := $FF2A001A;
+  BorderFrame.Color := $FF2A001A;
   BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
   BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
 

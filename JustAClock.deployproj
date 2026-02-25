@@ -44,11 +44,11 @@
     <ItemGroup Condition="'$(Platform)'=='Linux64'"/>
     <ItemGroup Condition="'$(Platform)'=='OSX64'"/>
     <ItemGroup Condition="'$(Platform)'=='Android'">
-        <DeployFile Include="Arts\PCKs\Patterns\Predator 1.pck" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
-            <RemoteName>Predator 1.pck</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
+        <DeployFile Include="Arts\Splash470x320.png" Condition="'$(Config)'=='Release'">
+            <RemoteDir>JustAClock\res\drawable-normal\</RemoteDir>
+            <RemoteName>splash_image.png</RemoteName>
+            <DeployClass>Android_SplashImage470</DeployClass>
+            <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
@@ -84,15 +84,6 @@
             <RemoteDir>JustAClock\res\drawable-xxxhdpi\</RemoteDir>
             <RemoteName>ic_launcher.png</RemoteName>
             <DeployClass>Android_LauncherIcon192</DeployClass>
-            <Operation>1</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-        <DeployFile Include="Arts\Splash470x320.png" Condition="'$(Config)'=='Release'">
-            <RemoteDir>JustAClock\res\drawable-normal\</RemoteDir>
-            <RemoteName>splash_image.png</RemoteName>
-            <DeployClass>Android_SplashImage470</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -297,9 +288,9 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\PCKs\Patterns\Predator 3.pck" Condition="'$(Config)'=='Debug'">
+        <DeployFile Include="Arts\PCKs\Patterns\Predator.pck" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
-            <RemoteName>Predator 3.pck</RemoteName>
+            <RemoteName>Predator.pck</RemoteName>
             <DeployClass>File</DeployClass>
             <Operation>0</Operation>
             <LocalCommand/>
@@ -387,15 +378,6 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\PCKs\Patterns\Predator 5.pck" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
-            <RemoteName>Predator 5.pck</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
         <DeployFile Include="Android\Debug\classes.dex" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\classes\</RemoteDir>
             <RemoteName>classes.dex</RemoteName>
@@ -423,27 +405,9 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\PCKs\Images\BDSM girls.pck" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\assets\internal\PCKs\Images\</RemoteDir>
-            <RemoteName>BDSM girls.pck</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
         <DeployFile Include="Arts\PCKs\Patterns\Olympic.pck" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
             <RemoteName>Olympic.pck</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-        <DeployFile Include="Arts\PCKs\Patterns\Predator 2.pck" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
-            <RemoteName>Predator 2.pck</RemoteName>
             <DeployClass>File</DeployClass>
             <Operation>0</Operation>
             <LocalCommand/>
@@ -505,20 +469,20 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\PCKs\Patterns\Predator 4.pck" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
-            <RemoteName>Predator 4.pck</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
         <DeployFile Include="Android\Release\strings.xml" Condition="'$(Config)'=='Release'">
             <RemoteDir>JustAClock\res\values\</RemoteDir>
             <RemoteName>strings.xml</RemoteName>
             <DeployClass>Android_Strings</DeployClass>
             <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="Arts\PCKs\Images\Gzhel.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Images\</RemoteDir>
+            <RemoteName>Gzhel.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
@@ -541,29 +505,11 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Arts\PCKs\Images\BDSM girls inverted.pck" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\assets\internal\PCKs\Images\</RemoteDir>
-            <RemoteName>BDSM girls inverted.pck</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
         <DeployFile Include="Android\Release\colors.xml" Condition="'$(Config)'=='Release'">
             <RemoteDir>JustAClock\res\values\</RemoteDir>
             <RemoteName>colors.xml</RemoteName>
             <DeployClass>Android_Colors</DeployClass>
             <Operation>1</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-        <DeployFile Include="Arts\PCKs\Images\Gzhel.pck" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>JustAClock\assets\internal\PCKs\Images\</RemoteDir>
-            <RemoteName>Gzhel.pck</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>

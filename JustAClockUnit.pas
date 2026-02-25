@@ -237,9 +237,9 @@ type
   public
     procedure StartSignal;
     procedure StopSignal;
-    {$IFDEF MSWINDOWS}
-//    property BorderFrame: TBorderFrame read FBorderFrame;
-    {$ENDIF}
+//    {$IFDEF MSWINDOWS}
+////    property BorderFrame: TBorderFrame read FBorderFrame;
+//    {$ENDIF}
   end;
 
 var
@@ -253,13 +253,14 @@ uses
   {$IFDEF MSWINDOWS}
     Winapi.Windows
   , FMX.Platform.Win,
+//  , FMX.FormExt.Types,
   {$ENDIF}
     ShowTimeUnit
   , ShowTextTimeUnit
   , ThreadFactoryUnit
   , NumScrollUnit
   , SetTimerFormUnit
-  , SetCustomColorUnit
+  , SetCustomColorFormUnit
   , VerticalElectronicBoardFrameUnit
   , VerticalTextBoardFrameUnit
   , ProportionUnit
@@ -420,7 +421,7 @@ begin
 //  {$ELSE IFDEF ANDROID}
 //  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self);
 //  {$ENDIF}
-  TState.MenuTheme.CopyTo(FSettingsPopupMenuExt.Theme);
+  FSettingsPopupMenuExt.Theme.CopyFrom(TState.MenuTheme);
 
   FBoardsMenuItem := TItem.Create;
   FBoardsMenuItem.Text := 'Boards';
@@ -654,7 +655,7 @@ begin
 //  {$ELSE IFDEF ANDROID}
 //  FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
 //  {$ENDIF}
-  TState.MenuTheme.CopyTo(FToolsPopupMenuExt.Theme);
+  FToolsPopupMenuExt.Theme.CopyFrom(TState.MenuTheme);
 
   FRingMenuItem := TItem.Create;
   FRingMenuItem.Text := 'Ring';
@@ -753,7 +754,7 @@ begin
 
   {$IFDEF MSWINDOWS}
   FTrayPopupMenuExt := TPopupMenuExt.Create(Self);
-  TState.MenuTheme.CopyTo(FTrayPopupMenuExt.Theme);
+  FTrayPopupMenuExt.Theme.CopyFrom(TState.MenuTheme);
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Close';
@@ -819,9 +820,9 @@ begin
 
     { MenuTheme}
 
-    TState.MenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
-    TState.MenuTheme.LightBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
-    TState.MenuTheme.DarkBackgroundColor := TAlphaColorRec.Cornflowerblue;
+    TState.MenuTheme.PopUpMenuSettings.FormBackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
+    TState.MenuTheme.PopUpMenuSettings.BackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
+    TState.MenuTheme.PopUpMenuSettings.MouseOverColor := TAlphaColorRec.Cornflowerblue;
     TState.MenuTheme.TextSettings.FontColor := TAlphaColorRec.White;
     TState.MenuTheme.TextSettings.HorzAlign := TTextAlign.Leading;
     TState.MenuTheme.TextSettings.VertAlign := TTextAlign.Center;
@@ -832,9 +833,9 @@ begin
     BuildPopupMenues;
 
     {$IFDEF MSWINDOWS}
-    BorderFrame.BorderFrameKind := TBorderFrameKind.bfkNormal;
+    BorderFrame.Kind := TBorderFrameKind.bfkNormal;
     BorderFrame.CaptionColor := $FF8D003A;
-    BorderFrame.BorderColor := $FF2A001A;
+    BorderFrame.Color := $FF2A001A;
     BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
     BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
 
