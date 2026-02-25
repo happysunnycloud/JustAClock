@@ -1,4 +1,4 @@
-﻿unit SetCustomColorUnit;
+﻿unit SetCustomColorFormUnit;
 
 interface
 
@@ -54,6 +54,7 @@ implementation
 uses
     System.UIConsts
   , FMX.ImageToolsUnit
+//  , FMX.FormExt.Types
   ;
 
 procedure TSetCustomColorForm.OnRectangleMouseEnterHandler(Sender: TObject);
@@ -94,9 +95,9 @@ begin
 //      TAlphaColorRec.Lime,
 //      $FFADADAD);
 
-  BorderFrame.BorderFrameKind := TBorderFrameKind.bfkNormal;
+  BorderFrame.Kind := TBorderFrameKind.bfkNormal;
   BorderFrame.CaptionColor := $FF8D003A;
-  BorderFrame.BorderColor := $FF2A001A;
+  BorderFrame.Color := $FF2A001A;
   BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
   BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
   {$ENDIF}
