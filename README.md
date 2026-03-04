@@ -1,1 +1,1 @@
-Простые часы со сменными циферблатами. Кроссплатформа Windows/Android
+Simple desktop clock (Windows/Android) 
