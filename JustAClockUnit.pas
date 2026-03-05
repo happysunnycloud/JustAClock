@@ -421,7 +421,7 @@ begin
 //  {$ELSE IFDEF ANDROID}
 //  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self);
 //  {$ENDIF}
-  FSettingsPopupMenuExt.Theme.CopyFrom(TState.MenuTheme);
+  FSettingsPopupMenuExt.Theme.CopyFrom(TState.MenuTheme.PopUpMenuTheme);
 
   FBoardsMenuItem := TItem.Create;
   FBoardsMenuItem.Text := 'Boards';
@@ -655,7 +655,7 @@ begin
 //  {$ELSE IFDEF ANDROID}
 //  FToolsPopupMenuExt := TPopupMenuExt.Create(Self);
 //  {$ENDIF}
-  FToolsPopupMenuExt.Theme.CopyFrom(TState.MenuTheme);
+  FToolsPopupMenuExt.Theme.CopyFrom(TState.MenuTheme.PopUpMenuTheme);
 
   FRingMenuItem := TItem.Create;
   FRingMenuItem.Text := 'Ring';
@@ -754,7 +754,7 @@ begin
 
   {$IFDEF MSWINDOWS}
   FTrayPopupMenuExt := TPopupMenuExt.Create(Self);
-  FTrayPopupMenuExt.Theme.CopyFrom(TState.MenuTheme);
+  FTrayPopupMenuExt.Theme.CopyFrom(TState.MenuTheme.PopUpMenuTheme);
 
   MenuItem := TItem.Create;
   MenuItem.Text := 'Close';
@@ -820,13 +820,13 @@ begin
 
     { MenuTheme}
 
-    TState.MenuTheme.PopUpMenuSettings.FormBackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
-    TState.MenuTheme.PopUpMenuSettings.BackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
-    TState.MenuTheme.PopUpMenuSettings.MouseOverColor := TAlphaColorRec.Cornflowerblue;
-    TState.MenuTheme.TextSettings.FontColor := TAlphaColorRec.White;
-    TState.MenuTheme.TextSettings.HorzAlign := TTextAlign.Leading;
-    TState.MenuTheme.TextSettings.VertAlign := TTextAlign.Center;
-    TState.MenuTheme.TextSettings.WordWrap := false;
+    TState.MenuTheme.PopUpMenuTheme.BackgroundColor := $FF2A001A;//TAlphaColorRec.Black;
+    TState.MenuTheme.PopUpMenuTheme.NormalBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
+    TState.MenuTheme.PopUpMenuTheme.MouseOverColor := TAlphaColorRec.Cornflowerblue;
+    TState.MenuTheme.PopUpMenuTheme.CustomTextSettings.FontColor := TAlphaColorRec.White;
+//    TState.MenuTheme.TextSettings.HorzAlign := TTextAlign.Leading;
+//    TState.MenuTheme.TextSettings.VertAlign := TTextAlign.Center;
+//    TState.MenuTheme.TextSettings.WordWrap := false;
 
     FCurrentColorIdent := TColors.ColorArray.LastValue;
 

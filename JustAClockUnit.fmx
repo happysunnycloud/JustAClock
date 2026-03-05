@@ -1,4 +1,4 @@
-object MainForm_1: TMainForm
+object MainForm: TMainForm
   Left = 0
   Top = 0
   BorderStyle = None
