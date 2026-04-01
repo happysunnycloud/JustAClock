@@ -111,9 +111,7 @@ begin
 
   FreeOnTerminate := true;
 
-  inherited Create(
-    AThreadFactory,
-    'TTimeThread');
+  inherited Create(AThreadFactory);
 end;
 
 destructor TTimeThread.Destroy;

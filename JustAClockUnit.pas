@@ -87,6 +87,7 @@ type
     procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
   strict private
+    FTimeThread: TTimeThread;
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
     FCurrentColorIdent: String;
@@ -190,7 +191,7 @@ type
     {$ENDIF}
     procedure RaiseAppException(const AMethod: String; const AE: Exception);
 
-    function GetTimeThread: TTimeThread;
+//    function GetTimeThread: TTimeThread;
     procedure SetTimeThreadOutputControl(const AControl: TControl);
 
     procedure SetRingFileName(const ARingFileName: String);
@@ -233,7 +234,7 @@ type
       const AColor: TAlphaColor;
       const ALastOrientationIsEqual: Boolean);
 
-    property TimeThread: TTimeThread read GetTimeThread;
+//    property TimeThread: TTimeThread read GetTimeThread;
   public
     procedure StartSignal;
     procedure StopSignal;
@@ -270,17 +271,17 @@ uses
 
 { TMainForm }
 
-function TMainForm.GetTimeThread: TTimeThread;
-begin
-  Result := ThreadFactory.FindThread('TTimeThread') as TTimeThread;
-end;
+//function TMainForm.GetTimeThread: TTimeThread;
+//begin
+//  Result := ThreadFactory.FindThread('TTimeThread') as TTimeThread;
+//end;
 
 procedure TMainForm.SetTimeThreadOutputControl(const AControl: TControl);
 begin
-  if not Assigned(TimeThread) then
+  if not Assigned(FTimeThread) then
     Exit;
 
-  TimeThread.OutputControl := AControl;
+  FTimeThread.OutputControl := AControl;
 end;
 
 procedure TMainForm.SetRingFileName(const ARingFileName: String);
@@ -325,7 +326,7 @@ procedure TMainForm.TrayIconMouseRightButtonDownHandler(
 begin
   GetCurPos(X, Y);
 
-  FTrayPopupMenuExt.Open(Trunc(X), Trunc(Y));
+  FTrayPopupMenuExt.Open(X, Y);
 end;
 
 procedure TMainForm.TrayIconMouseLeftButtonDownHandler(
@@ -775,6 +776,7 @@ var
 begin
   ReportMemoryLeaksOnShutdown := true;
   try
+    FTimeThread := nil;
     // Пусть остается SystemDefault
     // В некоторых эмуляторах при установке в HighQuality
     // зависает на экране заставки
@@ -1548,27 +1550,15 @@ var
 begin
   OutputControl := TimeVoidEdit;
 
-  if Assigned(TimeThread) then
-    TimeThread.Terminate;
+  if Assigned(FTimeThread) then
+    ThreadFactory.TerminateThread(FTimeThread);
 
-  TTimeThread.Create(
+  FTimeThread := TTimeThread.Create(
     ThreadFactory,
     StrToTime('00:00:00'),
-    TTimeKind.tkTime,
+    tkTime,
     Self,
     OutputControl);
-
-//  ThreadFactory.CreateRegistredThread(
-//    procedure (
-//      const AThreadFactory: TThreadFactory)
-//    begin
-//      TTimeThread.Create(
-//        AThreadFactory,
-//        StrToTime('00:00:00'),
-//        TTimeKind.tkTime,
-//        Self,
-//        OutputControl);
-//    end);
 end;
 
 procedure TMainForm.RunTimer(
@@ -1580,20 +1570,15 @@ begin
   if Assigned(FElectronicBoardFrame) then
     OutputControl := TimeVoidEdit;
 
-  if Assigned(TimeThread) then
-    TimeThread.Terminate;
+  if Assigned(FTimeThread) then
+    ThreadFactory.TerminateThread(FTimeThread);
 
-  ThreadFactory.CreateRegistredThread(
-    procedure (
-      const AThreadFactory: TThreadFactory)
-    begin
-      TTimeThread.Create(
-        AThreadFactory,
-        ATriggerTime,
-        tkTimer,
-        Self,
-        OutputControl);
-    end);
+  FTimeThread := TTimeThread.Create(
+    ThreadFactory,
+    ATriggerTime,
+    tkTimer,
+    Self,
+    OutputControl);
 end;
 
 procedure TMainForm.RunAlarm(
@@ -1605,20 +1590,15 @@ begin
   if Assigned(FElectronicBoardFrame) then
     OutputControl := TimeVoidEdit;
 
-  if Assigned(TimeThread) then
-    TimeThread.Terminate;
+  if Assigned(FTimeThread) then
+    ThreadFactory.TerminateThread(FTimeThread);
 
-  ThreadFactory.CreateRegistredThread(
-    procedure (
-      const AThreadFactory: TThreadFactory)
-    begin
-      TTimeThread.Create(
-        AThreadFactory,
-        ATriggerTime,
-        tkAlarm,
-        Self,
-        OutputControl);
-    end);
+  FTimeThread := TTimeThread.Create(
+    ThreadFactory,
+    ATriggerTime,
+    tkAlarm,
+    Self,
+    OutputControl);
 end;
 
 procedure TMainForm.StartSignal;
