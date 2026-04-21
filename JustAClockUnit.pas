@@ -87,6 +87,7 @@ type
     procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
   strict private
+    FIsAppStartedFromAlarmReceiver: Boolean;
     FTimeThread: TTimeThread;
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
@@ -157,6 +158,8 @@ type
     procedure RunTimer(const ATriggerTime: TTime);
     // Будильник
     procedure RunAlarm(const ATriggerTime: TTime);
+
+    procedure OnTimeThreadTerminateHandler(Sender: TObject);
     {$IFDEF ANDROID}
     procedure MenuAutoOrientationOnItemClickHandler(Sender: TObject);
     procedure MenuAutoOrientationOffItemClickHandler(Sender: TObject);
@@ -254,7 +257,12 @@ uses
   {$IFDEF MSWINDOWS}
     Winapi.Windows
   , FMX.Platform.Win,
-//  , FMX.FormExt.Types,
+  {$ENDIF}
+  {$IFDEF ANDROID}
+    Androidapi.Helpers
+  , Androidapi.JNI.App
+  , Androidapi.JNI.JavaTypes
+  , FMX.Alarm.Android,
   {$ENDIF}
     ShowTimeUnit
   , ShowTextTimeUnit
@@ -344,6 +352,8 @@ end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+//  if Assigned(FTimeThread) then
+//    FTimeThread.OutputControl := nil;
   // Борды нужно закрывать раньше, чем умрут все потоки
   // Так как при закрытии бордов есть обращение к потоку таймера
   CloseBoard;
@@ -797,20 +807,22 @@ begin
     FCustomColorsMenuItem := nil;
     FHorizontalOrientationMenuItem := nil;
     FVerticalOrientationMenuItem := nil;
-    {$IFDEF ANDROID}
-    FAutoOrientationMenuItem := nil;
-    {$ENDIF}
+    FIsAppStartedFromAlarmReceiver := false;
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt := nil;
-    //FBorderFrame := nil;
     {$ENDIF}
     {$IFDEF ANDROID}
+    FAutoOrientationMenuItem := nil;
     if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService,
       IInterface(aFMXApplicationEventService))
     then
       aFMXApplicationEventService.SetApplicationEventHandler(HandleAppEvent)
     else
       ShowMessage('Application Event Service is not supported');
+
+    FIsAppStartedFromAlarmReceiver :=
+      TAndroidHelper.Activity.getIntent.
+        getBooleanExtra(StringToJString('StartedFromAlarmReceiver'), false);
     {$ENDIF}
 
     FSingleSound := TSingleSound.Create(ThreadFactory);
@@ -879,6 +891,9 @@ begin
             TState.Board := Board;
             OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
             ScreenLockerLayout.BringToFront;
+
+            if FIsAppStartedFromAlarmReceiver then
+              StartSignal;
           end);
       end
       ).Start;
@@ -1559,6 +1574,7 @@ begin
     tkTime,
     Self,
     OutputControl);
+  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
 end;
 
 procedure TMainForm.RunTimer(
@@ -1579,6 +1595,7 @@ begin
     tkTimer,
     Self,
     OutputControl);
+  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
 end;
 
 procedure TMainForm.RunAlarm(
@@ -1599,6 +1616,12 @@ begin
     tkAlarm,
     Self,
     OutputControl);
+  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
+end;
+
+procedure TMainForm.OnTimeThreadTerminateHandler(Sender: TObject);
+begin
+  FTimeThread := nil;
 end;
 
 procedure TMainForm.StartSignal;
@@ -1685,11 +1708,18 @@ begin
 //  ThreadFactory.TerminateThread(SINGLE_SOUND_THREAD);
 
   ThreadFactory.TerminateThread(SIGNAL_THREAD);
-
   ThreadFactory.TerminateThread(VIBRO_THREAD);
 end;
 
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
+
+  function _TimeToDateTime(const ATime: TTime): TDateTime;
+  begin
+    Result := Now;
+
+    ReplaceTime(Result, ATime);
+  end;
+
 var
   AlarmTime: TTime;
   MenuItem: TItem;
@@ -1697,9 +1727,11 @@ begin
   StopSignal;
 
   AlarmTime := SetTimerForm.Time;
-
+  {$IFDEF MSWINDOWS}
   RunAlarm(AlarmTime);
-
+  {$ELSE IFDEF ANDROID}
+  TAlarm.ReChargeAlarm(_TimeToDateTime(AlarmTime));
+  {$ENDIF}
   MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
   MenuItem.Visible := true;
 
@@ -1707,8 +1739,7 @@ begin
     procedure
     begin
       SetTimerForm.Close;
-    end
-  );
+    end);
 end;
 
 procedure TMainForm.SetTimerTimerFormOkButtonClickHandler(Sender: TObject);

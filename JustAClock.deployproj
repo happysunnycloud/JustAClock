@@ -495,11 +495,29 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="classes.dex" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\</RemoteDir>
+            <RemoteName>classes.dex</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Arts\Splash426x320.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\res\drawable-small\</RemoteDir>
             <RemoteName>splash_image.png</RemoteName>
             <DeployClass>Android_SplashImage426</DeployClass>
             <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="Android\libs\app-release.aar" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\</RemoteDir>
+            <RemoteName>app-release.aar</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>

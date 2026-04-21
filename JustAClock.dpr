@@ -25,7 +25,7 @@ uses
   FilePackerUnit in '..\DevelopmentsCollection\FilePacker\FilePackerUnit.pas',
   FMX.ImageExtractorUnit in '..\DevelopmentsCollection\FilePacker\FMX.ImageExtractorUnit.pas',
   TimeCalcUnit in '..\DevelopmentsCollection\TimeCalcUnit.pas',
-  FMX.FormExtUnit in '..\DevelopmentsCollection\FMX.FormExt\FMX.FormExtUnit.pas',
+  FMX.FormExtUnit in '..\DevelopmentsCollection\FMX.FormExtUnit.pas',
 //  FMX.FormExt.Types in '..\DevelopmentsCollection\FMX.FormExt.Types.pas',
   ThreadFactoryUnit in '..\DevelopmentsCollection\ThreadFactoryUnit.pas',
   ThreadRegistryUnit in '..\DevelopmentsCollection\ThreadRegistryUnit.pas',
@@ -58,7 +58,6 @@ uses
   FMX.PopupMenuExt.Layout in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Layout.pas',
   BinFileTypes in '..\DevelopmentsCollection\Types\BinFileTypes.pas',
   StreamHandler in '..\DevelopmentsCollection\Stream\StreamHandler.pas',
-  StringToolsUnit in '..\DevelopmentsCollection\StringToolsUnit.pas',
   {$IFDEF MSWINDOWS}
   FMX.PopupMenuExt.Form in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Form.pas',
   FMX.PopupMenuExt.Thread in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Thread.pas',
@@ -66,7 +65,8 @@ uses
   BorderFrameUnit in 'FMX.BorderFrame\BorderFrameUnit.pas' {BorderFrame: TFrame},
   FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas'
   {$ELSE IFDEF ANDROID}
-  FMX.PopupMenuExt.Android in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Android.pas'
+  FMX.PopupMenuExt.Android in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Android.pas',
+  FMX.Alarm.Android in 'FMX.Alarm.Android.pas'
   {$ENDIF}
   ;
 
@@ -81,7 +81,6 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
-
 
 // Просто копия для страховки
 // При подключении новых юнитов, часто съезжает файл проджекта
@@ -153,6 +152,7 @@ end.
 //  FMX.TrayIcon.Win in '..\DevelopmentsCollection\FMX.TrayIcon.Win.pas'
 //  {$ELSE IFDEF ANDROID}
 //  FMX.PopupMenuExt.Android in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Android.pas'
+//  FMX.Alarm.Android in 'FMX.PopupMenuExt.Android.pas'
 //  {$ENDIF}
 //  ;
 //
@@ -167,4 +167,3 @@ end.
 //  Application.CreateForm(TMainForm, MainForm);
 //  Application.Run;
 //end.
-

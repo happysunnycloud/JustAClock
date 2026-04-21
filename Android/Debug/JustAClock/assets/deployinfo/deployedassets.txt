@@ -6,6 +6,7 @@
 .\assets\internal\Rings\YameteKudasai.mp3
 .\assets\internal\PCKs\Images\Colored numbers.pck
 .\assets\internal\PCKs\Patterns\Predator.pck
+.\assets\classes.dex
 .\assets\internal\PCKs\Patterns\Electronic.pck
 .\assets\internal\PCKs\Patterns\Olympic.pck
 .\assets\internal\Rings\Wow.mp3

@@ -112,6 +112,12 @@ begin
   FreeOnTerminate := true;
 
   inherited Create(AThreadFactory);
+
+  OnSetTerminateProcRef :=
+    procedure
+    begin
+      FOutputControl := nil;
+    end;
 end;
 
 destructor TTimeThread.Destroy;
