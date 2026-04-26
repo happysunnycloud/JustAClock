@@ -9,6 +9,7 @@ uses
   , FilePackerUnit
   , CommonUnit
   , System.UITypes
+  , TypesUnit
   ;
 
 const

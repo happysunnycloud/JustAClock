@@ -9,6 +9,7 @@ uses
   , CommonUnit
   , System.UITypes
   , FMX.MultiResBitmapsUnit
+  , TypesUnit
   ;
 
 type

@@ -15,6 +15,7 @@ uses
   , FMX.SingleSoundUnit
   , FMX.Gestures
   , PopupMenuExt.Item
+  , TypesUnit
   {$IFDEF ANDROID}
   , FMX.Platform
   {$ENDIF}
@@ -31,6 +32,9 @@ const
   VIBRO_MENU_ITEM_NAME = 'VibroMenuItem';
   VERTICAL_ORIENTATION_MENU_ITEM_NAME = 'VerticalOrientationMenuItem';
   HORIZONTAL_ORIENTATION_MENU_ITEM_NAME = 'HorizontalOrientationMenuItem';
+  // Мы не будем управлять состоянием кнопки отмены будильника
+  // На андроиде нельзя отследить выставлено будильник или нет
+  // Отслеживать можно только по локальному флагу - это не обосо имеет смысл
   CANCEL_MENU_ITEM_NAME = 'CancelMenuItem';
   COLOR_MENU_ITEM_NAME_PREFIX = 'ColorMenuItem';
   CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX = 'CustomColorMenuItem';
@@ -72,7 +76,6 @@ type
     GestureManager: TGestureManager;
     ScreenLockerLayout: TLayout;
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
     procedure SettingsLayoutTap(Sender: TObject; const Point: TPointF);
@@ -86,8 +89,9 @@ type
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
+    procedure FormDestroy(Sender: TObject);
   strict private
-    FIsAppStartedFromAlarmReceiver: Boolean;
+    //FIsAppStartedFromAlarmReceiver: Boolean;
     FTimeThread: TTimeThread;
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
@@ -130,9 +134,7 @@ type
     procedure MenuElectronicBoardItemClickHandler(Sender: TObject);
     procedure MenuImageBoardItemClickHandler(Sender: TObject);
     procedure MenuRingItemClickHandler(Sender: TObject);
-    {$IFDEF ANDROID}
-    procedure MenuVibroItemClickHandler(Sender: TObject);
-    {$ENDIF}
+
     procedure MenuAlarmItemClickHandler(Sender: TObject);
     procedure MenuTimerItemClickHandler(Sender: TObject);
     procedure MenuCancelTimerItemClickHandler(Sender: TObject);
@@ -142,6 +144,9 @@ type
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
 
+    procedure SetAlarmTrigger(
+      const ATimeKind: TTimeKind;
+      const ATriggerTime: TTime);
     procedure SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
@@ -152,6 +157,15 @@ type
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
 
     procedure GestureHandler(const EventInfo: TGestureEventInfo);
+    // Создаем и запускаем поток отвечающий за ход часов FTimeThread
+    // В соотвествие с TState.TimeKind
+    procedure StartTime;
+    // Уничтожаем поток отвечающий за ход часов FTimeThread
+    procedure StopTime;
+
+    procedure RunTimeCounter(
+      const ATimeKind: TTimeKind;
+      const ATriggerTime: TTime);
     // Часы
     procedure RunTime;
     // Таймер обратного отсчета
@@ -159,8 +173,11 @@ type
     // Будильник
     procedure RunAlarm(const ATriggerTime: TTime);
 
-    procedure OnTimeThreadTerminateHandler(Sender: TObject);
+//    procedure OnTimeThreadTerminateHandler(Sender: TObject);
     {$IFDEF ANDROID}
+    procedure MenuVibroItemClickHandler(Sender: TObject);
+    procedure AlarmJsonParser(const AJson: String = '');
+
     procedure MenuAutoOrientationOnItemClickHandler(Sender: TObject);
     procedure MenuAutoOrientationOffItemClickHandler(Sender: TObject);
     procedure MenuScreenLockItemClickHandler(Sender: TObject);
@@ -170,17 +187,9 @@ type
 
     procedure VerticalDetectedProc;
     procedure HorizontalDetectedProc;
-    {$ENDIF}
 
-//    procedure SetIsCheckedMenuItem(
-//      const AMenuItemsArray: TMenuItemsArray;
-//      const Sender: TObject);
-//    procedure SetIsCheckedColorMenuItem(
-//      const Sender: TObject);
-//    procedure SetIsCheckedCustomColorMenuItem(
-//      const Sender: TObject);
-//    procedure SetIsCheckedImageMenuItem(
-//      const Sender: TObject);
+    procedure SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
+    {$ENDIF}
 
     procedure SetIsCheckedForChildrenMenuItems(
       const AParentMenuItem: TItem;
@@ -189,9 +198,7 @@ type
     procedure SetIsCheckedBoardMenuItem(const AMenuItem: TItem);
     procedure SetIsCheckedColorMenuItem(const AMenuItem: TItem);
     procedure SetIsCheckedRingMenuItem(const AMenuItem: TItem);
-    {$IFDEF ANDROID}
-    procedure SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
-    {$ENDIF}
+
     procedure RaiseAppException(const AMethod: String; const AE: Exception);
 
 //    function GetTimeThread: TTimeThread;
@@ -275,6 +282,7 @@ uses
   , ProportionUnit
   , MotionSensorDataThreadUnit
   , FMX.VibroUnit
+  , TimeCalcUnit
   ;
 
 { TMainForm }
@@ -352,8 +360,18 @@ end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  FSingleSound.Stop;
+
+  {$IFDEF ANDROID}
+  if TState.IsAndroidAlarmEngineStarted then
+    TAndroidAlarm.Uninit;
+  {$ENDIF}
 //  if Assigned(FTimeThread) then
 //    FTimeThread.OutputControl := nil;
+
+//  if Assigned(FTimeThread) then
+//    ThreadFactory.TerminateThread(FTimeThread);
+
   // Борды нужно закрывать раньше, чем умрут все потоки
   // Так как при закрытии бордов есть обращение к потоку таймера
   CloseBoard;
@@ -367,6 +385,8 @@ begin
   case AAppEvent of
     TApplicationEvent.FinishedLaunching:
     begin
+      if TState.IsAndroidAlarmEngineStarted then
+        TAndroidAlarm.HandleIntent;
     end;
     TApplicationEvent.BecameActive:
     begin
@@ -758,7 +778,7 @@ begin
   MenuItem.Name := CANCEL_MENU_ITEM_NAME;
   MenuItem.Text := 'Cancel';
   MenuItem.OnClick := MenuCancelTimerItemClickHandler;
-  MenuItem.Visible := false;
+  MenuItem.Visible := true;
   FToolsPopupMenuExt.Add(MenuItem);
 
   { Tray menu}
@@ -807,11 +827,14 @@ begin
     FCustomColorsMenuItem := nil;
     FHorizontalOrientationMenuItem := nil;
     FVerticalOrientationMenuItem := nil;
-    FIsAppStartedFromAlarmReceiver := false;
+//    FIsAppStartedFromAlarmReceiver := false;
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt := nil;
     {$ENDIF}
     {$IFDEF ANDROID}
+    TState.IsAndroidAlarmEngineStarted :=
+      TAndroidAlarm.Init(1001, AlarmJsonParser);
+
     FAutoOrientationMenuItem := nil;
     if TPlatformServices.Current.SupportsPlatformService(IFMXApplicationEventService,
       IInterface(aFMXApplicationEventService))
@@ -820,9 +843,9 @@ begin
     else
       ShowMessage('Application Event Service is not supported');
 
-    FIsAppStartedFromAlarmReceiver :=
-      TAndroidHelper.Activity.getIntent.
-        getBooleanExtra(StringToJString('StartedFromAlarmReceiver'), false);
+//    FIsAppStartedFromAlarmReceiver :=
+//      TAndroidHelper.Activity.getIntent.
+//        getBooleanExtra(StringToJString('StartedFromAlarmReceiver'), false);
     {$ENDIF}
 
     FSingleSound := TSingleSound.Create(ThreadFactory);
@@ -878,7 +901,8 @@ begin
       StartMotionSensorDataThread;
     {$ENDIF}
 
-    RunTime;
+    TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
+//    RunTime;
 
     TThread.CreateAnonymousThread(
       procedure
@@ -892,8 +916,8 @@ begin
             OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
             ScreenLockerLayout.BringToFront;
 
-            if FIsAppStartedFromAlarmReceiver then
-              StartSignal;
+//            if FIsAppStartedFromAlarmReceiver then
+//              StartSignal;
           end);
       end
       ).Start;
@@ -1257,8 +1281,8 @@ var
 begin
   TextTimeLayout.Visible := false;
 
-  SetTimeThreadOutputControl(nil);
-  TimeVoidEdit.OnChange := nil;
+//  SetTimeThreadOutputControl(nil);
+//  TimeVoidEdit.OnChange := nil;
 
   CloseBoard;
 
@@ -1352,15 +1376,18 @@ begin
     Exit;
 
   SetTimeThreadOutputControl(TimeVoidEdit);
-  TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
+  //TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
 
   Self.Resize;
-end;
 
+  StartTime;
+end;
+//asd debug TMainForm.CloseBoard;
 procedure TMainForm.CloseBoard;
 begin
-  SetTimeThreadOutputControl(nil);
-  TimeVoidEdit.OnChange := nil;
+  StopTime;
+//  SetTimeThreadOutputControl(nil);
+//  TimeVoidEdit.OnChange := nil;
 
   TShowTime.UnInit;
   TShowTextTime.UnInit;
@@ -1427,18 +1454,7 @@ begin
 
   SetRingFileName(MenuItem.Text);
 end;
-{$IFDEF ANDROID}
-procedure TMainForm.MenuVibroItemClickHandler(Sender: TObject);
-var
-  MenuItem: TItem absolute Sender;
-begin
-  SetIsCheckedVibroMenuItem(MenuItem);
 
-  TState.Vibration := false;
-  if MenuItem.Text = VIBRO_NAME_ON then
-    TState.Vibration := true;
-end;
-{$ENDIF}
 procedure TMainForm.MenuAlarmItemClickHandler(Sender: TObject);
 begin
   StopSignal;
@@ -1476,6 +1492,7 @@ procedure TMainForm.MenuCancelTimerItemClickHandler(Sender: TObject);
 begin
   StopSignal;
 
+  StopTime;
   RunTime;
 end;
 
@@ -1559,75 +1576,125 @@ begin
   StopMotionSensorDataThread;
 end;
 {$ENDIF}
-procedure TMainForm.RunTime;
+
+procedure TMainForm.StartTime;
+begin
+  case TState.TimeKind of
+    tkTime:   RunTime;
+    tkTimer:  RunTimer(TState.TriggerTime);
+    tkAlarm:  RunAlarm(TState.TriggerTime);
+  end;
+end;
+
+procedure TMainForm.StopTime;
+begin
+  ThreadFactory.TerminateThread(FTimeThread);
+end;
+
+procedure TMainForm.RunTimeCounter(
+  const ATimeKind: TTimeKind;
+  const ATriggerTime: TTime);
 var
   OutputControl: TControl;
 begin
-  OutputControl := TimeVoidEdit;
+  TState.TimeKind := ATimeKind;
 
-  if Assigned(FTimeThread) then
-    ThreadFactory.TerminateThread(FTimeThread);
+  if ATimeKind = tkTime then
+    TState.TriggerTime := StrToTime('00:00:00')
+  else
+    TState.TriggerTime := ATriggerTime;
+
+  OutputControl := TimeVoidEdit;
+  if Assigned(FElectronicBoardFrame) then
+    OutputControl := TimeVoidEdit;
 
   FTimeThread := TTimeThread.Create(
     ThreadFactory,
-    StrToTime('00:00:00'),
-    tkTime,
+    TState.TriggerTime,
+    TState.TimeKind,
     Self,
     OutputControl);
-  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
+end;
+
+procedure TMainForm.RunTime;
+//var
+//  OutputControl: TControl;
+begin
+  RunTimeCounter(tkTime, Now);
+//  TState.TimeKind := tkTime;
+//  TState.TriggerTime := Now;
+//
+//  OutputControl := TimeVoidEdit;
+//
+//  FTimeThread := TTimeThread.Create(
+//    ThreadFactory,
+//    StrToTime('00:00:00'),
+//    TState.TimeKind,
+//    Self,
+//    OutputControl);
+//  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
 end;
 
 procedure TMainForm.RunTimer(
   const ATriggerTime: TTime);
-var
-  OutputControl: TControl;
+//var
+//  OutputControl: TControl;
 begin
-  OutputControl := TimeVoidEdit;
-  if Assigned(FElectronicBoardFrame) then
-    OutputControl := TimeVoidEdit;
-
-  if Assigned(FTimeThread) then
-    ThreadFactory.TerminateThread(FTimeThread);
-
-  FTimeThread := TTimeThread.Create(
-    ThreadFactory,
-    ATriggerTime,
-    tkTimer,
-    Self,
-    OutputControl);
-  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
+  RunTimeCounter(tkTimer, ATriggerTime);
+//  TState.TimeKind := tkTimer;
+//  TState.TriggerTime := ATriggerTime;
+//
+//  OutputControl := TimeVoidEdit;
+//  if Assigned(FElectronicBoardFrame) then
+//    OutputControl := TimeVoidEdit;
+//
+//  FTimeThread := TTimeThread.Create(
+//    ThreadFactory,
+//    TState.TriggerTime,
+//    TState.TimeKind,
+//    Self,
+//    OutputControl);
+//  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
 end;
 
 procedure TMainForm.RunAlarm(
   const ATriggerTime: TTime);
-var
-  OutputControl: TControl;
+//var
+//  OutputControl: TControl;
 begin
-  OutputControl := TimeVoidEdit;
-  if Assigned(FElectronicBoardFrame) then
-    OutputControl := TimeVoidEdit;
+  RunTimeCounter(tkAlarm, ATriggerTime);
 
-  if Assigned(FTimeThread) then
-    ThreadFactory.TerminateThread(FTimeThread);
-
-  FTimeThread := TTimeThread.Create(
-    ThreadFactory,
-    ATriggerTime,
-    tkAlarm,
-    Self,
-    OutputControl);
-  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
+//  TState.TimeKind := tkAlarm;
+//  TState.TriggerTime := ATriggerTime;
+//
+//  OutputControl := TimeVoidEdit;
+//  if Assigned(FElectronicBoardFrame) then
+//    OutputControl := TimeVoidEdit;
+//
+//  FTimeThread := TTimeThread.Create(
+//    ThreadFactory,
+//    TState.TriggerTime,
+//    TState.TimeKind,
+//    Self,
+//    OutputControl);
+//  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
 end;
 
-procedure TMainForm.OnTimeThreadTerminateHandler(Sender: TObject);
-begin
-  FTimeThread := nil;
-end;
+//procedure TMainForm.OnTimeThreadTerminateHandler(Sender: TObject);
+//begin
+////  FTimeThread := nil;
+//end;
 
 procedure TMainForm.StartSignal;
 const
   VOLUME_VALUE = 1.0;
+//var
+//  MenuItem: TItem;
 begin
+//  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
+//  MenuItem.Visible := true;
+  StopTime;
+
   if TState.RingName <> RING_NAME_OFF then
   begin
     FSingleSound.OnFinished :=
@@ -1697,11 +1764,16 @@ begin
 end;
 
 procedure TMainForm.StopSignal;
-var
-  MenuItem: TItem;
+//var
+//  MenuItem: TItem;
 begin
-  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
-  MenuItem.Visible := false;
+//  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
+//  MenuItem.Visible := false;
+
+  {$IFDEF ANDROID}
+  if TState.IsAndroidAlarmEngineStarted then
+    TAndroidAlarm.CancelAlarm;
+  {$ENDIF}
 
   FSingleSound.Pause;
 
@@ -1709,31 +1781,27 @@ begin
 
   ThreadFactory.TerminateThread(SIGNAL_THREAD);
   ThreadFactory.TerminateThread(VIBRO_THREAD);
+
+  if not ThreadFactory.ThreadExists(FTimeThread) then
+    RunTime;
 end;
 
-procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
-
-  function _TimeToDateTime(const ATime: TTime): TDateTime;
-  begin
-    Result := Now;
-
-    ReplaceTime(Result, ATime);
-  end;
-
-var
-  AlarmTime: TTime;
-  MenuItem: TItem;
+procedure TMainForm.SetAlarmTrigger(
+  const ATimeKind: TTimeKind;
+  const ATriggerTime: TTime);
 begin
   StopSignal;
 
-  AlarmTime := SetTimerForm.Time;
-  {$IFDEF MSWINDOWS}
-  RunAlarm(AlarmTime);
-  {$ELSE IFDEF ANDROID}
-  TAlarm.ReChargeAlarm(_TimeToDateTime(AlarmTime));
+  {$IFDEF ANDROID}
+  if TState.IsAndroidAlarmEngineStarted then
+    TAndroidAlarm.RechargeAlarm(TimeToDateTime(ATriggerTime));
   {$ENDIF}
-  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
-  MenuItem.Visible := true;
+
+  StopTime;
+  case ATimeKind of
+    tkAlarm: RunAlarm(ATriggerTime);
+    tkTimer: RunTimer(ATriggerTime);
+  end;
 
   TThread.Queue(nil,
     procedure
@@ -1742,26 +1810,22 @@ begin
     end);
 end;
 
+procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
+var
+  TriggerTime: TTime;
+begin
+  TriggerTime := SetTimerForm.Time;
+  SetAlarmTrigger(tkAlarm, TriggerTime);
+end;
+
 procedure TMainForm.SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
 var
+  TriggerTime: TTime;
   TimerTime: TTime;
-  MenuItem: TItem;
 begin
-  StopSignal;
-
   TimerTime := SetTimerForm.Time;
-
-  RunTimer(TimerTime);
-
-  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
-  MenuItem.Visible := true;
-
-  TThread.Queue(nil,
-    procedure
-    begin
-      SetTimerForm.Close;
-    end
-  );
+  TriggerTime := TTimeCalc.CalcTime(Now, TimerTime, true);
+  SetAlarmTrigger(tkTimer, TriggerTime);
 end;
 
 procedure TMainForm.SetTimerFormCancelButtonClickHandler(Sender: TObject);
@@ -1858,14 +1922,29 @@ begin
   AMenuItem.IsChecked := true;
 end;
 {$IFDEF ANDROID}
+procedure TMainForm.MenuVibroItemClickHandler(Sender: TObject);
+var
+  MenuItem: TItem absolute Sender;
+begin
+  SetIsCheckedVibroMenuItem(MenuItem);
+
+  TState.Vibration := false;
+  if MenuItem.Text = VIBRO_NAME_ON then
+    TState.Vibration := true;
+end;
+
+procedure TMainForm.AlarmJsonParser(const AJson: String = '');
+begin
+  StartSignal;
+end;
+
 procedure TMainForm.SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
 begin
   SetIsCheckedForChildrenMenuItems(FVibroMenuItem, false);
 
   AMenuItem.IsChecked := true;
 end;
-{$ENDIF}
-{$IFDEF ANDROID}
+
 procedure TMainForm.MenuScreenLockItemClickHandler(Sender: TObject);
 begin
   ScreenLockerLayout.HitTest := true;

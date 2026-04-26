@@ -10,11 +10,10 @@ uses
   , FMX.Controls
   , FMX.FormExtUnit
   , ThreadFactoryUnit
+  , TypesUnit
   ;
 
 type
-  TTimeKind = (tkTime = 0, tkTimer = 1, tkAlarm = 2);
-
   TTimeThread = class(TThreadExt)
   strict private
     FCriticalSection: TCriticalSection;
@@ -56,6 +55,7 @@ uses
   , FMX.ControlToolsUnit
   , TimeCalcUnit
   , JustAClockUnit
+  , CommonUnit
   ;
 
 { TTimeThread }
@@ -162,15 +162,9 @@ end;
 procedure TTimeThread.ExecTimer;
 var
   TimeString: String;
-  CountdownTimeString: String;
-  CountdownTime: TTime;
-  FinishTimeString: String;
   FinishTime: TTime;
 begin
-  CountdownTimeString := TimeToStr(FTriggerTime);
-  CountdownTime := StrToTime(CountdownTimeString);
-  FinishTime := TTimeCalc.CalcTime(Now, CountdownTime, true);
-  FinishTimeString := TimeToStr(FinishTime);
+  FinishTime := FTriggerTime;
 
   while not Terminated do
   begin
@@ -180,7 +174,13 @@ begin
 
     if TimeString = '00:00:00' then
     begin
-      TMainForm(FForm).StartSignal;
+      // В случае андроида, запускается через интент
+      if not TState.IsAndroidAlarmEngineStarted then
+        TThread.Queue(nil,
+          procedure
+          begin
+            TMainForm(FForm).StartSignal;
+          end);
 
       Break;
     end;
@@ -209,14 +209,13 @@ begin
 
     if Now >= FullTriggerTime then
     begin
-      TMainForm(FForm).StartSignal;
-
-
-//      TThread.Queue(nil,
-//        procedure
-//        begin
-//          TMainForm(FForm).StartSignal;
-//        end);
+      // В случае андроида, запускается через интент
+      if not TState.IsAndroidAlarmEngineStarted then
+        TThread.Queue(nil,
+          procedure
+          begin
+            TMainForm(FForm).StartSignal;
+          end);
 
       Break;
     end;

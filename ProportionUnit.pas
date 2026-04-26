@@ -6,6 +6,7 @@ uses
     FMX.Layouts
   , FMX.Controls
   , CommonUnit
+  , TypesUnit
   ;
 
 type

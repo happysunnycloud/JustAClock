@@ -6,6 +6,7 @@ uses
     System.UITypes
   , System.Classes
   , FMX.Theme
+  , TypesUnit
   ;
 
 const
@@ -32,10 +33,6 @@ const
   {$ENDIF}
 
 type
-  TBoardKind = (bkNone = -1, bkText = 0, bkElectronic = 1, bkImage = 2);
-  TOrientationKind = (okNone = -1, okHorizontal = 0, okVertical = 1);
-  TPCKFileKind = (pkNone = -1, pkPattern = 0, pkImage = 1);
-
   TPCKFileKindHelper = record helper for TPCKFileKind
   public
     function ToString: String;
@@ -62,7 +59,9 @@ type
       FFormTop: Integer;
       FFormWidth: Integer;
       FFormHeight: Integer;
-
+      FTimeKind: TTimeKind;
+      FTriggerTime: TTime;
+      FIsAndroidAlarmEngineStarted: Boolean;
       FMenuTheme: TTheme;
 
     class procedure SetBoard(const ABoard: TBoardKind); static;
@@ -97,6 +96,11 @@ type
     class property FormTop: Integer read FFormTop write FFormTop;
     class property FormWidth: Integer read FFormWidth write FFormWidth;
     class property FormHeight: Integer read FFormHeight write FFormHeight;
+    class property TimeKind: TTimeKind read FTimeKind write FTimeKind;
+    class property TriggerTime: TTime read FTriggerTime write FTriggerTime;
+    class property IsAndroidAlarmEngineStarted: Boolean
+      read FIsAndroidAlarmEngineStarted write FIsAndroidAlarmEngineStarted;
+
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
 
@@ -165,6 +169,7 @@ function GetRingFile(const ARingName: String): String;
 function GetRingsFilesPath: String;
 procedure GetRingFileList(const ARingFileList: TStringList);
 procedure GetCurPos(var X, Y: Single);
+function TimeToDateTime(const ATime: TTime): TDateTime;
 
 implementation
 
@@ -333,6 +338,13 @@ begin
   {$ENDIF}
 end;
 
+function TimeToDateTime(const ATime: TTime): TDateTime;
+begin
+  Result := Now;
+
+  ReplaceTime(Result, ATime);
+end;
+
 { TPCKFileKindHelper }
 
 function TPCKFileKindHelper.ToString: String;
@@ -367,6 +379,9 @@ end;
 class constructor TState.Initialize;
 begin
   FMenuTheme := TTheme.Create;
+  FTimeKind := tkTime;
+  FTriggerTime := Now;
+  FIsAndroidAlarmEngineStarted := false;
 end;
 
 class destructor TState.Finalize;
