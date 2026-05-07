@@ -78,6 +78,7 @@ type
     class procedure SetCustomColor1(const AAlphaColor: TAlphaColor); static;
     class procedure SetCustomColor2(const AAlphaColor: TAlphaColor); static;
     class procedure SetCustomColor3(const AAlphaColor: TAlphaColor); static;
+    class function  GetIsAlarmCharged: Boolean; static;
   public
 //    class constructor Initialize;
 //    class destructor Finalize;
@@ -103,7 +104,7 @@ type
     class property TriggerTime: TTime read FTriggerTime write FTriggerTime;
     class property IsAndroidAlarmEngineStarted: Boolean
       read FIsAndroidAlarmEngineStarted write FIsAndroidAlarmEngineStarted;
-
+    class property IsAlarmCharged: Boolean read GetIsAlarmCharged;
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
 
@@ -424,11 +425,13 @@ var
   FileName: String;
   Board: Integer;
   Orientation: Integer;
+  TimeKind: Integer;
 begin
   FileName := ConfigFileName;
 
   Board := Integer(FBoard);
   Orientation := Integer(FOrientation);
+  TimeKind := Integer(FTimeKind);
 
   FileStreamTools := TFileStreamTools.Create(FileName, fmCreate);
   try
@@ -448,6 +451,8 @@ begin
     FileStreamTools.Write(FFormTop);
     FileStreamTools.Write(FFormWidth);
     FileStreamTools.Write(FFormHeight);
+    FileStreamTools.Write(TimeKind);
+    FileStreamTools.Write(FTriggerTime);
   finally
     FreeAndNil(FileStreamTools);
   end;
@@ -459,11 +464,13 @@ var
   FileName: String;
   Board: Integer;
   Orientation: Integer;
+  TimeKind: Integer;
+  TriggerTime: TTime;
 begin
   FileName := ConfigFileName;
   if not FileExists(FileName) then
     Exit;
-
+  // Порядок чтения зависит от порядка записи
   FileStreamTools := TFileStreamTools.Create(FileName, fmOpenRead);
   try
     Board               := FileStreamTools.ReadAsInteger;
@@ -482,9 +489,13 @@ begin
     FFormTop            := FileStreamTools.ReadAsInteger;
     FFormWidth          := FileStreamTools.ReadAsInteger;
     FFormHeight         := FileStreamTools.ReadAsInteger;
+    TimeKind            := FileStreamTools.ReadAsInteger;
+    TriggerTime         := FileStreamTools.ReadAsDouble;
 
     FBoard := TBoardKind(Board);
     FOrientation := TOrientationKind(Orientation);
+    FTimeKind := TTimeKind(TimeKind);
+    FTriggerTime := TriggerTime;
   finally
     FreeAndNil(FileStreamTools);
   end;
@@ -557,6 +568,11 @@ class procedure TState.SetCustomColor3(const AAlphaColor: TAlphaColor);
 begin
   FCustomColor3 := AAlphaColor;
   CustomColorNumber := 3;
+end;
+
+class function TState.GetIsAlarmCharged: Boolean;
+begin
+  Result := FTriggerTime > 0;
 end;
 
 { TColorArrayHelper }

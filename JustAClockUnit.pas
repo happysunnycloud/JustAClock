@@ -1616,6 +1616,7 @@ var
   OutputControl: TControl;
 begin
   TState.TimeKind := ATimeKind;
+  TState.TriggerTime := ATriggerTime;
 
   if ATimeKind = tkTime then
     TState.TriggerTime := StrToTime(ZERO_TIME_STRING)
@@ -1820,12 +1821,6 @@ begin
     tkAlarm: RunAlarm(ATriggerTime);
     tkTimer: RunTimer(ATriggerTime);
   end;
-
-  TThread.Queue(nil,
-    procedure
-    begin
-      SetTimerForm.Close;
-    end);
 end;
 
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
@@ -1834,6 +1829,12 @@ var
 begin
   TriggerTime := SetTimerForm.Time;
   SetAlarmTrigger(tkAlarm, TriggerTime);
+
+  TThread.Queue(nil,
+    procedure
+    begin
+      SetTimerForm.Close;
+    end);
 end;
 
 procedure TMainForm.SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
@@ -1844,6 +1845,12 @@ begin
   TimerTime := SetTimerForm.Time;
   TriggerTime := TTimeCalc.CalcTime(Now, TimerTime, true);
   SetAlarmTrigger(tkTimer, TriggerTime);
+
+  TThread.Queue(nil,
+    procedure
+    begin
+      SetTimerForm.Close;
+    end);
 end;
 
 procedure TMainForm.SetTimerFormCancelButtonClickHandler(Sender: TObject);
