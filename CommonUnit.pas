@@ -6,6 +6,7 @@ uses
     System.UITypes
   , System.Classes
   , FMX.Theme
+  , FMX.Controls
   , TypesUnit
   ;
 
@@ -25,6 +26,8 @@ const
   CUSTOM_COLOR_COUNT = 4;
 
   RING_NAME_OFF = 'Off';
+
+  ZERO_TIME_STRING = '00:00:00';
 
   {$IFDEF ANDROID}
   PATH_DELIMITER = '/';
@@ -76,8 +79,8 @@ type
     class procedure SetCustomColor2(const AAlphaColor: TAlphaColor); static;
     class procedure SetCustomColor3(const AAlphaColor: TAlphaColor); static;
   public
-    class constructor Initialize;
-    class destructor Finalize;
+//    class constructor Initialize;
+//    class destructor Finalize;
 
     class property ColorIdent: String read FColorIdent write FColorIdent;
     class property Color: TAlphaColor read FColor write SetColor;
@@ -105,6 +108,7 @@ type
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
 
     class procedure Init;
+    class procedure UnInit;
     class procedure Save;
     class procedure Load;
   end;
@@ -170,20 +174,30 @@ function GetRingsFilesPath: String;
 procedure GetRingFileList(const ARingFileList: TStringList);
 procedure GetCurPos(var X, Y: Single);
 function TimeToDateTime(const ATime: TTime): TDateTime;
+procedure DisplayTime(const AOutputControl: TControl; const ATimeString: String);
 
 implementation
 
 uses
     System.SysUtils
   , FileStreamToolsUnit
+  , FMX.ControlToolsUnit
+  , FileToolsUnit
   {$IFDEF ANDROID}
   , System.IOUtils
   {$ENDIF}
   {$IFDEF MSWINDOWS}
   , Winapi.Windows
   {$ENDIF}
-  , FileToolsUnit
   ;
+
+procedure DisplayTime(const AOutputControl: TControl; const ATimeString: String);
+begin
+  if not Assigned(AOutputControl) then
+    raise Exception.Create('DisplayTime -> Control is nil');
+
+  TControlTools.SetTextProperty(AOutputControl, ATimeString);
+end;
 
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
 var
@@ -376,18 +390,19 @@ end;
 
 { TState }
 
-class constructor TState.Initialize;
-begin
-  FMenuTheme := TTheme.Create;
-  FTimeKind := tkTime;
-  FTriggerTime := Now;
-  FIsAndroidAlarmEngineStarted := false;
-end;
-
-class destructor TState.Finalize;
-begin
-  FreeAndNil(FMenuTheme);
-end;
+//class constructor TState.Initialize;
+//begin
+//  FMenuTheme := TTheme.Create;
+//  FTimeKind := tkTime;
+//  FTriggerTime := Now;
+//  FIsAndroidAlarmEngineStarted := false;
+//  FOrientation := TOrientationKind.okHorizontal;
+//end;
+//
+//class destructor TState.Finalize;
+//begin
+//  FreeAndNil(FMenuTheme);
+//end;
 
 class procedure TState.SetBoard(const ABoard: TBoardKind);
 begin
@@ -477,6 +492,9 @@ end;
 
 class procedure TState.Init;
 begin
+  FMenuTheme          := TTheme.Create;
+  FTimeKind           := TTimeKind.tkTime;
+  FTriggerTime        := 0;
   FColorIdent         := CHROMAKEY_COLOR_IDENT;
   FColor              := TColors.ColorByIdent(FColorIdent);
   FImageName          := 'Electronic';
@@ -491,15 +509,20 @@ begin
   FFormTop            := 100;
   FFormWidth          := HORIZONTAL_MIN_WIDTH;
   FFormHeight         := HORIZONTAL_MIN_HEIGHT;
+  FOrientation        := TOrientationKind.okHorizontal;
+  FIsAndroidAlarmEngineStarted := false;
   {$IFDEF MSWINDOWS}
   FVibration          := false;
   FAutoOrientation    := false;
-  FOrientation        := TOrientationKind.okNone;
   {$ELSE IFDEF ANDROID}
   FVibration          := true;
   FAutoOrientation    := true;
-  FOrientation        := TOrientationKind.okNone;
   {$ENDIF}
+end;
+
+class procedure TState.UnInit;
+begin
+  FreeAndNil(FMenuTheme);
 end;
 
 class procedure TState.SetColor(const AAlphaColor: TAlphaColor);
@@ -652,6 +675,7 @@ initialization
 finalization
   try
     TState.Save;
+    TState.UnInit;
   except
     RaiseLastOSError;
   end;

@@ -33,7 +33,7 @@ const
   VERTICAL_ORIENTATION_MENU_ITEM_NAME = 'VerticalOrientationMenuItem';
   HORIZONTAL_ORIENTATION_MENU_ITEM_NAME = 'HorizontalOrientationMenuItem';
   // Мы не будем управлять состоянием кнопки отмены будильника
-  // На андроиде нельзя отследить выставлено будильник или нет
+  // На андроиде нельзя отследить выставлен будильник или нет
   // Отслеживать можно только по локальному флагу - это не обосо имеет смысл
   CANCEL_MENU_ITEM_NAME = 'CancelMenuItem';
   COLOR_MENU_ITEM_NAME_PREFIX = 'ColorMenuItem';
@@ -91,7 +91,7 @@ type
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormDestroy(Sender: TObject);
   strict private
-    //FIsAppStartedFromAlarmReceiver: Boolean;
+    FOpeningBoard: TBoardKind;
     FTimeThread: TTimeThread;
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
@@ -115,11 +115,11 @@ type
     {$IFDEF ANDROID}
     FVibroMenuItem: TItem;
     FAutoOrientationMenuItem: TItem;
+    FIsJsonReceived: Boolean;
     {$ENDIF}
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt: TPopupMenuExt;
     //FBorderFrame: TBorderFrame;
-
     procedure TrayIconMouseRightButtonDownHandler(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure TrayIconMouseLeftButtonDownHandler(
@@ -127,6 +127,8 @@ type
     procedure OnCloseTrayItemHandler(Sender: TObject);
     {$ENDIF}
 
+    procedure WindowsDelayedBoardOpen(
+      const ABoardKind: TBoardKind);
     procedure BuildPopupMenues;
 
     procedure MenuColorItemClickHandler(Sender: TObject);
@@ -189,6 +191,9 @@ type
     procedure HorizontalDetectedProc;
 
     procedure SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
+    procedure AndroidDelayedBoardOpen(
+      const ABoardKind: TBoardKind;
+      const ADoStartTime: Boolean = true);
     {$ENDIF}
 
     procedure SetIsCheckedForChildrenMenuItems(
@@ -213,7 +218,8 @@ type
       const ABoard: TBoardKind;
       const AImageName: String;
       const AColor: TAlphaColor;
-      const AOrientation: TOrientationKind = TOrientationKind.okHorizontal); overload;
+      const AOrientation: TOrientationKind;
+      const ADoStartTime: Boolean = true);
     procedure CloseBoard;
 
     function SetBoardOrientation(const AClass: TFrameClass): Pointer;
@@ -386,7 +392,10 @@ begin
     TApplicationEvent.FinishedLaunching:
     begin
       if TState.IsAndroidAlarmEngineStarted then
+      begin
         TAndroidAlarm.HandleIntent;
+        AndroidDelayedBoardOpen(FOpeningBoard, not FIsJsonReceived);
+      end;
     end;
     TApplicationEvent.BecameActive:
     begin
@@ -794,13 +803,35 @@ begin
   {$ENDIF}
 end;
 
+procedure TMainForm.WindowsDelayedBoardOpen(
+  const ABoardKind: TBoardKind);
+begin
+  TThread.CreateAnonymousThread(
+    procedure
+    begin
+      Sleep(100);
+
+      TThread.Queue(nil,
+        procedure
+        begin
+          OpenBoard(
+            ABoardKind,
+            TState.ImageName,
+            TState.Color,
+            TState.Orientation,
+            true);
+          ScreenLockerLayout.BringToFront;
+        end);
+    end
+    ).Start;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 const
   METHOD = 'TMainForm.FormCreate';
   SCALE_VALUE = 1;
-var
-  Board: TBoardKind;
 {$IFDEF ANDROID}
+var
   aFMXApplicationEventService: IFMXApplicationEventService;
 {$ENDIF}
 begin
@@ -832,6 +863,7 @@ begin
     FTrayPopupMenuExt := nil;
     {$ENDIF}
     {$IFDEF ANDROID}
+    FIsJsonReceived := false;
     TState.IsAndroidAlarmEngineStarted :=
       TAndroidAlarm.Init(1001, AlarmJsonParser);
 
@@ -880,10 +912,15 @@ begin
     TrayIconMouseLeftButtonDown := TrayIconMouseLeftButtonDownHandler;
     {$ENDIF}
 
-    Board := TState.Board;
-    TState.Board := bkNone;
+    TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
 
-    OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
+    FOpeningBoard := TState.Board;
+
+    OpenBoard(
+      bkNone,
+      TState.ImageName,
+      TState.Color,
+      TState.Orientation, false);
 
     {$IFDEF MSWINDOWS}
     ShowWindow(ApplicationHWND, SW_HIDE);
@@ -892,35 +929,14 @@ begin
     Self.Top  := TState.FormTop;
     Self.ClientWidth := TState.FormWidth;
     Self.ClientHeight := TState.FormHeight;
+
+    WindowsDelayedBoardOpen(FOpeningBoard);
     {$ELSE IFDEF ANDROID}
     Self.FullScreen := true;
-    {$ENDIF}
 
-    {$IFDEF ANDROID}
     if TState.AutoOrientation then
       StartMotionSensorDataThread;
     {$ENDIF}
-
-    TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
-//    RunTime;
-
-    TThread.CreateAnonymousThread(
-      procedure
-      begin
-        Sleep(100);
-
-        TThread.Queue(nil,
-          procedure
-          begin
-            TState.Board := Board;
-            OpenBoard(TState.Board, TState.ImageName, TState.Color, TState.Orientation);
-            ScreenLockerLayout.BringToFront;
-
-//            if FIsAppStartedFromAlarmReceiver then
-//              StartSignal;
-          end);
-      end
-      ).Start;
   except
     on e: Exception do
       RaiseAppException(METHOD, e);
@@ -1255,7 +1271,8 @@ procedure TMainForm.OpenBoard(
   const ABoard: TBoardKind;
   const AImageName: String;
   const AColor: TAlphaColor;
-  const AOrientation: TOrientationKind = TOrientationKind.okHorizontal);
+  const AOrientation: TOrientationKind;
+  const ADoStartTime: Boolean = true);
 
   {$IFDEF ANDROID}
   procedure _SetAndroidScreenOrientation(
@@ -1380,7 +1397,8 @@ begin
 
   Self.Resize;
 
-  StartTime;
+  if ADoStartTime then
+    StartTime;
 end;
 //asd debug TMainForm.CloseBoard;
 procedure TMainForm.CloseBoard;
@@ -1600,13 +1618,13 @@ begin
   TState.TimeKind := ATimeKind;
 
   if ATimeKind = tkTime then
-    TState.TriggerTime := StrToTime('00:00:00')
+    TState.TriggerTime := StrToTime(ZERO_TIME_STRING)
   else
     TState.TriggerTime := ATriggerTime;
 
   OutputControl := TimeVoidEdit;
-  if Assigned(FElectronicBoardFrame) then
-    OutputControl := TimeVoidEdit;
+//  if Assigned(FElectronicBoardFrame) then
+//    OutputControl := TimeVoidEdit;
 
   FTimeThread := TTimeThread.Create(
     ThreadFactory,
@@ -1935,6 +1953,7 @@ end;
 
 procedure TMainForm.AlarmJsonParser(const AJson: String = '');
 begin
+  FIsJsonReceived := true;
   StartSignal;
 end;
 
@@ -1972,6 +1991,33 @@ procedure TMainForm.StopMotionSensorDataThread;
 begin
   TMotionSensorDataThread.UnInit;
 end;
+
+procedure TMainForm.AndroidDelayedBoardOpen(
+  const ABoardKind: TBoardKind;
+  const ADoStartTime: Boolean = true);
+begin
+  TThread.CreateAnonymousThread(
+    procedure
+    begin
+      Sleep(100);
+
+      TThread.Queue(nil,
+        procedure
+        begin
+          OpenBoard(
+            ABoardKind,
+            TState.ImageName,
+            TState.Color,
+            TState.Orientation,
+            ADoStartTime);
+          if not ADoStartTime then
+            CommonUnit.DisplayTime(TimeVoidEdit, ZERO_TIME_STRING);
+          ScreenLockerLayout.BringToFront;
+        end);
+    end
+    ).Start;
+end;
+
 {$ENDIF}
 
 end.

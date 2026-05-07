@@ -6,7 +6,6 @@ uses
     System.Classes
   , System.SysUtils
   , System.SyncObjs
-
   , FMX.Controls
   , FMX.FormExtUnit
   , ThreadFactoryUnit
@@ -139,9 +138,13 @@ var
 begin
   Synchronize(
     procedure
+    var
+      Control: TControl;
     begin
-      if Assigned(OutputControl) then
-        TControlTools.SetTextProperty(OutputControl, TimeString);
+      Control := OutputControl;
+      if Assigned(Control) then
+        CommonUnit.DisplayTime(Control, TimeString);
+//        TControlTools.SetTextProperty(OutputControl, TimeString);
     end);
 end;
 
@@ -172,7 +175,7 @@ begin
 
     DisplayTime(TimeString);
 
-    if TimeString = '00:00:00' then
+    if TimeString = ZERO_TIME_STRING then
     begin
       // В случае андроида, запускается через интент
       if not TState.IsAndroidAlarmEngineStarted then
