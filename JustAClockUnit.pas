@@ -172,12 +172,6 @@ type
       const ATriggerTime: TTime);
 
     procedure RunTicker;
-    // Часы
-    procedure RunTime;
-    // Таймер обратного отсчета
-    procedure RunTimer(const ATriggerTime: TTime);
-    // Будильник
-    procedure RunAlarm(const ATriggerTime: TTime);
 
 //    procedure OnTimeThreadTerminateHandler(Sender: TObject);
     {$IFDEF ANDROID}
@@ -1521,7 +1515,7 @@ begin
   StopSignal;
 
   StopTime;
-  RunTime;
+  RunTicker;
 end;
 
 procedure TMainForm.MenuSetCustomColorItemClickHandler(Sender: TObject);
@@ -1607,11 +1601,7 @@ end;
 
 procedure TMainForm.StartTime;
 begin
-  case TState.TimeKind of
-    tkTime:   RunTime;
-    tkTimer:  RunTimer(TState.TriggerTime);
-    tkAlarm:  RunAlarm(TState.TriggerTime);
-  end;
+  RunTicker;
 end;
 
 procedure TMainForm.StopTime;
@@ -1645,21 +1635,9 @@ begin
     OutputControl);
 end;
 
-procedure TMainForm.RunTime;
+procedure TMainForm.RunTicker;
 begin
-  RunTimeCounter(Now);
-end;
-
-procedure TMainForm.RunTimer(
-  const ATriggerTime: TTime);
-begin
-  RunTimeCounter(ATriggerTime);
-end;
-
-procedure TMainForm.RunAlarm(
-  const ATriggerTime: TTime);
-begin
-  RunTimeCounter(ATriggerTime);
+  RunTimeCounter(TState.TriggerTime);
 end;
 
 //procedure TMainForm.OnTimeThreadTerminateHandler(Sender: TObject);
@@ -1760,7 +1738,7 @@ begin
   ThreadFactory.TerminateThread(VIBRO_THREAD);
 
   if not ThreadFactory.ThreadExists(FTimeThread) then
-    RunTime;
+    RunTicker;
 end;
 
 procedure TMainForm.SetAlarmTrigger(

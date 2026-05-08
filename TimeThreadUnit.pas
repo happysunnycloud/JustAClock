@@ -54,6 +54,7 @@ uses
   , FMX.ControlToolsUnit
   , TimeCalcUnit
   , JustAClockUnit
+  , DateTimeToolsUnit
   , CommonUnit
   ;
 
@@ -165,18 +166,18 @@ end;
 procedure TTimeThread.ExecTimer;
 var
   TimeString: String;
-  FinishTime: TTime;
+  CurrentTime: TDateTime;
+  TriggerTime: TDateTime;
 begin
-  FinishTime := FTriggerTime;
-
   while not Terminated do
   begin
-    TimeString := FormatDateTime('hh:nn:ss', TTimeCalc.CalcTime(FinishTime, Now, false));
-
-    DisplayTime(TimeString);
-
-    if TimeString = ZERO_TIME_STRING then
+    CurrentTime := Now;
+    TriggerTime := CurrentTime;
+    TDateTimeTools.ChangeTime(TriggerTime, FTriggerTime);
+    if CurrentTime >= TriggerTime then
     begin
+      DisplayTime(ZERO_TIME_STRING);
+
       // В случае андроида, запускается через интент
       if not TState.IsAndroidAlarmEngineStarted then
         TThread.Queue(nil,
@@ -186,7 +187,32 @@ begin
           end);
 
       Break;
+    end
+    else
+    begin
+      TimeString := FormatDateTime(
+        'hh:nn:ss',
+        TTimeCalc.CalcTime(FTriggerTime, CurrentTime, false));
+
+      DisplayTime(TimeString);
     end;
+
+//    TimeString := FormatDateTime('hh:nn:ss', TTimeCalc.CalcTime(FinishTime, Now, false));
+//
+//    DisplayTime(TimeString);
+//
+//    if TimeString = ZERO_TIME_STRING then
+//    begin
+//      // В случае андроида, запускается через интент
+//      if not TState.IsAndroidAlarmEngineStarted then
+//        TThread.Queue(nil,
+//          procedure
+//          begin
+//            TMainForm(FForm).StartSignal;
+//          end);
+//
+//      Break;
+//    end;
 
     Sleep(100);
   end;
