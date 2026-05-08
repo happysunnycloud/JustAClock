@@ -75,6 +75,8 @@ type
     ToolsLayout: TLayout;
     GestureManager: TGestureManager;
     ScreenLockerLayout: TLayout;
+    AlarmLayout: TLayout;
+    AlarmRectangle: TRectangle;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
@@ -149,6 +151,7 @@ type
     procedure SetAlarmTrigger(
       const ATimeKind: TTimeKind;
       const ATriggerTime: TTime);
+
     procedure SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerFormCancelButtonClickHandler(Sender: TObject);
@@ -166,8 +169,9 @@ type
     procedure StopTime;
 
     procedure RunTimeCounter(
-      const ATimeKind: TTimeKind;
       const ATriggerTime: TTime);
+
+    procedure RunTicker;
     // Часы
     procedure RunTime;
     // Таймер обратного отсчета
@@ -886,6 +890,7 @@ begin
     SetTimerForm := nil;
     SignalRectangle.Visible := false;
     SignalRectangle.SendToBack;
+    AlarmLayout.Visible := TState.IsAlarmCharged;
 
     { MenuTheme}
 
@@ -1395,6 +1400,8 @@ begin
   SetTimeThreadOutputControl(TimeVoidEdit);
   //TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
 
+  AlarmLayout.Visible := TState.IsAlarmCharged;
+
   Self.Resize;
 
   if ADoStartTime then
@@ -1404,8 +1411,6 @@ end;
 procedure TMainForm.CloseBoard;
 begin
   StopTime;
-//  SetTimeThreadOutputControl(nil);
-//  TimeVoidEdit.OnChange := nil;
 
   TShowTime.UnInit;
   TShowTextTime.UnInit;
@@ -1508,6 +1513,11 @@ end;
 
 procedure TMainForm.MenuCancelTimerItemClickHandler(Sender: TObject);
 begin
+  TState.TimeKind := tkTime;
+  TState.TriggerTime := 0;
+
+  AlarmLayout.Visible := TState.IsAlarmCharged;
+
   StopSignal;
 
   StopTime;
@@ -1607,96 +1617,49 @@ end;
 procedure TMainForm.StopTime;
 begin
   ThreadFactory.TerminateThread(FTimeThread);
+
+  AlarmLayout.Visible := TState.IsAlarmCharged;
 end;
 
 procedure TMainForm.RunTimeCounter(
-  const ATimeKind: TTimeKind;
   const ATriggerTime: TTime);
 var
+  TimeKind: TTimeKind;
   OutputControl: TControl;
 begin
-  TState.TimeKind := ATimeKind;
+  TimeKind := TState.TimeKind;
   TState.TriggerTime := ATriggerTime;
 
-  if ATimeKind = tkTime then
+  if TimeKind = tkTime then
     TState.TriggerTime := StrToTime(ZERO_TIME_STRING)
   else
     TState.TriggerTime := ATriggerTime;
 
   OutputControl := TimeVoidEdit;
-//  if Assigned(FElectronicBoardFrame) then
-//    OutputControl := TimeVoidEdit;
 
   FTimeThread := TTimeThread.Create(
     ThreadFactory,
     TState.TriggerTime,
-    TState.TimeKind,
+    TimeKind,
     Self,
     OutputControl);
 end;
 
 procedure TMainForm.RunTime;
-//var
-//  OutputControl: TControl;
 begin
-  RunTimeCounter(tkTime, Now);
-//  TState.TimeKind := tkTime;
-//  TState.TriggerTime := Now;
-//
-//  OutputControl := TimeVoidEdit;
-//
-//  FTimeThread := TTimeThread.Create(
-//    ThreadFactory,
-//    StrToTime('00:00:00'),
-//    TState.TimeKind,
-//    Self,
-//    OutputControl);
-//  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
+  RunTimeCounter(Now);
 end;
 
 procedure TMainForm.RunTimer(
   const ATriggerTime: TTime);
-//var
-//  OutputControl: TControl;
 begin
-  RunTimeCounter(tkTimer, ATriggerTime);
-//  TState.TimeKind := tkTimer;
-//  TState.TriggerTime := ATriggerTime;
-//
-//  OutputControl := TimeVoidEdit;
-//  if Assigned(FElectronicBoardFrame) then
-//    OutputControl := TimeVoidEdit;
-//
-//  FTimeThread := TTimeThread.Create(
-//    ThreadFactory,
-//    TState.TriggerTime,
-//    TState.TimeKind,
-//    Self,
-//    OutputControl);
-//  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
+  RunTimeCounter(ATriggerTime);
 end;
 
 procedure TMainForm.RunAlarm(
   const ATriggerTime: TTime);
-//var
-//  OutputControl: TControl;
 begin
-  RunTimeCounter(tkAlarm, ATriggerTime);
-
-//  TState.TimeKind := tkAlarm;
-//  TState.TriggerTime := ATriggerTime;
-//
-//  OutputControl := TimeVoidEdit;
-//  if Assigned(FElectronicBoardFrame) then
-//    OutputControl := TimeVoidEdit;
-//
-//  FTimeThread := TTimeThread.Create(
-//    ThreadFactory,
-//    TState.TriggerTime,
-//    TState.TimeKind,
-//    Self,
-//    OutputControl);
-//  FTimeThread.OnTerminate := OnTimeThreadTerminateHandler;
+  RunTimeCounter(ATriggerTime);
 end;
 
 //procedure TMainForm.OnTimeThreadTerminateHandler(Sender: TObject);
@@ -1783,11 +1746,8 @@ begin
 end;
 
 procedure TMainForm.StopSignal;
-//var
-//  MenuItem: TItem;
 begin
-//  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
-//  MenuItem.Visible := false;
+  TState.TriggerTime := 0;
 
   {$IFDEF ANDROID}
   if TState.IsAndroidAlarmEngineStarted then
@@ -1795,8 +1755,6 @@ begin
   {$ENDIF}
 
   FSingleSound.Pause;
-
-//  ThreadFactory.TerminateThread(SINGLE_SOUND_THREAD);
 
   ThreadFactory.TerminateThread(SIGNAL_THREAD);
   ThreadFactory.TerminateThread(VIBRO_THREAD);
@@ -1817,10 +1775,10 @@ begin
   {$ENDIF}
 
   StopTime;
-  case ATimeKind of
-    tkAlarm: RunAlarm(ATriggerTime);
-    tkTimer: RunTimer(ATriggerTime);
-  end;
+  TState.TimeKind := ATimeKind;
+  TState.TriggerTime := ATriggerTime;
+  AlarmLayout.Visible := TState.IsAlarmCharged;
+  StartTime;
 end;
 
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);

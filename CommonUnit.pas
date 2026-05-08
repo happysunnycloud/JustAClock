@@ -78,6 +78,8 @@ type
     class procedure SetCustomColor1(const AAlphaColor: TAlphaColor); static;
     class procedure SetCustomColor2(const AAlphaColor: TAlphaColor); static;
     class procedure SetCustomColor3(const AAlphaColor: TAlphaColor); static;
+
+    class procedure SetTriggerTime(const ATriggerTime: TTime); static;
     class function  GetIsAlarmCharged: Boolean; static;
   public
 //    class constructor Initialize;
@@ -101,7 +103,7 @@ type
     class property FormWidth: Integer read FFormWidth write FFormWidth;
     class property FormHeight: Integer read FFormHeight write FFormHeight;
     class property TimeKind: TTimeKind read FTimeKind write FTimeKind;
-    class property TriggerTime: TTime read FTriggerTime write FTriggerTime;
+    class property TriggerTime: TTime read FTriggerTime write SetTriggerTime;
     class property IsAndroidAlarmEngineStarted: Boolean
       read FIsAndroidAlarmEngineStarted write FIsAndroidAlarmEngineStarted;
     class property IsAlarmCharged: Boolean read GetIsAlarmCharged;
@@ -568,6 +570,11 @@ class procedure TState.SetCustomColor3(const AAlphaColor: TAlphaColor);
 begin
   FCustomColor3 := AAlphaColor;
   CustomColorNumber := 3;
+end;
+
+class procedure TState.SetTriggerTime(const ATriggerTime: TTime);
+begin
+  FTriggerTime := ATriggerTime;
 end;
 
 class function TState.GetIsAlarmCharged: Boolean;
