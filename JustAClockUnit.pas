@@ -77,6 +77,7 @@ type
     ScreenLockerLayout: TLayout;
     AlarmLayout: TLayout;
     AlarmRectangle: TRectangle;
+    AlarmTimeText: TText;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
@@ -208,6 +209,8 @@ type
     procedure SetTimeThreadOutputControl(const AControl: TControl);
 
     procedure SetRingFileName(const ARingFileName: String);
+
+    procedure OnSetTriggerTimeHandler(Sender: TObject);
   private
     {$IFDEF ANDROID}
     function HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
@@ -892,9 +895,7 @@ begin
     TState.MenuTheme.PopUpMenuTheme.NormalBackgroundColor := TAlphaColorRec.Black;//$FFE0E0E0;
     TState.MenuTheme.PopUpMenuTheme.MouseOverColor := TAlphaColorRec.Cornflowerblue;
     TState.MenuTheme.PopUpMenuTheme.CustomTextSettings.FontColor := TAlphaColorRec.White;
-//    TState.MenuTheme.TextSettings.HorzAlign := TTextAlign.Leading;
-//    TState.MenuTheme.TextSettings.VertAlign := TTextAlign.Center;
-//    TState.MenuTheme.TextSettings.WordWrap := false;
+    TState.OnSetTriggerTime := OnSetTriggerTimeHandler;
 
     FCurrentColorIdent := TColors.ColorArray.LastValue;
 
@@ -1882,6 +1883,13 @@ begin
 
   AMenuItem.IsChecked := true;
 end;
+
+procedure TMainForm.OnSetTriggerTimeHandler(Sender: TObject);
+begin
+  AlarmLayout.Visible := TState.IsAlarmCharged;
+  AlarmTimeText.Text := TimeToStr(TState.TriggerTime);
+end;
+
 {$IFDEF ANDROID}
 procedure TMainForm.MenuVibroItemClickHandler(Sender: TObject);
 var
@@ -1960,7 +1968,6 @@ begin
     end
     ).Start;
 end;
-
 {$ENDIF}
 
 end.

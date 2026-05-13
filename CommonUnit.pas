@@ -66,6 +66,7 @@ type
       FTriggerTime: TTime;
       FIsAndroidAlarmEngineStarted: Boolean;
       FMenuTheme: TTheme;
+      FOnSetTriggerTime: TNotifyEvent;
 
     class procedure SetBoard(const ABoard: TBoardKind); static;
     class function GetConfigFileName: String; static;
@@ -109,6 +110,7 @@ type
     class property IsAlarmCharged: Boolean read GetIsAlarmCharged;
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
+    class property OnSetTriggerTime: TNotifyEvent write FOnSetTriggerTime;
 
     class procedure Init;
     class procedure UnInit;
@@ -575,6 +577,9 @@ end;
 class procedure TState.SetTriggerTime(const ATriggerTime: TTime);
 begin
   FTriggerTime := ATriggerTime;
+
+  if Assigned(FOnSetTriggerTime) then
+    FOnSetTriggerTime(nil);
 end;
 
 class function TState.GetIsAlarmCharged: Boolean;

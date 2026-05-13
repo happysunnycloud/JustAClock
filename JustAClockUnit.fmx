@@ -252,9 +252,29 @@ object MainForm: TMainForm
       TabOrder = 4
       object AlarmRectangle: TRectangle
         Align = Left
+        Fill.Bitmap.Bitmap.PNG = {
+          89504E470D0A1A0A0000000D494844520000000A0000000A08060000008D32CF
+          BD000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+          00774944415428539D8E310EC2400C04CF57205AC43B6803FF40A205E51DFC83
+          37E607543314E40E938886A9D6DEB5BCA5FC831AC045BDA99BA5DF9903AA02F7
+          ECD53CA8A7341E93FE0E96527649EF935E05B73FF40760009EADE3DCF3DAFC48
+          C173441CFAE5BBF3546B7DE45D07188171B95FA186DA3F355EBCFB4A4478173F
+          4A0000000049454E44AE426082}
+        Fill.Bitmap.WrapMode = TileOriginal
+        Fill.Kind = Bitmap
         Size.Width = 10.000000000000000000
         Size.Height = 10.000000000000000000
         Size.PlatformDefault = False
+      end
+      object AlarmTimeText: TText
+        Align = Client
+        Margins.Left = 2.000000000000000000
+        Size.Width = 214.000000000000000000
+        Size.Height = 10.000000000000000000
+        Size.PlatformDefault = False
+        Text = '00:00:00'
+        TextSettings.FontColor = claWhite
+        TextSettings.HorzAlign = Leading
       end
     end
   end
