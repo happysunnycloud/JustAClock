@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="Clock.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#000000"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#000000"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="2.8756734"
+     inkscape:cx="365.13187"
+     inkscape:cy="23.820508"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="0.99999998"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Слой 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-opacity:1;stroke-dasharray:none"
+       id="path1"
+       cx="32.5"
+       cy="22.5"
+       r="12"
+       inkscape:export-filename="Clock192x192.png"
+       inkscape:export-xdpi="180.62221"
+       inkscape:export-ydpi="180.62221" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-opacity:1;stroke-dasharray:none"
+       d="m 32.479521,23.032529 3.449087,3.580861 v 0"
+       id="path2" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-opacity:1;stroke-dasharray:none"
+       d="m 32.500002,11.192309 v 2.307692"
+       id="path3" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-opacity:1;stroke-dasharray:none"
+       d="M 32.479522,16.173755 V 22.86355"
+       id="path3-1" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-opacity:1;stroke-dasharray:none"
+       d="M 23.307692,22.999999 H 21"
+       id="path3-2" />
+    <rect
+       style="fill:none;stroke:none;stroke-width:1;stroke-linecap:round;stroke-opacity:1"
+       id="rect3"
+       width="27.000002"
+       height="26.999998"
+       x="19"
+       y="9" />
+    <circle
+       style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="path1-8"
+       cx="88.650002"
+       cy="23.679167"
+       r="12"
+       inkscape:export-filename="Clock192x192.png"
+       inkscape:export-xdpi="180.62221"
+       inkscape:export-ydpi="180.62221" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.7;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 88.650004,24.679165 4.507698,-3.12156 v 0"
+       id="path2-8"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 88.650004,12.371474 v 2.307692"
+       id="path3-24" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 88.650004,32.679165 v 2.307692"
+       id="path3-24-8" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.50001;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 82.250003,18.886857 6.400001,5.792308"
+       id="path3-1-5"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 79.803849,24.679165 h -2.30769"
+       id="path3-2-5" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 99.957682,24.679165 H 97.650004"
+       id="path3-2-5-17" />
+    <rect
+       style="fill:none;stroke:#00fff8;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3-1"
+       width="27"
+       height="26.999998"
+       x="75.150002"
+       y="10.15" />
+    <circle
+       style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="path1-8-1"
+       cx="128.64999"
+       cy="23.679169"
+       r="12"
+       inkscape:export-filename="Clock32x32.png"
+       inkscape:export-xdpi="29.772888"
+       inkscape:export-ydpi="29.772888" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.7;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 128.65,24.679165 4.5077,-3.12156 v 0"
+       id="path2-8-4"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 128.65,12.371474 v 2.307692"
+       id="path3-24-2" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 128.65,32.679165 v 2.307692"
+       id="path3-24-8-3" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.50001;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 122.25,18.886857 6.4,5.792308"
+       id="path3-1-5-2"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 119.80385,24.679165 h -2.30769"
+       id="path3-2-5-2" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 139.95768,24.679165 H 137.65"
+       id="path3-2-5-17-1" />
+    <rect
+       style="fill:none;stroke:#00fff8;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:0"
+       id="rect3-1-6"
+       width="27"
+       height="26.999998"
+       x="115.15"
+       y="10.15" />
+    <g
+       id="g2"
+       transform="translate(-2.2295196,2.2174842)"
+       inkscape:export-filename="Splash426x320.png"
+       inkscape:export-xdpi="96.25827"
+       inkscape:export-ydpi="96.25827">
+      <circle
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="path1-8-5"
+         cx="62.25"
+         cy="97.25"
+         r="12"
+         inkscape:export-filename="Clock192x192.png"
+         inkscape:export-xdpi="180.62221"
+         inkscape:export-ydpi="180.62221" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 62.229521,97.782513 3.44909,3.580867 v 0"
+         id="path2-8-2" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 62.250001,85.942293 v 2.3077"
+         id="path3-24-7" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 62.229521,90.923743 v 6.6898"
+         id="path3-1-5-6" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 53.057691,97.749993 h -2.30769"
+         id="path3-2-5-1" />
+    </g>
+    <rect
+       style="fill:none;stroke:none;stroke-width:0.302419;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3-1-4"
+       width="112.41008"
+       height="84.36425"
+       x="5.5378962"
+       y="55.537899" />
+    <g
+       id="g1"
+       transform="translate(0.7500005,0.58103449)"
+       inkscape:export-filename="Splash470x320.png"
+       inkscape:export-xdpi="96.25827"
+       inkscape:export-ydpi="96.25827">
+      <circle
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="path1-8-5-2"
+         cx="64.270485"
+         cy="193.88646"
+         r="12"
+         inkscape:export-filename="Clock192x192.png"
+         inkscape:export-xdpi="180.62221"
+         inkscape:export-ydpi="180.62221" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.250001,194.41896 3.44909,3.58087 v 0"
+         id="path2-8-2-1" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.270481,182.57874 v 2.3077"
+         id="path3-24-7-6" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.250001,187.56019 v 6.6898"
+         id="path3-1-5-6-8" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 55.078173,194.38644 h -2.30769"
+         id="path3-2-5-1-5" />
+    </g>
+    <rect
+       style="fill:none;stroke:none;stroke-width:0.317645;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3-1-4-7"
+       width="124.03652"
+       height="84.349022"
+       x="5.158823"
+       y="150.15883" />
+    <g
+       id="g2-2"
+       transform="matrix(1.3560658,0,0,1.3819503,2.8727731,46.178645)"
+       inkscape:export-filename="Splash640x480.png"
+       inkscape:export-xdpi="96.25827"
+       inkscape:export-ydpi="96.25827">
+      <circle
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="path1-8-5-2-7"
+         cx="64.270485"
+         cy="193.88646"
+         r="12"
+         inkscape:export-filename="Clock192x192.png"
+         inkscape:export-xdpi="180.62221"
+         inkscape:export-ydpi="180.62221" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.250001,194.41896 3.44909,3.58087 v 0"
+         id="path2-8-2-1-9" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.270481,182.57874 v 2.3077"
+         id="path3-24-7-6-5" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.250001,187.56019 v 6.6898"
+         id="path3-1-5-6-8-4" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 55.078173,194.38644 h -2.30769"
+         id="path3-2-5-1-5-3" />
+    </g>
+    <rect
+       style="fill:none;stroke:none;stroke-width:0.453983;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3-1-4-7-1"
+       width="168.87936"
+       height="126.54601"
+       x="5.2269917"
+       y="250.22699" />
+    <g
+       id="g2-2-1"
+       transform="matrix(1.6126692,0,0,1.6102453,30.823764,181.17169)"
+       inkscape:export-filename="Splash960x720.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <circle
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="path1-8-5-2-7-1"
+         cx="64.270485"
+         cy="193.88646"
+         r="12"
+         inkscape:export-filename="Clock192x192.png"
+         inkscape:export-xdpi="180.62221"
+         inkscape:export-ydpi="180.62221" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.250001,194.41896 3.44909,3.58087 v 0"
+         id="path2-8-2-1-9-3" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.270481,182.57874 v 2.3077"
+         id="path3-24-7-6-5-8" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.250001,187.56019 v 6.6898"
+         id="path3-1-5-6-8-4-7" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 55.078173,194.38644 h -2.30769"
+         id="path3-2-5-1-5-3-4" />
+    </g>
+    <rect
+       style="fill:none;stroke:none;stroke-width:0.683112;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3-1-4-7-1-2"
+       width="254"
+       height="190.5"
+       x="5.340487"
+       y="400.34048" />
+  </g>
+</svg>
