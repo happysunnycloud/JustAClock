@@ -118,7 +118,7 @@ type
     {$IFDEF ANDROID}
     FVibroMenuItem: TItem;
     FAutoOrientationMenuItem: TItem;
-    FIsJsonReceived: Boolean;
+    //FIsJsonReceived: Boolean;
     {$ENDIF}
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt: TPopupMenuExt;
@@ -128,10 +128,10 @@ type
     procedure TrayIconMouseLeftButtonDownHandler(
       Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure OnCloseTrayItemHandler(Sender: TObject);
-    {$ENDIF}
-
     procedure WindowsDelayedBoardOpen(
       const ABoardKind: TBoardKind);
+    {$ENDIF}
+
     procedure BuildPopupMenues;
 
     procedure MenuColorItemClickHandler(Sender: TObject);
@@ -336,29 +336,6 @@ begin
     end);
 end;
 
-{$IFDEF MSWINDOWS}
-procedure TMainForm.OnCloseTrayItemHandler(Sender: TObject);
-begin
-  Close;
-//  MainForm.BorderFrame.CloseButtonRectangle.
-//    OnClick(MainForm.BorderFrame.CloseButtonRectangle);
-end;
-
-procedure TMainForm.TrayIconMouseRightButtonDownHandler(
-  Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-begin
-  GetCurPos(X, Y);
-
-  FTrayPopupMenuExt.Open(X, Y);
-end;
-
-procedure TMainForm.TrayIconMouseLeftButtonDownHandler(
-  Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-begin
-  ShowWindow(ApplicationHWND, SW_HIDE);
-end;
-{$ENDIF}
-
 procedure TMainForm.ContentLayoutGesture(Sender: TObject;
   const EventInfo: TGestureEventInfo; var Handled: Boolean);
 begin
@@ -383,61 +360,6 @@ begin
   // Так как при закрытии бордов есть обращение к потоку таймера
   CloseBoard;
 end;
-
-{$IFDEF ANDROID}
-function TMainForm.HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
-begin
-  Result := True;
-
-  case AAppEvent of
-    TApplicationEvent.FinishedLaunching:
-    begin
-      if TState.IsAndroidAlarmEngineStarted then
-      begin
-        TAndroidAlarm.HandleIntent;
-        AndroidDelayedBoardOpen(FOpeningBoard, not FIsJsonReceived);
-      end;
-    end;
-    TApplicationEvent.BecameActive:
-    begin
-    end;
-    TApplicationEvent.WillBecomeInactive:
-    begin
-    end;
-    TApplicationEvent.EnteredBackground:
-    begin
-    end;
-    TApplicationEvent.WillBecomeForeground:
-    begin
-    end;
-//  case AAppEvent of
-//    TApplicationEvent.FinishedLaunching:
-//    begin
-//      ShowMessage('FinishedLaunching');
-//    end;
-//    TApplicationEvent.BecameActive:
-//    begin
-//      ShowMessage('BecameActive');
-//    end;
-//    TApplicationEvent.WillBecomeInactive:
-//    begin
-//      ShowMessage('WillBecomeForeground');
-//    end;
-//    TApplicationEvent.EnteredBackground:
-//    begin
-//     ShowMessage('EnteredBackground');
-//    end;
-//    TApplicationEvent.WillBecomeForeground:
-//    begin
-//      ShowMessage('WillBecomeForeground');
-//    end;
-//    TApplicationEvent.WillTerminate: Memo1.Lines.Insert(0, 'Will Terminate');
-//    TApplicationEvent.LowMemory: Memo1.Lines.Insert(0, 'Low Memory');
-//    TApplicationEvent.TimeChange: Memo1.Lines.Insert(0, 'Time Change');
-//    TApplicationEvent.OpenURL: Memo1.Lines.Insert(0, 'Open URL');
-  end;
-end;
-{$ENDIF}
 
 procedure TMainForm.BuildPopupMenues;
 var
@@ -804,29 +726,6 @@ begin
   {$ENDIF}
 end;
 
-procedure TMainForm.WindowsDelayedBoardOpen(
-  const ABoardKind: TBoardKind);
-begin
-  TThread.CreateAnonymousThread(
-    procedure
-    begin
-      Sleep(100);
-
-      TThread.Queue(nil,
-        procedure
-        begin
-          OpenBoard(
-            ABoardKind,
-            TState.ImageName,
-            TState.Color,
-            TState.Orientation,
-            true);
-          ScreenLockerLayout.BringToFront;
-        end);
-    end
-    ).Start;
-end;
-
 procedure TMainForm.FormCreate(Sender: TObject);
 const
   METHOD = 'TMainForm.FormCreate';
@@ -864,7 +763,6 @@ begin
     FTrayPopupMenuExt := nil;
     {$ENDIF}
     {$IFDEF ANDROID}
-    FIsJsonReceived := false;
     TState.IsAndroidAlarmEngineStarted :=
       TAndroidAlarm.Init(1001, AlarmJsonParser);
 
@@ -1067,28 +965,7 @@ function TMainForm.SetBoardOrientation(const AClass: TFrameClass): Pointer;
 begin
   Result := AClass.Create(nil);
 end;
-{$IFDEF MSWINDOWS}
-// Привордим размеры к дефолтным только когда меняем ориентацию экрана
-procedure TMainForm.SetBoardSize(
-  const AMinWidth: Integer;
-  const AMinHeight: Integer;
-  const ALastOrientationIsEqual: Boolean);
-begin
-  MinClientWidth := AMinWidth;
-  MinClientHeight := AMinHeight;
 
-  if not ALastOrientationIsEqual then
-  begin
-    ClientWidth := MinClientWidth;
-    ClientHeight := MinClientHeight;
-  end
-  else
-  begin
-    ClientWidth  := TState.FormWidth;
-    ClientHeight := TState.FormHeight;
-  end;
-end;
-{$ENDIF}
 procedure TMainForm.GetElectronicBoard(
   const AImageName: String;
   const AOrientation: TOrientationKind;
@@ -1572,33 +1449,6 @@ begin
 
   OpenBoard(TState.Board, TState.ImageName, TState.Color, okHorizontal);
 end;
-{$IFDEF ANDROID}
-procedure TMainForm.MenuAutoOrientationOnItemClickHandler(Sender: TObject);
-var
-  MenuItem: TItem absolute Sender;
-begin
-  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
-  SetIsCheckedForChildrenMenuItems(FAutoOrientationMenuItem, false);
-
-  MenuItem.IsChecked := true;
-
-  TState.AutoOrientation := true;
-  StartMotionSensorDataThread;
-end;
-
-procedure TMainForm.MenuAutoOrientationOffItemClickHandler(Sender: TObject);
-var
-  MenuItem: TItem absolute Sender;
-begin
-  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
-  SetIsCheckedForChildrenMenuItems(FAutoOrientationMenuItem, false);
-
-  MenuItem.IsChecked := true;
-
-  TState.AutoOrientation := false;
-  StopMotionSensorDataThread;
-end;
-{$ENDIF}
 
 procedure TMainForm.StartTime;
 begin
@@ -1890,7 +1740,100 @@ begin
   AlarmTimeText.Text := TimeToStr(TState.TriggerTime);
 end;
 
+{$IFDEF MSWINDOWS}
+procedure TMainForm.OnCloseTrayItemHandler(Sender: TObject);
+begin
+  Close;
+//  MainForm.BorderFrame.CloseButtonRectangle.
+//    OnClick(MainForm.BorderFrame.CloseButtonRectangle);
+end;
+
+procedure TMainForm.TrayIconMouseRightButtonDownHandler(
+  Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+begin
+  GetCurPos(X, Y);
+
+  FTrayPopupMenuExt.Open(X, Y);
+end;
+
+procedure TMainForm.TrayIconMouseLeftButtonDownHandler(
+  Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+begin
+  ShowWindow(ApplicationHWND, SW_HIDE);
+end;
+
+// Приводим размеры к дефолтным только когда меняем ориентацию экрана
+procedure TMainForm.SetBoardSize(
+  const AMinWidth: Integer;
+  const AMinHeight: Integer;
+  const ALastOrientationIsEqual: Boolean);
+begin
+  MinClientWidth := AMinWidth;
+  MinClientHeight := AMinHeight;
+
+  if not ALastOrientationIsEqual then
+  begin
+    ClientWidth := MinClientWidth;
+    ClientHeight := MinClientHeight;
+  end
+  else
+  begin
+    ClientWidth  := TState.FormWidth;
+    ClientHeight := TState.FormHeight;
+  end;
+end;
+
+procedure TMainForm.WindowsDelayedBoardOpen(
+  const ABoardKind: TBoardKind);
+begin
+  TThread.CreateAnonymousThread(
+    procedure
+    begin
+      Sleep(100);
+
+      TThread.Queue(nil,
+        procedure
+        begin
+          OpenBoard(
+            ABoardKind,
+            TState.ImageName,
+            TState.Color,
+            TState.Orientation,
+            true);
+          ScreenLockerLayout.BringToFront;
+        end);
+    end
+    ).Start;
+end;
+{$ENDIF}
+
 {$IFDEF ANDROID}
+procedure TMainForm.MenuAutoOrientationOnItemClickHandler(Sender: TObject);
+var
+  MenuItem: TItem absolute Sender;
+begin
+  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
+  SetIsCheckedForChildrenMenuItems(FAutoOrientationMenuItem, false);
+
+  MenuItem.IsChecked := true;
+
+  TState.AutoOrientation := true;
+  StartMotionSensorDataThread;
+end;
+
+procedure TMainForm.MenuAutoOrientationOffItemClickHandler(Sender: TObject);
+var
+  MenuItem: TItem absolute Sender;
+begin
+  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
+  SetIsCheckedForChildrenMenuItems(FAutoOrientationMenuItem, false);
+
+  MenuItem.IsChecked := true;
+
+  TState.AutoOrientation := false;
+  StopMotionSensorDataThread;
+end;
+
 procedure TMainForm.MenuVibroItemClickHandler(Sender: TObject);
 var
   MenuItem: TItem absolute Sender;
@@ -1904,7 +1847,7 @@ end;
 
 procedure TMainForm.AlarmJsonParser(const AJson: String = '');
 begin
-  FIsJsonReceived := true;
+  TState.IsJsonReceived := AJson.Length > 0;
   StartSignal;
 end;
 
@@ -1967,6 +1910,58 @@ begin
         end);
     end
     ).Start;
+end;
+
+function TMainForm.HandleAppEvent(AAppEvent: TApplicationEvent; AContext: TObject): Boolean;
+begin
+  Result := True;
+
+  case AAppEvent of
+    TApplicationEvent.FinishedLaunching:
+    begin
+      if TState.IsAndroidAlarmEngineStarted then
+        TAndroidAlarm.HandleIntent;
+
+      AndroidDelayedBoardOpen(FOpeningBoard, not TState.IsJsonReceived);
+    end;
+    TApplicationEvent.BecameActive:
+    begin
+    end;
+    TApplicationEvent.WillBecomeInactive:
+    begin
+    end;
+    TApplicationEvent.EnteredBackground:
+    begin
+    end;
+    TApplicationEvent.WillBecomeForeground:
+    begin
+    end;
+//  case AAppEvent of
+//    TApplicationEvent.FinishedLaunching:
+//    begin
+//      ShowMessage('FinishedLaunching');
+//    end;
+//    TApplicationEvent.BecameActive:
+//    begin
+//      ShowMessage('BecameActive');
+//    end;
+//    TApplicationEvent.WillBecomeInactive:
+//    begin
+//      ShowMessage('WillBecomeForeground');
+//    end;
+//    TApplicationEvent.EnteredBackground:
+//    begin
+//     ShowMessage('EnteredBackground');
+//    end;
+//    TApplicationEvent.WillBecomeForeground:
+//    begin
+//      ShowMessage('WillBecomeForeground');
+//    end;
+//    TApplicationEvent.WillTerminate: Memo1.Lines.Insert(0, 'Will Terminate');
+//    TApplicationEvent.LowMemory: Memo1.Lines.Insert(0, 'Low Memory');
+//    TApplicationEvent.TimeChange: Memo1.Lines.Insert(0, 'Time Change');
+//    TApplicationEvent.OpenURL: Memo1.Lines.Insert(0, 'Open URL');
+  end;
 end;
 {$ENDIF}
 

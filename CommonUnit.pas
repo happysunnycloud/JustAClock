@@ -64,6 +64,7 @@ type
       FFormHeight: Integer;
       FTimeKind: TTimeKind;
       FTriggerTime: TTime;
+      FIsJsonReceived: Boolean;
       FIsAndroidAlarmEngineStarted: Boolean;
       FMenuTheme: TTheme;
       FOnSetTriggerTime: TNotifyEvent;
@@ -107,6 +108,7 @@ type
     class property TriggerTime: TTime read FTriggerTime write SetTriggerTime;
     class property IsAndroidAlarmEngineStarted: Boolean
       read FIsAndroidAlarmEngineStarted write FIsAndroidAlarmEngineStarted;
+    class property IsJsonReceived: Boolean read FIsJsonReceived write FIsJsonReceived;
     class property IsAlarmCharged: Boolean read GetIsAlarmCharged;
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
@@ -525,6 +527,7 @@ begin
   FFormWidth          := HORIZONTAL_MIN_WIDTH;
   FFormHeight         := HORIZONTAL_MIN_HEIGHT;
   FOrientation        := TOrientationKind.okHorizontal;
+  FIsJsonReceived     := false;
   FIsAndroidAlarmEngineStarted := false;
   {$IFDEF MSWINDOWS}
   FVibration          := false;
