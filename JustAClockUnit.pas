@@ -377,13 +377,7 @@ begin
   { SettingsPopupMenu }
 
   FSettingsPopupMenuExt := TPopupMenuExt.Create(ContentLayout);
-//  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self, ThreadFactory);
 
-//  {$IFDEF MSWINDOWS}
-//  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self, ThreadFactory);
-//  {$ELSE IFDEF ANDROID}
-//  FSettingsPopupMenuExt := TPopupMenuExt.Create(Self);
-//  {$ENDIF}
   FSettingsPopupMenuExt.Theme.CopyFrom(TState.MenuTheme.PopUpMenuTheme);
 
   FBoardsMenuItem := TItem.Create;
