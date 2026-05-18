@@ -344,19 +344,8 @@ end;
 //end;
 
 procedure GetCurPos(var X, Y: Single);
-{$IFDEF MSWINDOWS}
-var
-  MousePoint: TPoint;
-{$ENDIF}
 begin
-  {$IFDEF MSWINDOWS}
-  GetCursorPos(MousePoint);
-  X := MousePoint.X;
-  Y := MousePoint.Y;
-  {$ELSE IF ANDROID}
-  X := X;
-  Y := Y;
-  {$ENDIF}
+  TControlTools.GetCurPos(X, Y);
 end;
 
 function TimeToDateTime(const ATime: TTime): TDateTime;
