@@ -205,9 +205,6 @@ type
 
     procedure RaiseAppException(const AMethod: String; const AE: Exception);
 
-//    function GetTimeThread: TTimeThread;
-    procedure SetTimeThreadOutputControl(const AControl: TControl);
-
     procedure SetRingFileName(const ARingFileName: String);
 
     procedure OnSetTriggerTimeHandler(Sender: TObject);
@@ -293,19 +290,6 @@ uses
   ;
 
 { TMainForm }
-
-//function TMainForm.GetTimeThread: TTimeThread;
-//begin
-//  Result := ThreadFactory.FindThread('TTimeThread') as TTimeThread;
-//end;
-
-procedure TMainForm.SetTimeThreadOutputControl(const AControl: TControl);
-begin
-  if not Assigned(FTimeThread) then
-    Exit;
-
-  FTimeThread.OutputControl := AControl;
-end;
 
 procedure TMainForm.SetRingFileName(const ARingFileName: String);
 var
@@ -1263,9 +1247,6 @@ begin
   if TState.Board = bkNone then
     Exit;
 
-  SetTimeThreadOutputControl(TimeVoidEdit);
-  //TimeVoidEdit.OnChange := TimeVoidEditOnChangeHandler;
-
   AlarmLayout.Visible := TState.IsAlarmCharged;
 
   Self.Resize;
@@ -1273,7 +1254,7 @@ begin
   if ADoStartTime then
     StartTime;
 end;
-//asd debug TMainForm.CloseBoard;
+
 procedure TMainForm.CloseBoard;
 begin
   StopTime;
