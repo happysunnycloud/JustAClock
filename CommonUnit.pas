@@ -28,6 +28,7 @@ const
   RING_NAME_OFF = 'Off';
 
   ZERO_TIME_STRING = '00:00:00';
+  NULL_TIME = -1;
 
   {$IFDEF ANDROID}
   PATH_DELIMITER = '/';
@@ -64,6 +65,7 @@ type
       FFormHeight: Integer;
       FTimeKind: TTimeKind;
       FTriggerTime: TTime;
+      FIsAlarmCharged: Boolean;
       FIsJsonReceived: Boolean;
       FIsAndroidAlarmEngineStarted: Boolean;
       FMenuTheme: TTheme;
@@ -448,6 +450,7 @@ begin
     FileStreamTools.Write(FFormHeight);
     FileStreamTools.Write(TimeKind);
     FileStreamTools.Write(FTriggerTime);
+    FileStreamTools.Write(FIsAlarmCharged);
   finally
     FreeAndNil(FileStreamTools);
   end;
@@ -486,6 +489,7 @@ begin
     FFormHeight         := FileStreamTools.ReadAsInteger;
     TimeKind            := FileStreamTools.ReadAsInteger;
     TriggerTime         := FileStreamTools.ReadAsDouble;
+    FIsAlarmCharged     := FileStreamTools.ReadAsBoolean;
 
     FBoard := TBoardKind(Board);
     FOrientation := TOrientationKind(Orientation);
@@ -500,7 +504,8 @@ class procedure TState.Init;
 begin
   FMenuTheme          := TTheme.Create;
   FTimeKind           := TTimeKind.tkTime;
-  FTriggerTime        := 0;
+  FTriggerTime        := NULL_TIME;
+  FIsAlarmCharged     := false;
   FColorIdent         := CHROMAKEY_COLOR_IDENT;
   FColor              := TColors.ColorByIdent(FColorIdent);
   FImageName          := 'Electronic';
@@ -568,6 +573,11 @@ end;
 
 class procedure TState.SetTriggerTime(const ATriggerTime: TTime);
 begin
+  FIsAlarmCharged := true;
+
+  if ATriggerTime = NULL_TIME then
+    FIsAlarmCharged := false;
+
   FTriggerTime := ATriggerTime;
 
   if Assigned(FOnSetTriggerTime) then
@@ -576,7 +586,7 @@ end;
 
 class function TState.GetIsAlarmCharged: Boolean;
 begin
-  Result := FTriggerTime > 0;
+  Result := FIsAlarmCharged;
 end;
 
 { TColorArrayHelper }

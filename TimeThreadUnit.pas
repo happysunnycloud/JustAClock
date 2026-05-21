@@ -113,11 +113,11 @@ begin
 
   inherited Create(AThreadFactory);
 
-  OnSetTerminateProcRef :=
-    procedure
-    begin
-      FOutputControl := nil;
-    end;
+//  OnSetTerminateProcRef :=
+//    procedure
+//    begin
+//      FOutputControl := nil;
+//    end;
 end;
 
 destructor TTimeThread.Destroy;
@@ -145,7 +145,6 @@ begin
       Control := OutputControl;
       if Assigned(Control) then
         CommonUnit.DisplayTime(Control, TimeString);
-//        TControlTools.SetTextProperty(OutputControl, TimeString);
     end);
 end;
 
@@ -174,50 +173,35 @@ begin
     CurrentTime := Now;
     TriggerTime := CurrentTime;
     TDateTimeTools.ChangeTime(TriggerTime, FTriggerTime);
-    if CurrentTime >= TriggerTime then
-    begin
-      DisplayTime(ZERO_TIME_STRING);
+    try
+      if CurrentTime >= TriggerTime then
+      begin
+        TimeString := ZERO_TIME_STRING;
 
-      // В случае андроида, запускается через интент
-      if not TState.IsAndroidAlarmEngineStarted then
-        TThread.Queue(nil,
-          procedure
-          begin
-            TMainForm(FForm).StartSignal;
-          end);
+        // В случае андроида, запускается через интент
+        if not TState.IsAndroidAlarmEngineStarted then
+          TThread.Queue(nil,
+            procedure
+            begin
+              TMainForm(FForm).StartSignal;
+            end);
 
-      Break;
-    end
-    else
-    begin
-      TimeString := FormatDateTime(
-        'hh:nn:ss',
-        TTimeCalc.CalcTime(FTriggerTime, CurrentTime, false));
-
+        Break;
+      end
+      else
+      begin
+        TimeString := FormatDateTime(
+          'hh:nn:ss',
+          TTimeCalc.CalcTime(FTriggerTime, CurrentTime, false));
+      end;
+    finally
       DisplayTime(TimeString);
     end;
-
-//    TimeString := FormatDateTime('hh:nn:ss', TTimeCalc.CalcTime(FinishTime, Now, false));
-//
-//    DisplayTime(TimeString);
-//
-//    if TimeString = ZERO_TIME_STRING then
-//    begin
-//      // В случае андроида, запускается через интент
-//      if not TState.IsAndroidAlarmEngineStarted then
-//        TThread.Queue(nil,
-//          procedure
-//          begin
-//            TMainForm(FForm).StartSignal;
-//          end);
-//
-//      Break;
-//    end;
 
     Sleep(100);
   end;
 
-  OutputControl := nil;
+//  OutputControl := nil;
 end;
 
 procedure TTimeThread.ExecAlarm;
@@ -226,6 +210,7 @@ var
   Year, Month, Day: Word;
   Hour, Min, Sec, MSec: Word;
   FullTriggerTime: TDateTime;
+  Time: TTime;
 begin
   DecodeDate(Now, Year, Month, Day);
   DecodeTime(FTriggerTime, Hour, Min, Sec, MSec);
@@ -233,26 +218,31 @@ begin
 
   while not Terminated do
   begin
-    TimeString := FormatDateTime('hh:nn:ss', Now);
-    DisplayTime(TimeString);
+    Time := Now;
+    try
+      if Time >= FullTriggerTime then
+      begin
+        Time := FTriggerTime;
 
-    if Now >= FullTriggerTime then
-    begin
-      // В случае андроида, запускается через интент
-      if not TState.IsAndroidAlarmEngineStarted then
-        TThread.Queue(nil,
-          procedure
-          begin
-            TMainForm(FForm).StartSignal;
-          end);
+        // В случае андроида, запускается через интент
+        if not TState.IsAndroidAlarmEngineStarted then
+          TThread.Queue(nil,
+            procedure
+            begin
+              TMainForm(FForm).StartSignal;
+            end);
 
-      Break;
+        Break;
+      end;
+    finally
+      TimeString := FormatDateTime('hh:nn:ss', Time);
+      DisplayTime(TimeString);
     end;
 
     Sleep(100);
   end;
 
-  OutputControl := nil;
+//  OutputControl := nil;
 end;
 
 end.

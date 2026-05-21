@@ -712,6 +712,10 @@ const
 var
   aFMXApplicationEventService: IFMXApplicationEventService;
 {$ENDIF}
+{$IFDEF MSWINDOWS}
+var
+  TriggerTime: TTime;
+{$ENDIF}
 begin
   ReportMemoryLeaksOnShutdown := true;
   try
@@ -796,7 +800,8 @@ begin
       bkNone,
       TState.ImageName,
       TState.Color,
-      TState.Orientation, false);
+      TState.Orientation,
+      false);
 
     {$IFDEF MSWINDOWS}
     ShowWindow(ApplicationHWND, SW_HIDE);
@@ -1361,7 +1366,7 @@ end;
 procedure TMainForm.MenuCancelTimerItemClickHandler(Sender: TObject);
 begin
   TState.TimeKind := tkTime;
-  TState.TriggerTime := 0;
+  TState.TriggerTime := NULL_TIME;
 
   AlarmLayout.Visible := TState.IsAlarmCharged;
 
@@ -1444,10 +1449,9 @@ var
   OutputControl: TControl;
 begin
   TimeKind := TState.TimeKind;
-  TState.TriggerTime := ATriggerTime;
 
   if TimeKind = tkTime then
-    TState.TriggerTime := StrToTime(ZERO_TIME_STRING)
+    TState.TriggerTime := NULL_TIME //StrToTime(ZERO_TIME_STRING)
   else
     TState.TriggerTime := ATriggerTime;
 
