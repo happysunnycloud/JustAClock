@@ -1485,7 +1485,7 @@ begin
   TimeKind := TState.TimeKind;
 
   if TimeKind = tkTime then
-    TState.TriggerTime := NULL_TIME //StrToTime(ZERO_TIME_STRING)
+    TState.TriggerTime := NULL_TIME
   else
     TState.TriggerTime := ATriggerTime;
 
@@ -1526,12 +1526,15 @@ end;
 procedure TMainForm.StartSignal;
 const
   VOLUME_VALUE = 1.0;
-//var
-//  MenuItem: TItem;
+var
+  TimeString: String;
 begin
-//  MenuItem := FToolsPopupMenuExt.FindItem(CANCEL_MENU_ITEM_NAME);
-//  MenuItem.Visible := true;
   StopTime;
+
+  TimeString := FormatDateTime('hh:nn:ss', TState.TriggerTime);
+  if TState.TimeKind = tkTimer then
+    TimeString := ZERO_TIME_STRING;
+  CommonUnit.DisplayTime(TimeVoidEdit, TimeString);
 
   if TState.RingName <> RING_NAME_OFF then
   begin
@@ -1944,8 +1947,7 @@ begin
             TState.Color,
             TState.Orientation,
             ADoStartTime);
-          if not ADoStartTime then
-            CommonUnit.DisplayTime(TimeVoidEdit, ZERO_TIME_STRING);
+
           ScreenLockerLayout.BringToFront;
 
           if TState.AutoOrientation then

@@ -176,28 +176,24 @@ begin
     CurrentTime := Now;
     TriggerTime := CurrentTime;
     TDateTimeTools.ChangeTime(TriggerTime, FTriggerTime);
-    try
-      if CurrentTime >= TriggerTime then
-      begin
-        TimeString := ZERO_TIME_STRING;
+    if CurrentTime >= TriggerTime then
+    begin
+      // В случае андроида, запускается через интент
+      if not TState.IsAndroidAlarmEngineStarted then
+        TThread.Queue(nil,
+          procedure
+          begin
+            TMainForm(FForm).StartSignal;
+          end);
 
-        // В случае андроида, запускается через интент
-        if not TState.IsAndroidAlarmEngineStarted then
-          TThread.Queue(nil,
-            procedure
-            begin
-              TMainForm(FForm).StartSignal;
-            end);
+      Break;
+    end
+    else
+    begin
+      TimeString := FormatDateTime(
+        'hh:nn:ss',
+        TTimeCalc.CalcTime(FTriggerTime, CurrentTime, false));
 
-        Break;
-      end
-      else
-      begin
-        TimeString := FormatDateTime(
-          'hh:nn:ss',
-          TTimeCalc.CalcTime(FTriggerTime, CurrentTime, false));
-      end;
-    finally
       DisplayTime(TimeString);
     end;
 
@@ -222,22 +218,20 @@ begin
   while not Terminated do
   begin
     Time := Now;
-    try
-      if Time >= FullTriggerTime then
-      begin
-        Time := FTriggerTime;
+    if Time >= FullTriggerTime then
+    begin
+      // В случае андроида, запускается через интент
+      if not TState.IsAndroidAlarmEngineStarted then
+        TThread.Queue(nil,
+          procedure
+          begin
+            TMainForm(FForm).StartSignal;
+          end);
 
-        // В случае андроида, запускается через интент
-        if not TState.IsAndroidAlarmEngineStarted then
-          TThread.Queue(nil,
-            procedure
-            begin
-              TMainForm(FForm).StartSignal;
-            end);
-
-        Break;
-      end;
-    finally
+      Break;
+    end
+    else
+    begin
       TimeString := FormatDateTime('hh:nn:ss', Time);
       DisplayTime(TimeString);
     end;
