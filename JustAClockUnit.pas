@@ -1,5 +1,5 @@
 ﻿unit JustAClockUnit;
-
+{TODO: Перевести TriggerTime с TTime на TDateTime}
 interface
 
 uses
@@ -16,6 +16,7 @@ uses
   , FMX.Gestures
   , PopupMenuExt.Item
   , TypesUnit
+  , ThreadFactoryUnit
   {$IFDEF ANDROID}
   , FMX.Platform
   {$ENDIF}
@@ -39,9 +40,8 @@ const
   COLOR_MENU_ITEM_NAME_PREFIX = 'ColorMenuItem';
   CUSTOM_COLOR_MENU_ITEM_NAME_PREFIX = 'CustomColorMenuItem';
 
-  SINGLE_SOUND_THREAD = 'SingleSoundThread';
-  SIGNAL_THREAD = 'SignalThread';
-  VIBRO_THREAD = 'VibroThread';
+//  SIGNAL_THREAD = 'SignalThread';
+//  VIBRO_THREAD = 'VibroThread';
 
   VIBRO_NAME_OFF = 'Off';
   VIBRO_NAME_ON = 'On';
@@ -96,6 +96,8 @@ type
   strict private
     FOpeningBoard: TBoardKind;
     FTimeThread: TTimeThread;
+    FSignalThread: TInlineThreadExt;
+    FVibroThread: TInlineThreadExt;
     FElectronicBoardFrame: TElectronicBoardFrame;
     FTextBoardFrame: TTextBoardFrame;
     FCurrentColorIdent: String;
@@ -148,6 +150,7 @@ type
 
     procedure MenuHorizontalOrientationItemClickHandler(Sender: TObject);
     procedure MenuVerticalOrientationItemClickHandler(Sender: TObject);
+    procedure MountOrientation(const AOrientationKind: TOrientationKind);
 
     procedure SetAlarmTrigger(
       const ATimeKind: TTimeKind;
@@ -250,6 +253,7 @@ type
 
 //    property TimeThread: TTimeThread read GetTimeThread;
   public
+    function DoStartSignal: Boolean;
     procedure StartSignal;
     procedure StopSignal;
 //    {$IFDEF MSWINDOWS}
@@ -277,7 +281,6 @@ uses
   {$ENDIF}
     ShowTimeUnit
   , ShowTextTimeUnit
-  , ThreadFactoryUnit
   , NumScrollUnit
   , SetTimerFormUnit
   , SetCustomColorFormUnit
@@ -287,6 +290,7 @@ uses
   , MotionSensorDataThreadUnit
   , FMX.VibroUnit
   , TimeCalcUnit
+  , DateTimeToolsUnit
   ;
 
 { TMainForm }
@@ -328,12 +332,15 @@ end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  TimeVoidEdit.OnChange := nil;
+
   FSingleSound.Stop;
 
   {$IFDEF ANDROID}
   if TState.IsAndroidAlarmEngineStarted then
     TAndroidAlarm.Uninit;
   {$ENDIF}
+
 //  if Assigned(FTimeThread) then
 //    FTimeThread.OutputControl := nil;
 
@@ -712,14 +719,12 @@ const
 var
   aFMXApplicationEventService: IFMXApplicationEventService;
 {$ENDIF}
-{$IFDEF MSWINDOWS}
-var
-  TriggerTime: TTime;
-{$ENDIF}
 begin
   ReportMemoryLeaksOnShutdown := true;
   try
     FTimeThread := nil;
+    FSignalThread := nil;
+    FVibroThread := nil;
     // Пусть остается SystemDefault
     // В некоторых эмуляторах при установке в HighQuality
     // зависает на экране заставки
@@ -776,6 +781,8 @@ begin
     TState.MenuTheme.PopUpMenuTheme.MouseOverColor := TAlphaColorRec.Cornflowerblue;
     TState.MenuTheme.PopUpMenuTheme.CustomTextSettings.FontColor := TAlphaColorRec.White;
     TState.OnSetTriggerTime := OnSetTriggerTimeHandler;
+    // Переприсваеваем время триггера, что бы сработал TState.OnSetTriggerTime
+    TState.TriggerTime := TState.TriggerTime;
 
     FCurrentColorIdent := TColors.ColorArray.LastValue;
 
@@ -814,9 +821,6 @@ begin
     WindowsDelayedBoardOpen(FOpeningBoard);
     {$ELSE IFDEF ANDROID}
     Self.FullScreen := true;
-
-    if TState.AutoOrientation then
-      StartMotionSensorDataThread;
     {$ENDIF}
   except
     on e: Exception do
@@ -1307,9 +1311,11 @@ procedure TMainForm.MenuElectronicBoardItemClickHandler(Sender: TObject);
 var
   MenuItem: TItem absolute Sender;
 begin
+  Log.d('TMainForm.MenuElectronicBoardItemClickHandler.Enter');
   SetIsCheckedBoardMenuItem(MenuItem);
 
   OpenBoard(bkElectronic, MenuItem.Text, TState.Color, TState.Orientation);
+  Log.d('TMainForm.MenuElectronicBoardItemClickHandler.Leave');
 end;
 
 procedure TMainForm.MenuImageBoardItemClickHandler(Sender: TObject);
@@ -1412,22 +1418,49 @@ end;
 
 procedure TMainForm.MenuVerticalOrientationItemClickHandler(Sender: TObject);
 begin
-  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
-  // Выставляем значение не через Sender,
-  // так как при авто повороте, Sender = nil
-  FVerticalOrientationMenuItem.IsChecked := true;
+  MountOrientation(okVertical);
 
-  OpenBoard(TState.Board, TState.ImageName, TState.Color, okVertical);
+//  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
+//  // Выставляем значение не через Sender,
+//  // так как при авто повороте, Sender = nil
+//  FVerticalOrientationMenuItem.IsChecked := true;
+//
+//  OpenBoard(TState.Board, TState.ImageName, TState.Color, okVertical);
+//
+//  TimeVoidEditOnChangeHandler(TimeVoidEdit);
 end;
 
 procedure TMainForm.MenuHorizontalOrientationItemClickHandler(Sender: TObject);
 begin
+  MountOrientation(okHorizontal);
+
+//  SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
+//  // Выставляем значение не через Sender,
+//  // так как при авто повороте, Sender = nil
+//  FHorizontalOrientationMenuItem.IsChecked := true;
+//
+//  OpenBoard(TState.Board, TState.ImageName, TState.Color, okHorizontal);
+//
+//  TimeVoidEditOnChangeHandler(TimeVoidEdit);
+end;
+
+procedure TMainForm.MountOrientation(const AOrientationKind: TOrientationKind);
+begin
   SetIsCheckedForChildrenMenuItems(FOrientationMenuItem, false);
   // Выставляем значение не через Sender,
   // так как при авто повороте, Sender = nil
-  FHorizontalOrientationMenuItem.IsChecked := true;
+  if AOrientationKind = okVertical then
+    FVerticalOrientationMenuItem.IsChecked := true
+  else
+  if AOrientationKind = okHorizontal then
+    FHorizontalOrientationMenuItem.IsChecked := true;
 
-  OpenBoard(TState.Board, TState.ImageName, TState.Color, okHorizontal);
+  OpenBoard(TState.Board, TState.ImageName, TState.Color, AOrientationKind);
+
+  // Запускаем OnChange вручную, иначе цифры не отобразятся на табло,
+  // Так как поток тикера не запущен и изменений в TimeVoidEdit не происходит
+  // И не вызывается TimeVoidEdit.OnChange
+  TimeVoidEditOnChangeHandler(TimeVoidEdit);
 end;
 
 procedure TMainForm.StartTime;
@@ -1437,7 +1470,8 @@ end;
 
 procedure TMainForm.StopTime;
 begin
-  ThreadFactory.TerminateThread(FTimeThread);
+  if Assigned(FTimeThread) then
+    ThreadFactory.TerminateThread(FTimeThread);
 
   AlarmLayout.Visible := TState.IsAlarmCharged;
 end;
@@ -1475,6 +1509,20 @@ end;
 ////  FTimeThread := nil;
 //end;
 
+function TMainForm.DoStartSignal: Boolean;
+begin
+  Result := false;
+
+  if TState.IsJsonReceived or
+     ((TState.IsAlarmCharged) and (TState.TriggerTime <= Now))
+  then
+  begin
+    StartSignal;
+
+    Result := true;
+  end;
+end;
+
 procedure TMainForm.StartSignal;
 const
   VOLUME_VALUE = 1.0;
@@ -1506,8 +1554,10 @@ begin
       end);
   end;
 
+  ThreadFactory.TerminateThread(FVibroThread);
   if TState.Vibration then
-    ThreadFactory.CreateFreeOnTerminateInlineThread(VIBRO_THREAD,
+  begin
+    FVibroThread := ThreadFactory.CreateInlineThread(
       procedure (const AThread: TThreadExt)
       begin
         while not AThread.Terminated do
@@ -1515,10 +1565,11 @@ begin
           TVibro.Vibrate(200);
           Sleep(600);
         end;
-      end,
-      false);
+      end);
+  end;
 
-  ThreadFactory.CreateFreeOnTerminateInlineThread(SIGNAL_THREAD,
+  ThreadFactory.TerminateThread(FSignalThread);
+  FSignalThread := ThreadFactory.CreateInlineThread(
     procedure (const AThread: TThreadExt)
     begin
       TThread.ForceQueue(nil,
@@ -1549,13 +1600,12 @@ begin
 
         Sleep(600);
       end;
-    end,
-    false);
+    end);
 end;
 
 procedure TMainForm.StopSignal;
 begin
-  TState.TriggerTime := 0;
+  TState.TriggerTime := NULL_TIME;
 
   {$IFDEF ANDROID}
   if TState.IsAndroidAlarmEngineStarted then
@@ -1564,29 +1614,41 @@ begin
 
   FSingleSound.Pause;
 
-  ThreadFactory.TerminateThread(SIGNAL_THREAD);
-  ThreadFactory.TerminateThread(VIBRO_THREAD);
+  ThreadFactory.TerminateThread(FSignalThread);
+  ThreadFactory.TerminateThread(FVibroThread);
 
-  if not ThreadFactory.ThreadExists(FTimeThread) then
-    RunTicker;
+  if Assigned(FTimeThread) then
+    if not ThreadFactory.ThreadExists(FTimeThread) then
+      RunTicker;
 end;
 
 procedure TMainForm.SetAlarmTrigger(
   const ATimeKind: TTimeKind;
   const ATriggerTime: TTime);
+var
+  CurrentTime: TDateTime;
+  TriggerTime: TDateTime;
 begin
-  StopSignal;
+  CurrentTime := Now;
+  TriggerTime := CurrentTime;
+  TDateTimeTools.ChangeTime(TriggerTime, ATriggerTime);
 
-  {$IFDEF ANDROID}
-  if TState.IsAndroidAlarmEngineStarted then
-    TAndroidAlarm.RechargeAlarm(TimeToDateTime(ATriggerTime));
-  {$ENDIF}
+  StopSignal;
 
   StopTime;
   TState.TimeKind := ATimeKind;
-  TState.TriggerTime := ATriggerTime;
+  TState.TriggerTime := TriggerTime;
   AlarmLayout.Visible := TState.IsAlarmCharged;
+
+  if DoStartSignal then
+    Exit;
+
   StartTime;
+
+  {$IFDEF ANDROID}
+  if TState.IsAndroidAlarmEngineStarted then
+    TAndroidAlarm.RechargeAlarm(TimeToDateTime(TriggerTime));
+  {$ENDIF}
 end;
 
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
@@ -1827,7 +1889,6 @@ end;
 procedure TMainForm.AlarmJsonParser(const AJson: String = '');
 begin
   TState.IsJsonReceived := AJson.Length > 0;
-  StartSignal;
 end;
 
 procedure TMainForm.SetIsCheckedVibroMenuItem(const AMenuItem: TItem);
@@ -1886,6 +1947,11 @@ begin
           if not ADoStartTime then
             CommonUnit.DisplayTime(TimeVoidEdit, ZERO_TIME_STRING);
           ScreenLockerLayout.BringToFront;
+
+          if TState.AutoOrientation then
+            StartMotionSensorDataThread;
+
+          DoStartSignal;
         end);
     end
     ).Start;

@@ -198,14 +198,25 @@ uses
   {$IFDEF MSWINDOWS}
   , Winapi.Windows
   {$ENDIF}
+  //asd debug
+  , JustAClockUnit
+  //asd debug
   ;
 
 procedure DisplayTime(const AOutputControl: TControl; const ATimeString: String);
+//asd debug
+var
+  OnChange: TNotifyEvent;
+//asd debug
 begin
   if not Assigned(AOutputControl) then
     raise Exception.Create('DisplayTime -> Control is nil');
 
   TControlTools.SetTextProperty(AOutputControl, ATimeString);
+  //asd debug
+  OnChange := MainForm.TimeVoidEdit.OnChange;
+  OnChange := OnChange;
+  //asd debug
 end;
 
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;

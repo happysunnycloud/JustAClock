@@ -52,16 +52,16 @@ uses
   FMX.VibroUnit in '..\DevelopmentsCollection\FMX.VibroUnit.pas',
   PopupMenuExt.Item in '..\DevelopmentsCollection\FMX.PopupMenuExt\PopupMenuExt.Item.pas',
   FMX.SingleSoundUnit in '..\DevelopmentsCollection\FMX.SingleSoundUnit.pas',
-  FMX.PopupMenuExt.BaseClass in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.BaseClass.pas',
-  FMX.PopupMenuExt.Constants in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Constants.pas',
-  FMX.PopupMenuExt.Layout in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Layout.pas',
+  FMX.PopupMenuExt.BaseClass in 'FMX.PopupMenuExt.BaseClass.pas',
+  FMX.PopupMenuExt.Constants in 'FMX.PopupMenuExt.Constants.pas',
+  FMX.PopupMenuExt.Layout in 'FMX.PopupMenuExt.Layout.pas',
   BinFileTypes in '..\DevelopmentsCollection\Types\BinFileTypes.pas',
   StreamHandler in '..\DevelopmentsCollection\Stream\StreamHandler.pas',
   TypesUnit in 'TypesUnit.pas',
   {$IFDEF MSWINDOWS}
-  FMX.PopupMenuExt.Form in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Form.pas'
+  FMX.PopupMenuExt.Form in 'FMX.PopupMenuExt.Form.pas'
   {$ELSE IFDEF ANDROID}
-  FMX.PopupMenuExt.Android in '..\DevelopmentsCollection\FMX.PopupMenuExt\FMX.PopupMenuExt.Android.pas',
+  FMX.PopupMenuExt.Android in 'FMX.PopupMenuExt.Android.pas',
   FMX.Alarm.Android in '..\DevelopmentsCollection\Alarm\FMX.Alarm.Android.pas'
   {$ENDIF}
   ;

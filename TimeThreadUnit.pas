@@ -61,9 +61,13 @@ uses
 { TTimeThread }
 
 procedure TTimeThread.SetOutputControl(const AOutputControl: TControl);
+var
+  a: String;
 begin
   FCriticalSection.Enter;
   try
+    if AOutputControl = nil then
+      a := '';
     FOutputControl := AOutputControl;
   finally
     FCriticalSection.Leave;
@@ -116,14 +120,13 @@ begin
 //  OnSetTerminateProcRef :=
 //    procedure
 //    begin
-//      FOutputControl := nil;
+//      OutputControl := nil;
 //    end;
 end;
 
 destructor TTimeThread.Destroy;
 begin
-  if Assigned(FCriticalSection) then
-    FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 
   inherited;
 end;
