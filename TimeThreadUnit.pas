@@ -174,17 +174,14 @@ begin
   while not Terminated do
   begin
     CurrentTime := Now;
-    TriggerTime := CurrentTime;
-    TDateTimeTools.ChangeTime(TriggerTime, FTriggerTime);
+    TriggerTime := FTriggerTime;
     if CurrentTime >= TriggerTime then
     begin
-      // В случае андроида, запускается через интент
-      if not TState.IsAndroidAlarmEngineStarted then
-        TThread.Queue(nil,
-          procedure
-          begin
-            TMainForm(FForm).StartSignal;
-          end);
+      TThread.Queue(nil,
+        procedure
+        begin
+          TMainForm(FForm).StartSignal;
+        end);
 
       Break;
     end
@@ -220,13 +217,11 @@ begin
     Time := Now;
     if Time >= FullTriggerTime then
     begin
-      // В случае андроида, запускается через интент
-      if not TState.IsAndroidAlarmEngineStarted then
-        TThread.Queue(nil,
-          procedure
-          begin
-            TMainForm(FForm).StartSignal;
-          end);
+      TThread.Queue(nil,
+        procedure
+        begin
+          TMainForm(FForm).StartSignal;
+        end);
 
       Break;
     end

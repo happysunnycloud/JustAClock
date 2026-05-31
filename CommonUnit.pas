@@ -64,9 +64,10 @@ type
       FFormWidth: Integer;
       FFormHeight: Integer;
       FTimeKind: TTimeKind;
-      FTriggerTime: TTime;
+      FTriggerTime: TDateTime;
       FIsAlarmCharged: Boolean;
       FIsJsonReceived: Boolean;
+      {TODO: Проверить нужен ли еще этот флаг?}
       FIsAndroidAlarmEngineStarted: Boolean;
       FMenuTheme: TTheme;
       FOnSetTriggerTime: TNotifyEvent;
@@ -83,7 +84,7 @@ type
     class procedure SetCustomColor2(const AAlphaColor: TAlphaColor); static;
     class procedure SetCustomColor3(const AAlphaColor: TAlphaColor); static;
 
-    class procedure SetTriggerTime(const ATriggerTime: TTime); static;
+    class procedure SetTriggerTime(const ATriggerTime: TDateTime); static;
     class function  GetIsAlarmCharged: Boolean; static;
   public
 //    class constructor Initialize;
@@ -107,7 +108,7 @@ type
     class property FormWidth: Integer read FFormWidth write FFormWidth;
     class property FormHeight: Integer read FFormHeight write FFormHeight;
     class property TimeKind: TTimeKind read FTimeKind write FTimeKind;
-    class property TriggerTime: TTime read FTriggerTime write SetTriggerTime;
+    class property TriggerTime: TDateTime read FTriggerTime write SetTriggerTime;
     class property IsAndroidAlarmEngineStarted: Boolean
       read FIsAndroidAlarmEngineStarted write FIsAndroidAlarmEngineStarted;
     class property IsJsonReceived: Boolean read FIsJsonReceived write FIsJsonReceived;
@@ -182,7 +183,7 @@ function GetRingFile(const ARingName: String): String;
 function GetRingsFilesPath: String;
 procedure GetRingFileList(const ARingFileList: TStringList);
 procedure GetCurPos(var X, Y: Single);
-function TimeToDateTime(const ATime: TTime): TDateTime;
+//function TimeToDateTime(const ATime: TTime): TDateTime;
 procedure DisplayTime(const AOutputControl: TControl; const ATimeString: String);
 
 implementation
@@ -361,12 +362,12 @@ begin
   TControlTools.GetCurPos(X, Y);
 end;
 
-function TimeToDateTime(const ATime: TTime): TDateTime;
-begin
-  Result := Now;
-
-  ReplaceTime(Result, ATime);
-end;
+//function TimeToDateTime(const ATime: TTime): TDateTime;
+//begin
+//  Result := Now;
+//
+//  ReplaceTime(Result, ATime);
+//end;
 
 { TPCKFileKindHelper }
 
@@ -499,7 +500,7 @@ begin
     FFormWidth          := FileStreamTools.ReadAsInteger;
     FFormHeight         := FileStreamTools.ReadAsInteger;
     TimeKind            := FileStreamTools.ReadAsInteger;
-    TriggerTime         := FileStreamTools.ReadAsDouble;
+    TriggerTime         := FileStreamTools.ReadAsDate;
     FIsAlarmCharged     := FileStreamTools.ReadAsBoolean;
 
     FBoard := TBoardKind(Board);
@@ -582,7 +583,7 @@ begin
   CustomColorNumber := 3;
 end;
 
-class procedure TState.SetTriggerTime(const ATriggerTime: TTime);
+class procedure TState.SetTriggerTime(const ATriggerTime: TDateTime);
 begin
   FIsAlarmCharged := true;
 

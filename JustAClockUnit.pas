@@ -154,7 +154,7 @@ type
 
     procedure SetAlarmTrigger(
       const ATimeKind: TTimeKind;
-      const ATriggerTime: TTime);
+      const ATriggerTime: TDateTime);
 
     procedure SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
     procedure SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
@@ -1627,18 +1627,20 @@ end;
 
 procedure TMainForm.SetAlarmTrigger(
   const ATimeKind: TTimeKind;
-  const ATriggerTime: TTime);
+  const ATriggerTime: TDateTime);
 var
-  CurrentTime: TDateTime;
+//  CurrentTime: TDateTime;
   TriggerTime: TDateTime;
 begin
-  CurrentTime := Now;
-  TriggerTime := CurrentTime;
-  TDateTimeTools.ChangeTime(TriggerTime, ATriggerTime);
+//  CurrentTime := Now;
+//  TriggerTime := CurrentTime;
+//  TDateTimeTools.ChangeTime(TriggerTime, ATriggerTime);
+  TriggerTime := ATriggerTime;
 
   StopSignal;
 
   StopTime;
+
   TState.TimeKind := ATimeKind;
   TState.TriggerTime := TriggerTime;
   AlarmLayout.Visible := TState.IsAlarmCharged;
@@ -1650,15 +1652,17 @@ begin
 
   {$IFDEF ANDROID}
   if TState.IsAndroidAlarmEngineStarted then
-    TAndroidAlarm.RechargeAlarm(TimeToDateTime(TriggerTime));
+    TAndroidAlarm.RechargeAlarm(TriggerTime);
+//    TAndroidAlarm.RechargeAlarm(TimeToDateTime(TriggerTime));
   {$ENDIF}
 end;
 
 procedure TMainForm.SetAlarmTimerFormOkButtonClickHandler(Sender: TObject);
 var
-  TriggerTime: TTime;
+  TriggerTime: TDateTime;
 begin
-  TriggerTime := SetTimerForm.Time;
+  TriggerTime := Now;
+  TDateTimeTools.ChangeTime(TriggerTime, SetTimerForm.Time);
   SetAlarmTrigger(tkAlarm, TriggerTime);
 
   TThread.Queue(nil,
@@ -1670,11 +1674,11 @@ end;
 
 procedure TMainForm.SetTimerTimerFormOkButtonClickHandler(Sender: TObject);
 var
-  TriggerTime: TTime;
+  TriggerTime: TDateTime;
   TimerTime: TTime;
 begin
   TimerTime := SetTimerForm.Time;
-  TriggerTime := TTimeCalc.CalcTime(Now, TimerTime, true);
+  TriggerTime := TTimeCalc.CalcDateTime(Now, TimerTime, true);
   SetAlarmTrigger(tkTimer, TriggerTime);
 
   TThread.Queue(nil,
