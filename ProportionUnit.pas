@@ -133,8 +133,8 @@ class procedure TProportion.Resize;
     H1: Single;
     H: Single;
   begin
-    FDigitsLayout.Width := AParentFrame.Width - 10;
-    FDigitsLayout.Height := AParentFrame.Height - 10;
+    FDigitsLayout.Width := AParentFrame.Width;
+    FDigitsLayout.Height := AParentFrame.Height;
 
     if (FDigitsLayout.Height / FDigitsLayout.Width) >= 4 then
       W0 := FDigitsLayout.Width / 2
@@ -217,13 +217,13 @@ class procedure TProportion.Resize;
   begin
     if AParentFrame.Height / AParentFrame.Width >= 0.25 then
     begin
-      W := AParentFrame.Width - 10;
+      W := AParentFrame.Width;
       FDigitsLayout.Width := W;
       FDigitsLayout.Height := W / 4;
     end
     else
     begin
-      H := AParentFrame.Height - 10;
+      H := AParentFrame.Height;
       W := H / 2;
       FDigitsLayout.Height := H;
       FDigitsLayout.Width := (W * 6) + (W * 2);

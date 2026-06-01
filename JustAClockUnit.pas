@@ -1,5 +1,5 @@
 ﻿unit JustAClockUnit;
-{TODO: Перевести TriggerTime с TTime на TDateTime}
+// Поля циферблата можно выставлять через TimeLayout.Margins
 interface
 
 uses
@@ -722,6 +722,15 @@ var
 begin
   ReportMemoryLeaksOnShutdown := true;
   try
+    HDelimText.Text := '';
+    HHText.Text := '';
+    HLText.Text := '';
+    MHText.Text := '';
+    MLText.Text := '';
+    SDelimText.Text := '';
+    SHText.Text := '';
+    SLText.Text := '';
+
     FTimeThread := nil;
     FSignalThread := nil;
     FVibroThread := nil;

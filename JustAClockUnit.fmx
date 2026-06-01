@@ -3,8 +3,8 @@ object MainForm: TMainForm
   Top = 0
   BorderStyle = None
   Caption = 'JuckAClock'
-  ClientHeight = 96
-  ClientWidth = 230
+  ClientHeight = 105
+  ClientWidth = 308
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
@@ -22,16 +22,16 @@ object MainForm: TMainForm
     Touch.GestureManager = GestureManager
     OnGesture = ContentLayoutGesture
     Align = Contents
-    Size.Width = 230.000000000000000000
-    Size.Height = 96.000000000000000000
+    Size.Width = 308.000000000000000000
+    Size.Height = 105.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object ScreenLockerLayout: TLayout
       Touch.GestureManager = GestureManager
       OnGesture = ScreenLockerLayoutGesture
       Align = Contents
-      Size.Width = 230.000000000000000000
-      Size.Height = 96.000000000000000000
+      Size.Width = 308.000000000000000000
+      Size.Height = 105.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
     end
@@ -49,16 +49,18 @@ object MainForm: TMainForm
       Align = Client
       Fill.Kind = None
       HitTest = False
-      Size.Width = 230.000000000000000000
-      Size.Height = 82.000000000000000000
+      Size.Width = 308.000000000000000000
+      Size.Height = 91.000000000000000000
       Size.PlatformDefault = False
       Stroke.Color = claWhite
       Stroke.Thickness = 4.000000000000000000
     end
     object TimeLayout: TLayout
       Align = Client
-      Size.Width = 230.000000000000000000
-      Size.Height = 82.000000000000000000
+      Margins.Left = 10.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Size.Width = 288.000000000000000000
+      Size.Height = 91.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       object TextTimeLayout: TLayout
@@ -67,21 +69,21 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Size.Width = 210.000000000000000000
-        Size.Height = 62.000000000000000000
+        Size.Width = 268.000000000000000000
+        Size.Height = 71.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object TextHoursLayout: TLayout
           Align = Left
           Size.Width = 60.000000000000000000
-          Size.Height = 62.000000000000000000
+          Size.Height = 71.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 1
           object HHText: TText
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '0'
@@ -94,7 +96,7 @@ object MainForm: TMainForm
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '1'
@@ -107,14 +109,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 60.000000000000000000
           Size.Width = 15.000000000000000000
-          Size.Height = 62.000000000000000000
+          Size.Height = 71.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 2
           object HDelimText: TText
             Align = Contents
             HitTest = False
             Size.Width = 15.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = ':'
@@ -127,14 +129,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 75.000000000000000000
           Size.Width = 60.000000000000000000
-          Size.Height = 62.000000000000000000
+          Size.Height = 71.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 3
           object MHText: TText
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '2'
@@ -147,7 +149,7 @@ object MainForm: TMainForm
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '3'
@@ -160,14 +162,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 135.000000000000000000
           Size.Width = 15.000000000000000000
-          Size.Height = 62.000000000000000000
+          Size.Height = 71.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 4
           object SDelimText: TText
             Align = Contents
             HitTest = False
             Size.Width = 15.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = ':'
@@ -180,14 +182,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 150.000000000000000000
           Size.Width = 60.000000000000000000
-          Size.Height = 62.000000000000000000
+          Size.Height = 71.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 5
           object SHText: TText
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '4'
@@ -200,7 +202,7 @@ object MainForm: TMainForm
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 62.000000000000000000
+            Size.Height = 71.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '5'
@@ -246,7 +248,7 @@ object MainForm: TMainForm
       Margins.Bottom = 2.000000000000000000
       Position.X = 2.000000000000000000
       Position.Y = 2.000000000000000000
-      Size.Width = 226.000000000000000000
+      Size.Width = 304.000000000000000000
       Size.Height = 10.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 4
@@ -269,7 +271,7 @@ object MainForm: TMainForm
       object AlarmTimeText: TText
         Align = Client
         Margins.Left = 2.000000000000000000
-        Size.Width = 214.000000000000000000
+        Size.Width = 292.000000000000000000
         Size.Height = 10.000000000000000000
         Size.PlatformDefault = False
         Text = '00:00:00'
