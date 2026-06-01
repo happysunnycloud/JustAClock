@@ -61,8 +61,8 @@ type
       FVibration: Boolean;
       FFormLeft: Integer;
       FFormTop: Integer;
-      FFormWidth: Integer;
-      FFormHeight: Integer;
+      FFormClientWidth: Integer;
+      FFormClientHeight: Integer;
       FTimeKind: TTimeKind;
       FTriggerTime: TDateTime;
       FIsAlarmCharged: Boolean;
@@ -105,8 +105,8 @@ type
     class property AutoOrientation: Boolean read FAutoOrientation write FAutoOrientation;
     class property FormLeft: Integer read FFormLeft write FFormLeft;
     class property FormTop: Integer read FFormTop write FFormTop;
-    class property FormWidth: Integer read FFormWidth write FFormWidth;
-    class property FormHeight: Integer read FFormHeight write FFormHeight;
+    class property FormClientWidth: Integer read FFormClientWidth write FFormClientWidth;
+    class property FormClientHeight: Integer read FFormClientHeight write FFormClientHeight;
     class property TimeKind: TTimeKind read FTimeKind write FTimeKind;
     class property TriggerTime: TDateTime read FTriggerTime write SetTriggerTime;
     class property IsAndroidAlarmEngineStarted: Boolean
@@ -458,8 +458,8 @@ begin
     FileStreamTools.Write(FVibration);
     FileStreamTools.Write(FFormLeft);
     FileStreamTools.Write(FFormTop);
-    FileStreamTools.Write(FFormWidth);
-    FileStreamTools.Write(FFormHeight);
+    FileStreamTools.Write(FFormClientWidth);
+    FileStreamTools.Write(FFormClientHeight);
     FileStreamTools.Write(TimeKind);
     FileStreamTools.Write(FTriggerTime);
     FileStreamTools.Write(FIsAlarmCharged);
@@ -497,8 +497,8 @@ begin
     FVibration          := FileStreamTools.ReadAsBoolean;
     FFormLeft           := FileStreamTools.ReadAsInteger;
     FFormTop            := FileStreamTools.ReadAsInteger;
-    FFormWidth          := FileStreamTools.ReadAsInteger;
-    FFormHeight         := FileStreamTools.ReadAsInteger;
+    FFormClientWidth    := FileStreamTools.ReadAsInteger;
+    FFormClientHeight   := FileStreamTools.ReadAsInteger;
     TimeKind            := FileStreamTools.ReadAsInteger;
     TriggerTime         := FileStreamTools.ReadAsDate;
     FIsAlarmCharged     := FileStreamTools.ReadAsBoolean;
@@ -530,8 +530,8 @@ begin
   FRingName           := RING_NAME_OFF;
   FFormLeft           := 100;
   FFormTop            := 100;
-  FFormWidth          := HORIZONTAL_MIN_WIDTH;
-  FFormHeight         := HORIZONTAL_MIN_HEIGHT;
+  FFormClientWidth    := HORIZONTAL_MIN_WIDTH;
+  FFormClientHeight   := HORIZONTAL_MIN_HEIGHT;
   FOrientation        := TOrientationKind.okHorizontal;
   FIsJsonReceived     := false;
   FIsAndroidAlarmEngineStarted := false;

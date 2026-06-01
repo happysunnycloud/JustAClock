@@ -824,8 +824,8 @@ begin
 
     Self.Left := TState.FormLeft;
     Self.Top  := TState.FormTop;
-    Self.ClientWidth := TState.FormWidth;
-    Self.ClientHeight := TState.FormHeight;
+    Self.ClientWidth := TState.FormClientWidth;
+    Self.ClientHeight := TState.FormClientHeight;
 
     WindowsDelayedBoardOpen(FOpeningBoard);
     {$ELSE IFDEF ANDROID}
@@ -855,8 +855,8 @@ begin
   {$IFDEF MSWINDOWS}
   TState.FormLeft     := Self.Left;
   TState.FormTop      := Self.Top;
-  TState.FormWidth    := Self.ClientWidth;
-  TState.FormHeight   := Self.ClientHeight;
+  TState.FormClientWidth    := Self.ClientWidth;
+  TState.FormClientHeight   := Self.ClientHeight;
 //  TState.FormWidth    := FBorderFrame.ClientWidth;
 //  TState.FormHeight   := FBorderFrame.ClientHeight;
   {$ENDIF}
@@ -1168,6 +1168,7 @@ var
   MinWidth: Integer;
   MinHeight: Integer;
   LastOrientationIsEqual: Boolean;
+  FormClientWidth, ClientHeight: Integer;
 begin
   TextTimeLayout.Visible := false;
 
@@ -1180,6 +1181,9 @@ begin
   TState.Color := AColor;
   TState.ImageName := AImageName;
 
+  FormClientWidth := TState.FormClientWidth;
+  ClientHeight := TState.FormClientHeight;
+
   if AOrientation = okNone then
   begin
     LastOrientationIsEqual := false;
@@ -1189,7 +1193,15 @@ begin
   begin
     LastOrientationIsEqual := true;
     if TState.Orientation <> AOrientation then
+    begin
       LastOrientationIsEqual := false;
+
+      FormClientWidth := TState.FormClientHeight;
+      ClientHeight := TState.FormClientWidth;
+
+      TState.FormClientWidth := FormClientWidth;
+      TState.FormClientHeight := ClientHeight;
+    end;
 
     TState.Orientation := AOrientation;
   end;
@@ -1266,6 +1278,9 @@ begin
     Exit;
 
   AlarmLayout.Visible := TState.IsAlarmCharged;
+
+  Self.ClientWidth := FormClientWidth;
+  Self.ClientHeight := ClientHeight;
 
   Self.Resize;
 
@@ -1835,8 +1850,8 @@ begin
   end
   else
   begin
-    ClientWidth  := TState.FormWidth;
-    ClientHeight := TState.FormHeight;
+    ClientWidth  := TState.FormClientWidth;
+    ClientHeight := TState.FormClientHeight;
   end;
 end;
 
