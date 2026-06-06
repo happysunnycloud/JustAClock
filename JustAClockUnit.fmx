@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderStyle = None
   Caption = 'JuckAClock'
   ClientHeight = 94
-  ClientWidth = 308
+  ClientWidth = 265
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
@@ -22,7 +22,7 @@ object MainForm: TMainForm
     Touch.GestureManager = GestureManager
     OnGesture = ContentLayoutGesture
     Align = Contents
-    Size.Width = 308.000000000000000000
+    Size.Width = 265.000000000000000000
     Size.Height = 94.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
@@ -30,7 +30,7 @@ object MainForm: TMainForm
       Touch.GestureManager = GestureManager
       OnGesture = ScreenLockerLayoutGesture
       Align = Contents
-      Size.Width = 308.000000000000000000
+      Size.Width = 265.000000000000000000
       Size.Height = 94.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
@@ -43,13 +43,14 @@ object MainForm: TMainForm
       Size.Height = 85.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 3
+      OnMouseDown = SettingsLayoutMouseDown
       OnMouseUp = SettingsLayoutMouseUp
     end
     object SignalRectangle: TRectangle
       Align = Client
       Fill.Kind = None
       HitTest = False
-      Size.Width = 308.000000000000000000
+      Size.Width = 265.000000000000000000
       Size.Height = 80.000000000000000000
       Size.PlatformDefault = False
       Stroke.Color = claWhite
@@ -59,7 +60,7 @@ object MainForm: TMainForm
       Align = Client
       Margins.Left = 10.000000000000000000
       Margins.Right = 10.000000000000000000
-      Size.Width = 288.000000000000000000
+      Size.Width = 245.000000000000000000
       Size.Height = 80.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -69,7 +70,7 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Size.Width = 268.000000000000000000
+        Size.Width = 225.000000000000000000
         Size.Height = 60.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
@@ -238,6 +239,7 @@ object MainForm: TMainForm
       Size.Height = 85.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2
+      OnMouseDown = ToolsLayoutMouseDown
       OnMouseUp = ToolsLayoutMouseUp
     end
     object AlarmLayout: TLayout
@@ -248,7 +250,7 @@ object MainForm: TMainForm
       Margins.Bottom = 2.000000000000000000
       Position.X = 2.000000000000000000
       Position.Y = 2.000000000000000000
-      Size.Width = 304.000000000000000000
+      Size.Width = 261.000000000000000000
       Size.Height = 10.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 4
@@ -271,7 +273,7 @@ object MainForm: TMainForm
       object AlarmTimeText: TText
         Align = Client
         Margins.Left = 2.000000000000000000
-        Size.Width = 292.000000000000000000
+        Size.Width = 249.000000000000000000
         Size.Height = 10.000000000000000000
         Size.PlatformDefault = False
         Text = '00:00:00'

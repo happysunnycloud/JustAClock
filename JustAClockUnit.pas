@@ -93,6 +93,10 @@ type
     procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormDestroy(Sender: TObject);
+    procedure SettingsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure ToolsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
   strict private
     FOpeningBoard: TBoardKind;
     FTimeThread: TTimeThread;
@@ -123,6 +127,8 @@ type
     //FIsJsonReceived: Boolean;
     {$ENDIF}
     {$IFDEF MSWINDOWS}
+    FBorderFrameOff: TItem;
+    FBorderFrameOn: TItem;
     FTrayPopupMenuExt: TPopupMenuExt;
     //FBorderFrame: TBorderFrame;
     procedure TrayIconMouseRightButtonDownHandler(
@@ -271,7 +277,9 @@ implementation
 uses
   {$IFDEF MSWINDOWS}
     Winapi.Windows
-  , FMX.Platform.Win,
+  , FMX.Platform.Win
+  , FMX.MoveByMouse
+  ,
   {$ENDIF}
   {$IFDEF ANDROID}
     Androidapi.Helpers
@@ -291,6 +299,8 @@ uses
   , FMX.VibroUnit
   , TimeCalcUnit
   , DateTimeToolsUnit
+  //asd debug
+  , FMX.ControlToolsUnit
   ;
 
 { TMainForm }
@@ -580,7 +590,35 @@ begin
     MenuItem.OnClick := MenuSetCustomColorItemClickHandler;
     FSettingsPopupMenuExt.Add(MenuItem);
   end;
+  {$IFDEF MSWINDOWS}
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
 
+  FBorderFrameOff := TItem.Create;
+  FBorderFrameOff.Text := 'Border frame off';
+  FBorderFrameOff.OnClickProcRef :=
+    procedure
+    begin
+      Self.BorderFrame.Kind := TBorderFrameKind.bfkNoCaption;
+      FBorderFrameOff.Visible := false;
+      FBorderFrameOn.Visible := true;
+    end;
+  FSettingsPopupMenuExt.Add(FBorderFrameOff);
+
+  FBorderFrameOn := TItem.Create;
+  FBorderFrameOn.Visible := false;
+  FBorderFrameOn.Text := 'Border frame on';
+  FBorderFrameOn.OnClickProcRef :=
+    procedure
+    begin
+      Self.BorderFrame.Kind := TBorderFrameKind.bfkNormal;
+      FBorderFrameOff.Visible := true;
+      FBorderFrameOn.Visible := false;
+    end;
+  FSettingsPopupMenuExt.Add(FBorderFrameOn);
+  {$ENDIF}
   {$IFDEF ANDROID}
   MenuItem := TItem.Create;
   MenuItem.Text := '-';
@@ -929,12 +967,24 @@ begin
   end;
 end;
 
+procedure TMainForm.ToolsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Single);
+begin
+  {$IFDEF MSWINDOWS}
+  if Button = TMouseButton.mbLeft then
+    TMoveByMouse.ManualMove(ToolsLayout, Self);
+  {$ENDIF}
+end;
+
 procedure TMainForm.ToolsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
   // Для Андроида специально должно глушиться,
   // иначе не обработает собития жестов OnGesture
   {$IFDEF MSWINDOWS}
+  if Button <> TMouseButton.mbRight then
+    Exit;
+
   GetCurPos(X, Y);
   FToolsPopupMenuExt.Open(X, Y);
   {$ENDIF}
@@ -1722,12 +1772,24 @@ begin
   );
 end;
 
+procedure TMainForm.SettingsLayoutMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+begin
+  {$IFDEF MSWINDOWS}
+  if Button = TMouseButton.mbLeft then
+    TMoveByMouse.ManualMove(SettingsLayout, Self);
+  {$ENDIF}
+end;
+
 procedure TMainForm.SettingsLayoutMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
   // Для Андроида специально должно глушиться,
   // иначе не обработает события жестов OnGesture
   {$IFDEF MSWINDOWS}
+  if Button <> TMouseButton.mbRight then
+    Exit;
+
   GetCurPos(X, Y);
   FSettingsPopupMenuExt.Open(X, Y);
   {$ENDIF}
