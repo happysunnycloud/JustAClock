@@ -601,7 +601,7 @@ begin
   FBorderFrameOff.OnClickProcRef :=
     procedure
     begin
-      Self.BorderFrame.Kind := TBorderFrameKind.bfkNoCaption;
+      Self.BorderFrame.Kind := TBorderFrameKind.bfkNoFrame;
       FBorderFrameOff.Visible := false;
       FBorderFrameOn.Visible := true;
     end;
