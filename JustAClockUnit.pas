@@ -601,7 +601,8 @@ begin
   FBorderFrameOff.OnClickProcRef :=
     procedure
     begin
-      Self.BorderFrame.Kind := TBorderFrameKind.bfkNoFrame;
+      Self.BorderFrame.Kind := TBorderFrameKind.bfkNoCaption;
+      Self.BorderFrame.Color := Self.Fill.Color;
       FBorderFrameOff.Visible := false;
       FBorderFrameOn.Visible := true;
     end;
@@ -614,6 +615,7 @@ begin
     procedure
     begin
       Self.BorderFrame.Kind := TBorderFrameKind.bfkNormal;
+      Self.BorderFrame.Color := BORDER_FRAME_COLOR;
       FBorderFrameOff.Visible := true;
       FBorderFrameOn.Visible := false;
     end;
@@ -838,7 +840,7 @@ begin
     {$IFDEF MSWINDOWS}
     BorderFrame.Kind := TBorderFrameKind.bfkNormal;
     BorderFrame.CaptionColor := $FF8D003A;
-    BorderFrame.Color := $FF2A001A;
+    BorderFrame.Color := BORDER_FRAME_COLOR;
     BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
     BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
 
