@@ -138,6 +138,8 @@ type
     procedure OnCloseTrayItemHandler(Sender: TObject);
     procedure WindowsDelayedBoardOpen(
       const ABoardKind: TBoardKind);
+    procedure SetBorderFrameOff(const AForceSet: Boolean);
+    procedure SetBorderFrameOn(const AForceSet: Boolean);
     {$ENDIF}
 
     procedure BuildPopupMenues;
@@ -601,10 +603,7 @@ begin
   FBorderFrameOff.OnClickProcRef :=
     procedure
     begin
-      Self.BorderFrame.Kind := TBorderFrameKind.bfkNoCaption;
-      Self.BorderFrame.Color := Self.Fill.Color;
-      FBorderFrameOff.Visible := false;
-      FBorderFrameOn.Visible := true;
+      SetBorderFrameOff(true);
     end;
   FSettingsPopupMenuExt.Add(FBorderFrameOff);
 
@@ -614,10 +613,7 @@ begin
   FBorderFrameOn.OnClickProcRef :=
     procedure
     begin
-      Self.BorderFrame.Kind := TBorderFrameKind.bfkNormal;
-      Self.BorderFrame.Color := BORDER_FRAME_COLOR;
-      FBorderFrameOff.Visible := true;
-      FBorderFrameOn.Visible := false;
+      SetBorderFrameOn(true);
     end;
   FSettingsPopupMenuExt.Add(FBorderFrameOn);
   {$ENDIF}
@@ -860,12 +856,19 @@ begin
       false);
 
     {$IFDEF MSWINDOWS}
+
     ShowWindow(ApplicationHWND, SW_HIDE);
 
     Self.Left := TState.FormLeft;
     Self.Top  := TState.FormTop;
     Self.ClientWidth := TState.FormClientWidth;
     Self.ClientHeight := TState.FormClientHeight;
+
+    Self.OnFormStateLoaded :=
+      procedure (AForm: TFormExt)
+      begin
+        SetBorderFrameOff(false);
+      end;
 
     WindowsDelayedBoardOpen(FOpeningBoard);
     {$ELSE IFDEF ANDROID}
@@ -1940,6 +1943,38 @@ begin
         end);
     end
     ).Start;
+end;
+
+procedure TMainForm.SetBorderFrameOff(const AForceSet: Boolean);
+begin
+  if not AForceSet then
+    if Self.BorderFrame.Kind <> TBorderFrameKind.bfkNoCaption then
+      Exit;
+
+  BorderFrame.Kind := TBorderFrameKind.bfkNoCaption;
+  BorderFrame.Color := Fill.Color;
+
+  if Assigned(FBorderFrameOff) then
+    FBorderFrameOff.Visible := false;
+
+  if Assigned(FBorderFrameOn) then
+    FBorderFrameOn.Visible := true;
+end;
+
+procedure TMainForm.SetBorderFrameOn(const AForceSet: Boolean);
+begin
+  if not AForceSet then
+    if Self.BorderFrame.Kind <> TBorderFrameKind.bfkNormal then
+      Exit;
+
+  BorderFrame.Kind := TBorderFrameKind.bfkNormal;
+  Self.BorderFrame.Color := BORDER_FRAME_COLOR;
+
+  if Assigned(FBorderFrameOff) then
+    FBorderFrameOff.Visible := true;
+
+  if Assigned(FBorderFrameOn) then
+    FBorderFrameOn.Visible := false;
 end;
 {$ENDIF}
 
