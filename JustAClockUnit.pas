@@ -92,11 +92,11 @@ type
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
-    procedure FormDestroy(Sender: TObject);
     procedure SettingsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
     procedure ToolsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
+    procedure FormDestroy(Sender: TObject);
   strict private
     FOpeningBoard: TBoardKind;
     FTimeThread: TTimeThread;
@@ -301,8 +301,7 @@ uses
   , FMX.VibroUnit
   , TimeCalcUnit
   , DateTimeToolsUnit
-  //asd debug
-  , FMX.ControlToolsUnit
+  , DebugUnit
   ;
 
 { TMainForm }
@@ -629,6 +628,21 @@ begin
   MenuItem.OnClick := MenuScreenLockItemClickHandler;
   FSettingsPopupMenuExt.Add(MenuItem);
   {$ENDIF}
+
+  MenuItem := TItem.Create;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Text := 'Close';
+  MenuItem.Tag := -1;
+  MenuItem.OnClickProcRef :=
+    procedure
+    begin
+      Close;
+    end;
+  FSettingsPopupMenuExt.Add(MenuItem);
 
   { ToolsPopupMenu }
 
@@ -1590,6 +1604,8 @@ end;
 
 function TMainForm.DoStartSignal: Boolean;
 begin
+  TDebug.ODS('TMainForm.DoStartSignal.Enter');
+
   Result := false;
 
   if TState.IsJsonReceived or
@@ -1617,15 +1633,11 @@ begin
 
   if TState.RingName <> RING_NAME_OFF then
   begin
-    FSingleSound.OnFinished :=
+    FSingleSound.OnFinishedProcRef :=
       procedure
       begin
-        TThread.ForceQueue(nil,
-          procedure
-          begin
-            FSingleSound.Play(0);
-            FSingleSound.Volume := VOLUME_VALUE;
-          end);
+        FSingleSound.Play(0);
+        FSingleSound.Volume := VOLUME_VALUE;
       end;
 
     TThread.ForceQueue(nil,
