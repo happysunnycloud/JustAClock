@@ -3,6 +3,7 @@
 .\assets\internal\PCKs\Images\Colored olympic.pck
 .\assets\internal\PCKs\Images\Neon numbers.pck
 .\assets\internal\PCKs\Images\Gzhel.pck
+.\assets\internal\PCKs\Patterns\Dots.pck
 .\assets\internal\Rings\YameteKudasai.mp3
 .\assets\internal\PCKs\Images\Colored numbers.pck
 .\assets\internal\PCKs\Patterns\Predator.pck

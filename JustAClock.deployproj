@@ -288,6 +288,15 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="Arts\PCKs\Patterns\Dots.pck" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>JustAClock\assets\internal\PCKs\Patterns\</RemoteDir>
+            <RemoteName>Dots.pck</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Arts\Clock72x72.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>JustAClock\res\drawable-xxhdpi\</RemoteDir>
             <RemoteName>ic_notification.png</RemoteName>
