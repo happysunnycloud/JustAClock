@@ -5,9 +5,11 @@ interface
 uses
     System.UITypes
   , System.Classes
+  , System.SyncObjs
   , FMX.Theme
   , FMX.Controls
   , TypesUnit
+  , FMX.Objects
   ;
 
 const
@@ -39,6 +41,8 @@ const
   {$ENDIF}
 
 type
+  TGetCurrentDateThread = class;
+
   TPCKFileKindHelper = record helper for TPCKFileKind
   public
     function ToString: String;
@@ -88,6 +92,11 @@ type
 
     class procedure SetTriggerTime(const ATriggerTime: TDateTime); static;
     class function  GetIsAlarmCharged: Boolean; static;
+  strict private
+    class var
+      FGetCurrentDateThread: TGetCurrentDateThread;
+      FIsCurrentDateShowing: Boolean;
+      FCurrentDateControl: TText;
   public
 //    class constructor Initialize;
 //    class destructor Finalize;
@@ -115,6 +124,8 @@ type
       read FIsAndroidAlarmEngineStarted write FIsAndroidAlarmEngineStarted;
     class property IsJsonReceived: Boolean read FIsJsonReceived write FIsJsonReceived;
     class property IsAlarmCharged: Boolean read GetIsAlarmCharged;
+    class property IsCurrentDateShowing: Boolean
+      read FIsCurrentDateShowing write FIsCurrentDateShowing;
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
     class property OnSetTriggerTime: TNotifyEvent write FOnSetTriggerTime;
@@ -123,6 +134,12 @@ type
     class procedure UnInit;
     class procedure Save;
     class procedure Load;
+  public
+    class property CurrentDateControl: TText
+      read FCurrentDateControl write FCurrentDateControl;
+
+    class procedure StartCurrentDateShow;
+    class procedure StopCurrentDateShow;
   end;
 
   TColorArray = TArray<String>;
@@ -166,6 +183,19 @@ type
     class function ColorByIdent(const AColorIdent: String): TAlphaColor;
 
     class procedure Init;
+  end;
+
+  TGetCurrentDateThread = class(TThread)
+  strict private
+    FDone: TEvent;
+    FTextControl: TText;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(const ATextControl: TText); reintroduce;
+    destructor Destroy; override;
+
+    procedure Terminate;
   end;
 
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
@@ -537,6 +567,11 @@ begin
   FOrientation        := TOrientationKind.okHorizontal;
   FIsJsonReceived     := false;
   FIsAndroidAlarmEngineStarted := false;
+
+  FGetCurrentDateThread := nil;
+  FIsCurrentDateShowing := false;
+  FCurrentDateControl   := nil;
+
   {$IFDEF MSWINDOWS}
   FVibration          := false;
   FAutoOrientation    := false;
@@ -601,6 +636,23 @@ end;
 class function TState.GetIsAlarmCharged: Boolean;
 begin
   Result := FIsAlarmCharged;
+end;
+
+class procedure TState.StartCurrentDateShow;
+begin
+  if not Assigned(FCurrentDateControl) then
+    raise Exception.Create('FCurrentDateControl is nil');
+  FGetCurrentDateThread := TGetCurrentDateThread.Create(FCurrentDateControl);
+end;
+
+class procedure TState.StopCurrentDateShow;
+begin
+  if not Assigned(FGetCurrentDateThread) then
+    Exit;
+
+  FGetCurrentDateThread.Terminate;
+  FGetCurrentDateThread.WaitFor;
+  FreeAndNil(FGetCurrentDateThread);
 end;
 
 { TColorArrayHelper }
@@ -705,6 +757,53 @@ begin
     Color := FViolet.Value;
 
   Result := Color;
+end;
+
+{ TGetCurrentDateThread }
+
+constructor TGetCurrentDateThread.Create(const ATextControl: TText);
+begin
+  FDone := TEvent.Create(nil, true, false, '');
+  FTextControl := ATextControl;
+
+  inherited Create(false);
+end;
+
+destructor TGetCurrentDateThread.Destroy;
+begin
+  FreeAndNil(FDone);
+end;
+
+procedure TGetCurrentDateThread.Terminate;
+begin
+  FDone.SetEvent;
+
+  inherited Terminate;
+end;
+
+procedure TGetCurrentDateThread.Execute;
+var
+  i: Integer;
+begin
+  while not Terminated do
+  begin
+    FDone.ResetEvent;
+    TThread.ForceQueue(nil,
+      procedure
+      begin
+        FTextControl.Text := DateToStr(Now);
+        FDone.SetEvent;
+      end);
+    FDone.WaitFor(INFINITE);
+
+    i := 10;
+    while (not Terminated) and (i > 0) do
+    begin
+      Sleep(100);
+
+      Dec(i);
+    end;
+  end;
 end;
 
 initialization

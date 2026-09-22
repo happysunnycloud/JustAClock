@@ -242,7 +242,7 @@ object MainForm: TMainForm
       OnMouseDown = ToolsLayoutMouseDown
       OnMouseUp = ToolsLayoutMouseUp
     end
-    object AlarmLayout: TLayout
+    object TopLayout: TLayout
       Align = Top
       Margins.Left = 2.000000000000000000
       Margins.Top = 2.000000000000000000
@@ -254,6 +254,16 @@ object MainForm: TMainForm
       Size.Height = 10.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 4
+      object CurrentDateText: TText
+        Align = Right
+        Position.X = 161.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 10.000000000000000000
+        Size.PlatformDefault = False
+        Text = '00.00.0000'
+        TextSettings.FontColor = claWhite
+        TextSettings.HorzAlign = Trailing
+      end
       object AlarmRectangle: TRectangle
         Align = Left
         Fill.Bitmap.Bitmap.PNG = {
@@ -269,16 +279,17 @@ object MainForm: TMainForm
         Size.Width = 10.000000000000000000
         Size.Height = 10.000000000000000000
         Size.PlatformDefault = False
-      end
-      object AlarmTimeText: TText
-        Align = Client
-        Margins.Left = 2.000000000000000000
-        Size.Width = 249.000000000000000000
-        Size.Height = 10.000000000000000000
-        Size.PlatformDefault = False
-        Text = '00:00:00'
-        TextSettings.FontColor = claWhite
-        TextSettings.HorzAlign = Leading
+        object AlarmTimeText: TText
+          Align = Left
+          Margins.Left = 10.000000000000000000
+          Position.X = 10.000000000000000000
+          Size.Width = 249.000000000000000000
+          Size.Height = 10.000000000000000000
+          Size.PlatformDefault = False
+          Text = '00:00:00'
+          TextSettings.FontColor = claWhite
+          TextSettings.HorzAlign = Leading
+        end
       end
     end
   end
@@ -291,8 +302,8 @@ object MainForm: TMainForm
   end
   object GestureManager: TGestureManager
     Sensitivity = 80.000000000000000000
-    Left = 8
-    Top = 8
+    Left = 6
+    Top = 20
     GestureData = <
       item
         Control = ContentLayout

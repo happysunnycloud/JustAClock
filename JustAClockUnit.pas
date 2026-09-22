@@ -33,6 +33,7 @@ const
   VIBRO_MENU_ITEM_NAME = 'VibroMenuItem';
   VERTICAL_ORIENTATION_MENU_ITEM_NAME = 'VerticalOrientationMenuItem';
   HORIZONTAL_ORIENTATION_MENU_ITEM_NAME = 'HorizontalOrientationMenuItem';
+  SHOW_CURRENT_DATE_MENU_ITEM_NAME = 'ShowCurrentDateMenuItem';
   // Мы не будем управлять состоянием кнопки отмены будильника
   // На андроиде нельзя отследить выставлен будильник или нет
   // Отслеживать можно только по локальному флагу - это не обосо имеет смысл
@@ -75,9 +76,10 @@ type
     ToolsLayout: TLayout;
     GestureManager: TGestureManager;
     ScreenLockerLayout: TLayout;
-    AlarmLayout: TLayout;
+    TopLayout: TLayout;
     AlarmRectangle: TRectangle;
     AlarmTimeText: TText;
+    CurrentDateText: TText;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
@@ -140,6 +142,8 @@ type
       const ABoardKind: TBoardKind);
     procedure SetBorderFrameOff(const AForceSet: Boolean);
     procedure SetBorderFrameOn(const AForceSet: Boolean);
+
+    procedure RefreshTopLayoutVisible;
     {$ENDIF}
 
     procedure BuildPopupMenues;
@@ -367,6 +371,7 @@ procedure TMainForm.BuildPopupMenues;
 var
   MenuItem: TItem;
   SetCustomColorsMenuItem: TItem;
+  ShowCurrentDateMenuItem: TItem;
   ColorIdent: String;
   i: Integer;
   PCKFileName: String;
@@ -454,6 +459,35 @@ begin
   MenuItem.OnClick := MenuTextBoardItemClickHandler;
   MenuItem.IsChecked := TState.Board = bkText;
   FSettingsPopupMenuExt.Add(MenuItem);
+
+  MenuItem := TItem.Create;
+  MenuItem.Parent := FBoardsMenuItem;
+  MenuItem.Text := '-';
+  MenuItem.Tag := -1;
+  FSettingsPopupMenuExt.Add(MenuItem);
+
+  ShowCurrentDateMenuItem := TItem.Create;
+  ShowCurrentDateMenuItem.Name := SHOW_CURRENT_DATE_MENU_ITEM_NAME;
+  ShowCurrentDateMenuItem.Parent := FBoardsMenuItem;
+  ShowCurrentDateMenuItem.Text := 'Show current date';
+  ShowCurrentDateMenuItem.OnClickProcRef :=
+    procedure
+    begin
+      if TState.IsCurrentDateShowing then
+      begin
+        ShowCurrentDateMenuItem.Text := 'Show current date';
+        TState.IsCurrentDateShowing := false;
+        TState.StopCurrentDateShow;
+      end
+      else
+      begin
+        ShowCurrentDateMenuItem.Text := 'Hide current date';
+        TState.IsCurrentDateShowing := true;
+        TState.StartCurrentDateShow;
+      end;
+      RefreshTopLayoutVisible;
+    end;
+  FSettingsPopupMenuExt.Add(ShowCurrentDateMenuItem);
 
   MenuItem := TItem.Create;
   MenuItem.Text := '-';
@@ -831,7 +865,7 @@ begin
     SetTimerForm := nil;
     SignalRectangle.Visible := false;
     SignalRectangle.SendToBack;
-    AlarmLayout.Visible := TState.IsAlarmCharged;
+    RefreshTopLayoutVisible;
 
     { MenuTheme}
 
@@ -842,6 +876,7 @@ begin
     TState.OnSetTriggerTime := OnSetTriggerTimeHandler;
     // Переприсваеваем время триггера, что бы сработал TState.OnSetTriggerTime
     TState.TriggerTime := TState.TriggerTime;
+    TState.CurrentDateControl := CurrentDateText;
 
     FCurrentColorIdent := TColors.ColorArray.LastValue;
 
@@ -896,6 +931,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  TState.StopCurrentDateShow;
   FreeAndNil(FSingleSound);
 end;
 
@@ -1346,7 +1382,7 @@ begin
   if TState.Board = bkNone then
     Exit;
 
-  AlarmLayout.Visible := TState.IsAlarmCharged;
+  RefreshTopLayoutVisible;
 
   Self.ClientWidth := FormClientWidth;
   Self.ClientHeight := ClientHeight;
@@ -1467,7 +1503,7 @@ begin
   TState.TimeKind := tkTime;
   TState.TriggerTime := NULL_TIME;
 
-  AlarmLayout.Visible := TState.IsAlarmCharged;
+  RefreshTopLayoutVisible;
 
   StopSignal;
 
@@ -1566,7 +1602,7 @@ begin
   if Assigned(FTimeThread) then
     ThreadFactory.TerminateThread(FTimeThread);
 
-  AlarmLayout.Visible := TState.IsAlarmCharged;
+  RefreshTopLayoutVisible;
 end;
 
 procedure TMainForm.RunTimeCounter(
@@ -1734,7 +1770,7 @@ begin
 
   TState.TimeKind := ATimeKind;
   TState.TriggerTime := TriggerTime;
-  AlarmLayout.Visible := TState.IsAlarmCharged;
+  RefreshTopLayoutVisible;
 
   if DoStartSignal then
     Exit;
@@ -1887,8 +1923,15 @@ end;
 
 procedure TMainForm.OnSetTriggerTimeHandler(Sender: TObject);
 begin
-  AlarmLayout.Visible := TState.IsAlarmCharged;
+  RefreshTopLayoutVisible;
   AlarmTimeText.Text := TimeToStr(TState.TriggerTime);
+end;
+
+procedure TMainForm.RefreshTopLayoutVisible;
+begin
+  TopLayout.Visible := TState.IsAlarmCharged or TState.IsCurrentDateShowing;
+  AlarmRectangle.Visible := TState.IsAlarmCharged;
+  CurrentDateText.Visible := TState.IsCurrentDateShowing;
 end;
 
 {$IFDEF MSWINDOWS}
