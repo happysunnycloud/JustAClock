@@ -10,6 +10,7 @@ uses
   , FMX.Controls
   , TypesUnit
   , FMX.Objects
+  , SafeQueueThread
   ;
 
 const
@@ -48,6 +49,72 @@ type
     function ToString: String;
     function ToPath: String;
   end;
+
+//  // Класс для сохранения и чтения параметров во внешний файл
+//  TStateParams = class
+//  strict private
+//    FBoard: Integer;
+//    FOrientation: TOrientationKind;
+//    FColor: TAlphaColor;
+//    FImageName: String;
+//    FCustomColor0: TAlphaColor;
+//    FCustomColor1: TAlphaColor;
+//    FCustomColor2: TAlphaColor;
+//    FCustomColor3: TAlphaColor;
+//    FCustomColorNumber: Integer;
+//    FAutoOrientation: Boolean;
+//    FRingName: String;
+//    FVibration: Boolean;
+//    FFormLeft: Integer;
+//    FFormTop: Integer;
+//    FFormClientWidth: Integer;
+//    FFormClientHeight: Integer;
+//    FTimeKind: TTimeKind;
+//    FTriggerTime: TDateTime;
+//    FIsAlarmCharged: Boolean;
+//    FIsCurrentDateShowing: Boolean;
+//  public
+//    property Board: Integer
+//      read FBoard write FBoard;
+//    property Orientation: TOrientationKind
+//      read FOrientation write FOrientation;
+//    property Color: TAlphaColor
+//      read FColor write FColor;
+//    property ImageName: String
+//      read FImageName write FImageName;
+//    property CustomColor0: TAlphaColor
+//      read FCustomColor0 write FCustomColor0;
+//    property CustomColor1: TAlphaColor
+//      read FCustomColor1 write FCustomColor1;
+//    property CustomColor2: TAlphaColor
+//      read FCustomColor2 write FCustomColor2;
+//    property CustomColor3: TAlphaColor
+//      read FCustomColor3 write FCustomColor3;
+//    property CustomColorNumber: Integer
+//      read FCustomColorNumber write FCustomColorNumber;
+//    property AutoOrientation: Boolean
+//      read FAutoOrientation write FAutoOrientation;
+//    property RingName: String
+//      read FRingName write FRingName;
+//    property Vibration: Boolean
+//      read FVibration write FVibration;
+//    property FormLeft: Integer
+//      read FFormLeft write FFormLeft;
+//    property FormTop: Integer
+//      read FFormTop write FFormTop;
+//    property FormClientWidth: Integer
+//      read FFormClientWidth write FFormClientWidth;
+//    property FormClientHeight: Integer
+//      read FFormClientHeight write FFormClientHeight;
+//    property TimeKind: TTimeKind
+//      read FTimeKind write FTimeKind;
+//    property TriggerTime: TDateTime
+//      read FTriggerTime write FTriggerTime;
+//    property IsAlarmCharged: Boolean
+//      read FIsAlarmCharged write FIsAlarmCharged;
+//    property IsCurrentDateShowing: Boolean
+//      read FIsCurrentDateShowing write FIsCurrentDateShowing;
+//  end;
 
   TState = class
   strict private
@@ -97,6 +164,9 @@ type
       FGetCurrentDateThread: TGetCurrentDateThread;
       FIsCurrentDateShowing: Boolean;
       FCurrentDateControl: TText;
+
+      class procedure SetIsCurrentDateShowing(
+        const AIsCurrentDateShowing: Boolean); static;
   public
 //    class constructor Initialize;
 //    class destructor Finalize;
@@ -125,7 +195,7 @@ type
     class property IsJsonReceived: Boolean read FIsJsonReceived write FIsJsonReceived;
     class property IsAlarmCharged: Boolean read GetIsAlarmCharged;
     class property IsCurrentDateShowing: Boolean
-      read FIsCurrentDateShowing write FIsCurrentDateShowing;
+      read FIsCurrentDateShowing write SetIsCurrentDateShowing;
 
     class property MenuTheme: TTheme read FMenuTheme write FMenuTheme;
     class property OnSetTriggerTime: TNotifyEvent write FOnSetTriggerTime;
@@ -185,7 +255,7 @@ type
     class procedure Init;
   end;
 
-  TGetCurrentDateThread = class(TThread)
+  TGetCurrentDateThread = class(TSafeQueueThread)
   strict private
     FDone: TEvent;
     FTextControl: TText;
@@ -231,6 +301,7 @@ uses
   {$IFDEF MSWINDOWS}
   , Winapi.Windows
   {$ENDIF}
+  , ParamsExtUnit
   //asd debug
   , JustAClockUnit
   //asd debug
@@ -462,11 +533,11 @@ end;
 
 class procedure TState.Save;
 var
-  FileStreamTools: TFileStreamTools;
   FileName: String;
   Board: Integer;
   Orientation: Integer;
   TimeKind: Integer;
+  Params: TParamsExt;
 begin
   FileName := ConfigFileName;
 
@@ -474,73 +545,84 @@ begin
   Orientation := Integer(FOrientation);
   TimeKind := Integer(FTimeKind);
 
-  FileStreamTools := TFileStreamTools.Create(FileName, fmCreate);
+  Params := TParamsExt.Create;
   try
-    FileStreamTools.Write(Board);
-    FileStreamTools.Write(Orientation);
-    FileStreamTools.Write(FColor);
-    FileStreamTools.Write(FImageName);
-    FileStreamTools.Write(FCustomColor0);
-    FileStreamTools.Write(FCustomColor1);
-    FileStreamTools.Write(FCustomColor2);
-    FileStreamTools.Write(FCustomColor3);
-    FileStreamTools.Write(FCustomColorNumber);
-    FileStreamTools.Write(FAutoOrientation);
-    FileStreamTools.Write(FRingName);
-    FileStreamTools.Write(FVibration);
-    FileStreamTools.Write(FFormLeft);
-    FileStreamTools.Write(FFormTop);
-    FileStreamTools.Write(FFormClientWidth);
-    FileStreamTools.Write(FFormClientHeight);
-    FileStreamTools.Write(TimeKind);
-    FileStreamTools.Write(FTriggerTime);
-    FileStreamTools.Write(FIsAlarmCharged);
+    Params.AddAsType(Board, varInteger, 'Board');
+    Params.AddAsType(Orientation, varInteger, 'Orientation');
+    Params.AddAsType(FColor, varUInt32, 'Color');
+    Params.AddAsType(FImageName, varUString, 'ImageName');
+    Params.AddAsType(FCustomColor0, varUInt32, 'CustomColor0');
+    Params.AddAsType(FCustomColor1, varUInt32, 'CustomColor1');
+    Params.AddAsType(FCustomColor2, varUInt32, 'CustomColor2');
+    Params.AddAsType(FCustomColor3, varUInt32, 'CustomColor3');
+    Params.AddAsType(FCustomColorNumber, varInteger, 'CustomColorNumber');
+    Params.AddAsType(FAutoOrientation, varBoolean, 'AutoOrientation');
+    Params.AddAsType(FRingName, varUString, 'RingName');
+    Params.AddAsType(FVibration, varBoolean, 'Vibration');
+    Params.AddAsType(FFormLeft, varInteger, 'FormLeft');
+    Params.AddAsType(FFormTop, varInteger, 'FormTop');
+    Params.AddAsType(FFormClientWidth, varInteger, 'FormClientWidth');
+    Params.AddAsType(FFormClientHeight, varInteger, 'FormClientHeight');
+    Params.AddAsType(TimeKind, varInteger, 'TimeKind');
+    Params.AddAsType(TriggerTime, varDate, 'TriggerTime');
+    Params.AddAsType(FIsAlarmCharged, varBoolean, 'IsAlarmCharged');
+    Params.AddAsType(FIsCurrentDateShowing, varBoolean, 'IsCurrentDateShowing');
+
+    Params.SaveToFile(FileName);
   finally
-    FreeAndNil(FileStreamTools);
+    FreeAndNil(Params);
   end;
 end;
 
 class procedure TState.Load;
 var
-  FileStreamTools: TFileStreamTools;
   FileName: String;
   Board: Integer;
   Orientation: Integer;
   TimeKind: Integer;
-  TriggerTime: TTime;
+  Params: TParamsExt;
+  UInt32Color: UInt32;
 begin
   FileName := ConfigFileName;
   if not FileExists(FileName) then
     Exit;
-  // Порядок чтения зависит от порядка записи
-  FileStreamTools := TFileStreamTools.Create(FileName, fmOpenRead);
+
+  // Читать параметры можно в произвольном порядке
+  Params := TParamsExt.Create;
   try
-    Board               := FileStreamTools.ReadAsInteger;
-    Orientation         := FileStreamTools.ReadAsInteger;
-    FColor              := FileStreamTools.ReadAsUInt32;
-    FImageName          := FileStreamTools.ReadAsString;
-    FCustomColor0       := FileStreamTools.ReadAsUInt32;
-    FCustomColor1       := FileStreamTools.ReadAsUInt32;
-    FCustomColor2       := FileStreamTools.ReadAsUInt32;
-    FCustomColor3       := FileStreamTools.ReadAsUInt32;
-    FCustomColorNumber  := FileStreamTools.ReadAsInteger;
-    FAutoOrientation    := FileStreamTools.ReadAsBoolean;
-    FRingName           := FileStreamTools.ReadAsString;
-    FVibration          := FileStreamTools.ReadAsBoolean;
-    FFormLeft           := FileStreamTools.ReadAsInteger;
-    FFormTop            := FileStreamTools.ReadAsInteger;
-    FFormClientWidth    := FileStreamTools.ReadAsInteger;
-    FFormClientHeight   := FileStreamTools.ReadAsInteger;
-    TimeKind            := FileStreamTools.ReadAsInteger;
-    TriggerTime         := FileStreamTools.ReadAsDate;
-    FIsAlarmCharged     := FileStreamTools.ReadAsBoolean;
+    Params.LoadFromFile(FileName);
+
+    Params.GetDef<Integer>(Board, 'Board', 0);
+    Params.GetDef<Integer>(Orientation, 'Orientation', 0);
+    Params.GetDef<UInt32>(UInt32Color, 'Color', $FFFFFF);
+    FColor := TAlphaColor(UInt32Color);
+    Params.GetDef<String>(FImageName, 'ImageName', '');
+    Params.GetDef<UInt32>(UInt32Color, 'CustomColor0', $FFFFFF);
+    FCustomColor0 := TAlphaColor(UInt32Color);
+    Params.GetDef<UInt32>(UInt32Color, 'CustomColor1', $FFFFFF);
+    FCustomColor1 := TAlphaColor(UInt32Color);
+    Params.GetDef<UInt32>(UInt32Color, 'CustomColor2', $FFFFFF);
+    FCustomColor2 := TAlphaColor(UInt32Color);
+    Params.GetDef<UInt32>(UInt32Color, 'CustomColor3', $FFFFFF);
+    FCustomColor3 := TAlphaColor(UInt32Color);
+    Params.GetDef<Integer>(FCustomColorNumber, 'CustomColorNumber', 0);
+    Params.GetDef<Boolean>(FAutoOrientation, 'AutoOrientation', false);
+    Params.GetDef<String>(FRingName, 'RingName', '');
+    Params.GetDef<Boolean>(FVibration, 'Vibration', false);
+    Params.GetDef<Integer>(FFormLeft, 'FormLeft', 0);
+    Params.GetDef<Integer>(FFormTop, 'FormTop', 0);
+    Params.GetDef<Integer>(FFormClientWidth, 'FormClientWidth', 0);
+    Params.GetDef<Integer>(FFormClientHeight, 'FormClientHeight', 0);
+    Params.GetDef<Integer>(TimeKind, 'TimeKind', 0);
+    Params.GetDef<TDateTime>(FTriggerTime, 'TriggerTime', Now);
+    Params.GetDef<Boolean>(FIsAlarmCharged, 'IsAlarmCharged', false);
+    Params.GetDef<Boolean>(FIsCurrentDateShowing, 'IsCurrentDateShowing', false);
 
     FBoard := TBoardKind(Board);
     FOrientation := TOrientationKind(Orientation);
     FTimeKind := TTimeKind(TimeKind);
-    FTriggerTime := TriggerTime;
   finally
-    FreeAndNil(FileStreamTools);
+    FreeAndNil(Params);
   end;
 end;
 
@@ -636,6 +718,16 @@ end;
 class function TState.GetIsAlarmCharged: Boolean;
 begin
   Result := FIsAlarmCharged;
+end;
+
+class procedure TState.SetIsCurrentDateShowing(
+  const AIsCurrentDateShowing: Boolean);
+begin
+  FIsCurrentDateShowing := AIsCurrentDateShowing;
+  if FIsCurrentDateShowing then
+    StartCurrentDateShow
+  else
+    StopCurrentDateShow;
 end;
 
 class procedure TState.StartCurrentDateShow;
@@ -788,7 +880,7 @@ begin
   while not Terminated do
   begin
     FDone.ResetEvent;
-    TThread.ForceQueue(nil,
+    SafeForceQueue(
       procedure
       begin
         FTextControl.Text := DateToStr(Now);

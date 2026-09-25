@@ -17,20 +17,20 @@ type
 
   TMotionSensorDataThread = class(TThreadExt)
   strict private
-//    FCriticalSection: TCriticalSection;
     class var
+      FIsMotionSensorInitialized: Boolean;
+
       FForm: TFormExt;
 
-    FVerticalDetectedProc: TDetectOrientationProc;
-    FHorizontalDetectedProc: TDetectOrientationProc;
-    FSensor: TCustomMotionSensor;
+      FVerticalDetectedProc: TDetectOrientationProc;
+      FHorizontalDetectedProc: TDetectOrientationProc;
+      FSensor: TCustomMotionSensor;
 
   protected
     // Специально не перегружаем Execute,
     // чтобы выполнился на стороне родительского класса
     // В родителе ловятся исключения
     procedure InnerExecute; override;
-//    procedure Execute(const AThread: TThreadExt); reintroduce; // override;
   public
     constructor Create(
       const AThreadFactory: TThreadFactory;
@@ -45,6 +45,9 @@ type
       const AVerticalDetectedProc: TDetectOrientationProc;
       const AHorizontalDetectedProc: TDetectOrientationProc);
     class procedure UnInit;
+
+    class property IsMotionSensorInitialized: Boolean
+      read FIsMotionSensorInitialized write FIsMotionSensorInitialized;
   end;
 
 implementation
@@ -135,22 +138,17 @@ begin
     AVerticalDetectedProc,
     AHorizontalDetectedProc);
 
-//  FForm.ThreadFactory.CreateRegistredThread(
-//    procedure (
-//      const AThreadFactory: TThreadFactory)
-//    begin
-//      TMotionSensorDataThread.Create(
-//        AThreadFactory,
-//        THREAD_NAME,
-//        Sensor,
-//        AVerticalDetectedProc,
-//        AHorizontalDetectedProc);
-//    end);
+  IsMotionSensorInitialized := true;
 end;
 
 class procedure TMotionSensorDataThread.UnInit;
 begin
+  if not IsMotionSensorInitialized then
+    Exit;
+
   FForm.ThreadFactory.TerminateThread(THREAD_NAME);
+
+  IsMotionSensorInitialized := false;
 end;
 
 procedure TMotionSensorDataThread.InnerExecute;
@@ -185,6 +183,9 @@ begin
 
   FSensor.Stop;
 end;
+
+initialization
+  TMotionSensorDataThread.IsMotionSensorInitialized := false;
 
 end.
 

@@ -17,10 +17,10 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnPaint = FormPaint
+  OnTouch = FormTouch
   DesignerMasterStyle = 0
   object ContentLayout: TLayout
     Touch.GestureManager = GestureManager
-    OnGesture = ContentLayoutGesture
     Align = Contents
     Size.Width = 265.000000000000000000
     Size.Height = 94.000000000000000000
@@ -307,28 +307,7 @@ object MainForm: TMainForm
     GestureData = <
       item
         Control = ContentLayout
-        Collection = <
-          item
-            GestureID = sgiDown
-          end
-          item
-            GestureID = sgiDownLeft
-          end
-          item
-            GestureID = sgiDownRight
-          end
-          item
-            GestureID = sgiLeftDown
-          end
-          item
-            GestureID = sgiRightDown
-          end
-          item
-            GestureID = sgiDownLeftLong
-          end
-          item
-            GestureID = sgiDownRightLong
-          end>
+        Collection = <>
       end
       item
         Control = ScreenLockerLayout

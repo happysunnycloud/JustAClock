@@ -47,6 +47,8 @@ const
   VIBRO_NAME_OFF = 'Off';
   VIBRO_NAME_ON = 'On';
 
+  PINCH_CLOSE_THRESHOLD = 50;
+
 type
   TMenuItemsArray = TArray<String>;
 
@@ -90,8 +92,6 @@ type
       Shift: TShiftState; X, Y: Single);
     procedure ToolsLayoutTap(Sender: TObject; const Point: TPointF);
     procedure FormPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
-    procedure ContentLayoutGesture(Sender: TObject;
-      const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure ScreenLockerLayoutGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure SettingsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
@@ -99,6 +99,8 @@ type
     procedure ToolsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
     procedure FormDestroy(Sender: TObject);
+    procedure FormTouch(Sender: TObject; const Touches: TTouches;
+      const Action: TTouchAction);
   strict private
     FOpeningBoard: TBoardKind;
     FTimeThread: TTimeThread;
@@ -110,6 +112,9 @@ type
     FSettingsPopupMenuExt: TPopupMenuExt;
     FToolsPopupMenuExt: TPopupMenuExt;
     FSingleSound: TSingleSound;
+
+    FPinchStartDistance: Single;
+    FPinchActive: Boolean;
 
     { MenuItems }
 
@@ -142,9 +147,9 @@ type
       const ABoardKind: TBoardKind);
     procedure SetBorderFrameOff(const AForceSet: Boolean);
     procedure SetBorderFrameOn(const AForceSet: Boolean);
+    {$ENDIF}
 
     procedure RefreshTopLayoutVisible;
-    {$ENDIF}
 
     procedure BuildPopupMenues;
 
@@ -177,7 +182,6 @@ type
 
     procedure TimeVoidEditOnChangeHandler(Sender: TObject);
 
-    procedure GestureHandler(const EventInfo: TGestureEventInfo);
     // Создаем и запускаем поток отвечающий за ход часов FTimeThread
     // В соотвествие с TState.TimeKind
     procedure StartTime;
@@ -339,12 +343,6 @@ begin
     end);
 end;
 
-procedure TMainForm.ContentLayoutGesture(Sender: TObject;
-  const EventInfo: TGestureEventInfo; var Handled: Boolean);
-begin
-  GestureHandler(EventInfo);
-end;
-
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   TimeVoidEdit.OnChange := nil;
@@ -477,13 +475,13 @@ begin
       begin
         ShowCurrentDateMenuItem.Text := 'Show current date';
         TState.IsCurrentDateShowing := false;
-        TState.StopCurrentDateShow;
+//        TState.StopCurrentDateShow;
       end
       else
       begin
         ShowCurrentDateMenuItem.Text := 'Hide current date';
         TState.IsCurrentDateShowing := true;
-        TState.StartCurrentDateShow;
+//        TState.StartCurrentDateShow;
       end;
       RefreshTopLayoutVisible;
     end;
@@ -819,7 +817,7 @@ begin
     FSignalThread := nil;
     FVibroThread := nil;
     // Пусть остается SystemDefault
-    // В некоторых эмуляторах при установке в HighQuality
+    // В некоторых Android-эмуляторах при установке в HighQuality
     // зависает на экране заставки
     // На хардовом железе HighQuality отрабатывается
     // Визуально разница не замечена
@@ -838,7 +836,7 @@ begin
     FCustomColorsMenuItem := nil;
     FHorizontalOrientationMenuItem := nil;
     FVerticalOrientationMenuItem := nil;
-//    FIsAppStartedFromAlarmReceiver := false;
+
     {$IFDEF MSWINDOWS}
     FTrayPopupMenuExt := nil;
     {$ENDIF}
@@ -877,6 +875,9 @@ begin
     // Переприсваеваем время триггера, что бы сработал TState.OnSetTriggerTime
     TState.TriggerTime := TState.TriggerTime;
     TState.CurrentDateControl := CurrentDateText;
+    // Переприсвоим, что бы показать текущую дату, если она должна отображаться
+    TState.IsCurrentDateShowing := TState.IsCurrentDateShowing;
+    RefreshTopLayoutVisible;
 
     FCurrentColorIdent := TColors.ColorArray.LastValue;
 
@@ -905,7 +906,6 @@ begin
       false);
 
     {$IFDEF MSWINDOWS}
-
     ShowWindow(ApplicationHWND, SW_HIDE);
 
     Self.Left := TState.FormLeft;
@@ -997,6 +997,40 @@ begin
   TShowTime.CheckBitmapsResolution(Single(Self.Width), Single(Self.Height));
 end;
 
+procedure TMainForm.FormTouch(Sender: TObject; const Touches: TTouches;
+  const Action: TTouchAction);
+var
+  Distance: Single;
+begin
+  if Action = TTouchAction.Up then
+  begin
+    FPinchActive := False;
+    Exit;
+  end;
+
+  if Length(Touches) <> 2 then
+  begin
+    FPinchActive := False;
+    Exit;
+  end;
+
+  Distance := Touches[0].Location.Distance(Touches[1].Location);
+
+  if Action = TTouchAction.Down then
+  begin
+    FPinchStartDistance := Distance;
+    FPinchActive := True;
+    Exit;
+  end;
+
+  if FPinchActive and
+     (FPinchStartDistance - Distance >= PINCH_CLOSE_THRESHOLD) then
+  begin
+    FPinchActive := False;
+    Close;
+  end;
+end;
+
 procedure TMainForm.TimeVoidEditOnChangeHandler(Sender: TObject);
 var
   Time: String;
@@ -1006,20 +1040,6 @@ begin
     TShowTextTime.ShowTextTime(Time)
   else
     TShowTime.ShowTime(Time);
-end;
-
-procedure TMainForm.GestureHandler(const EventInfo: TGestureEventInfo);
-begin
-  case EventInfo.GestureID of
-    sgiDown,
-    sgiLeftDown,
-    sgiRightDown,
-    sgiDownLeft,
-    sgiDownRight,
-    sgiDownLeftLong,
-    sgiDownRightLong:
-      Close;
-  end;
 end;
 
 procedure TMainForm.ToolsLayoutMouseDown(Sender: TObject; Button: TMouseButton;
