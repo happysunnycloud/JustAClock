@@ -885,9 +885,9 @@ begin
 
     {$IFDEF MSWINDOWS}
     BorderFrame.Kind := TBorderFrameKind.bfkNormal;
-    BorderFrame.CaptionColor := $FF8D003A;
+    BorderFrame.CaptionText.TextSettings.FontColor := $FF8D003A;
     BorderFrame.Color := BORDER_FRAME_COLOR;
-    BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
+    BorderFrame.ToolButtonColor := BorderFrame.CaptionText.TextSettings.FontColor;
     BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
 
     TrayIconMouseRightButtonDown := TrayIconMouseRightButtonDownHandler;
@@ -913,7 +913,7 @@ begin
     Self.ClientWidth := TState.FormClientWidth;
     Self.ClientHeight := TState.FormClientHeight;
 
-    Self.OnFormStateLoaded :=
+    Self.OnFormStateLoadedProc :=
       procedure (AForm: TFormExt)
       begin
         SetBorderFrameOff(false);

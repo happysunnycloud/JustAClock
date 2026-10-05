@@ -96,10 +96,11 @@ begin
 //      $FFADADAD);
 
   BorderFrame.Kind := TBorderFrameKind.bfkNormal;
-  BorderFrame.CaptionColor := $FF8D003A;
+  BorderFrame.CaptionText.TextSettings.FontColor := $FF8D003A;
   BorderFrame.Color := $FF2A001A;
-  BorderFrame.ToolButtonColor := BorderFrame.CaptionColor;
-  BorderFrame.ToolButtonMouseOverColor := $FFADADAD;
+  BorderFrame.ToolButtonColor := BorderFrame.CaptionText.TextSettings.FontColor;
+  BorderFrame.MinToolButtonMouseOverBackgroundColor := $FFADADAD;
+  BorderFrame.MaxToolButtonMouseOverBackgroundColor := $FFADADAD;
   {$ENDIF}
 
 
