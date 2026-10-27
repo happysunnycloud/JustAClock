@@ -1279,8 +1279,8 @@ procedure TMainForm.OpenBoard(
     ScreenService: IFMXScreenService;
     OrientSet: TScreenOrientations;
   begin
-    if TPlatformServices.Current.
-      SupportsPlatformService(IFMXScreenService, IInterface(ScreenService))
+    if TPlatformServices.Current.SupportsPlatformService(
+      IFMXScreenService, IInterface(ScreenService))
     then
     begin
       OrientSet := [AAndroidScreenOrientation];
@@ -1293,7 +1293,7 @@ var
   MinWidth: Integer;
   MinHeight: Integer;
   LastOrientationIsEqual: Boolean;
-  FormClientWidth, ClientHeight: Integer;
+  FormClientWidth, FormClientHeight: Integer;
 begin
   TextTimeLayout.Visible := false;
 
@@ -1307,7 +1307,7 @@ begin
   TState.ImageName := AImageName;
 
   FormClientWidth := TState.FormClientWidth;
-  ClientHeight := TState.FormClientHeight;
+  FormClientHeight := TState.FormClientHeight;
 
   if AOrientation = okNone then
   begin
@@ -1322,10 +1322,10 @@ begin
       LastOrientationIsEqual := false;
 
       FormClientWidth := TState.FormClientHeight;
-      ClientHeight := TState.FormClientWidth;
+      FormClientHeight := TState.FormClientWidth;
 
       TState.FormClientWidth := FormClientWidth;
-      TState.FormClientHeight := ClientHeight;
+      TState.FormClientHeight := FormClientHeight;
     end;
 
     TState.Orientation := AOrientation;
@@ -1405,7 +1405,7 @@ begin
   RefreshTopLayoutVisible;
 
   Self.ClientWidth := FormClientWidth;
-  Self.ClientHeight := ClientHeight;
+  Self.ClientHeight := FormClientHeight;
 
   Self.Resize;
 

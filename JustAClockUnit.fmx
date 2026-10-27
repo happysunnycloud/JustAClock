@@ -256,38 +256,40 @@ object MainForm: TMainForm
       TabOrder = 4
       object CurrentDateText: TText
         Align = Right
-        Position.X = 161.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Position.X = 151.000000000000000000
         Size.Width = 100.000000000000000000
         Size.Height = 10.000000000000000000
         Size.PlatformDefault = False
         Text = '00.00.0000'
-        TextSettings.FontColor = claWhite
+        TextSettings.FontColor = xFFFF8D8D
         TextSettings.HorzAlign = Trailing
       end
       object AlarmRectangle: TRectangle
         Align = Left
         Fill.Bitmap.Bitmap.PNG = {
           89504E470D0A1A0A0000000D494844520000000A0000000A08060000008D32CF
-          BD000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
-          007C4944415428539D8E310EC2400C04ED2B225AC43B6803FF40A20DCA3BF807
-          6F44BA0750ED50101FCE45344CB5E7D9936DF60F804BBA023760E87D63290020
-          E99E5DC90F49E7C8C029BB55D1CCF6118043167D71F7237F9134D65A5F71E372
-          E714DE53F1E2EEC7F6F3B3FE594A79E45943D22C69EEE71B0007DAA6E00D37DB
-          5005A167DAC90000000049454E44AE426082}
+          BD0000000473424954080808087C086488000000744944415418958D90B10D80
+          3010036D4481E8506AD60016A106650E066012A6CB008822A601F1A044C2D5BF
+          7CB65E0FFC14ED228900460035808DE4914C499AF568B15E619718E360427D16
+          04D09890CB8224ABD4FCBDAF0B21EC7A6BBAFDD2B0AD736EFDE4EB64EBD5EC25
+          F92C60405EFF7CE904090841555C7689830000000049454E44AE426082}
         Fill.Bitmap.WrapMode = TileOriginal
         Fill.Kind = Bitmap
-        Size.Width = 10.000000000000000000
+        Margins.Left = 10.000000000000000000
+        Position.X = 10.000000000000000000
+        Size.Width = 100.000000000000000000
         Size.Height = 10.000000000000000000
         Size.PlatformDefault = False
         object AlarmTimeText: TText
           Align = Left
           Margins.Left = 10.000000000000000000
           Position.X = 10.000000000000000000
-          Size.Width = 249.000000000000000000
+          Size.Width = 145.000000000000000000
           Size.Height = 10.000000000000000000
           Size.PlatformDefault = False
           Text = '00:00:00'
-          TextSettings.FontColor = claWhite
+          TextSettings.FontColor = xFF92FF58
           TextSettings.HorzAlign = Leading
         end
       end
@@ -305,10 +307,6 @@ object MainForm: TMainForm
     Left = 6
     Top = 20
     GestureData = <
-      item
-        Control = ContentLayout
-        Collection = <>
-      end
       item
         Control = ScreenLockerLayout
         Collection = <
@@ -347,6 +345,10 @@ object MainForm: TMainForm
           item
             GestureID = sgiDown
           end>
+      end
+      item
+        Control = ContentLayout
+        Collection = <>
       end>
   end
 end

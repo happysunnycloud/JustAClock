@@ -28,6 +28,7 @@ uses
   FMX.FormExtUnit in '..\DevelopmentsCollection\FMX.FormExtUnit.pas',
   ThreadFactoryUnit in '..\DevelopmentsCollection\ThreadFactoryUnit.pas',
   ThreadRegistryUnit in '..\DevelopmentsCollection\ThreadRegistryUnit.pas',
+  HoldingThread in 'HoldingThread.pas',
   ParamsExtUnit in '..\DevelopmentsCollection\ParamsExt\ParamsExtUnit.pas',
   NumScrollUnit in 'Frames\NumScrollUnit.pas' {NumScrollFrame: TFrame},
   SetTimerFormUnit in 'SetTimerFormUnit.pas' {SetTimerForm},
