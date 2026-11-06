@@ -19,13 +19,11 @@ object ElectronicBoardFrame: TElectronicBoardFrame
       Stroke.Kind = None
       Stroke.Thickness = 0.000000000000000000
       object DigitsLayout: TLayout
-        Anchors = []
+        Align = Center
         Margins.Left = 10.000000000000000000
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Position.X = 10.000000000000000000
-        Position.Y = 10.462499618530270000
         Size.Width = 240.000000000000000000
         Size.Height = 60.000000000000000000
         Size.PlatformDefault = False

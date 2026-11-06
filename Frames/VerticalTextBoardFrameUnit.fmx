@@ -25,11 +25,9 @@ inherited VerticalTextBoardFrame: TVerticalTextBoardFrame
         inherited TextHoursLayout: TLayout
           Align = Top
           inherited HHText: TText
-            Stretch = True
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
           inherited HLText: TText
-            Stretch = True
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
         end
@@ -37,11 +35,9 @@ inherited VerticalTextBoardFrame: TVerticalTextBoardFrame
           Align = Top
           Position.Y = 90.000000000000000000
           inherited MHText: TText
-            Stretch = True
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
           inherited MLText: TText
-            Stretch = True
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
         end
@@ -60,11 +56,9 @@ inherited VerticalTextBoardFrame: TVerticalTextBoardFrame
           Align = Top
           Position.Y = 180.000000000000000000
           inherited SHText: TText
-            Stretch = True
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
           inherited SLText: TText
-            Stretch = True
             TextSettings.Font.StyleExt = {00070000000000000004000000}
           end
         end

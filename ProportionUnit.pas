@@ -131,7 +131,6 @@ class procedure TProportion.Resize;
     W0: Single;
     H0: Single;
     H1: Single;
-    H: Single;
   begin
     FDigitsLayout.Width := AParentFrame.Width;
     FDigitsLayout.Height := AParentFrame.Height;
@@ -144,38 +143,30 @@ class procedure TProportion.Resize;
     H0 := W0 * 2;
     H1 := H0 / 2;
 
-    FHoursLayout.Align         := TAlignLayout.None;
-    FHoursDelimLayout.Align    := TAlignLayout.None;
-    FMinutesLayout.Align       := TAlignLayout.None;
-    FSecondsDelimLayout.Align  := TAlignLayout.None;
-    FSecondsLayout.Align       := TAlignLayout.None;
-
     FHoursLayout.Height        := H0;
     FHoursDelimLayout.Height   := H1;
     FMinutesLayout.Height      := H0;
     FSecondsDelimLayout.Height := H1;
     FSecondsLayout.Height      := H0;
 
-    FSecondsLayout.Align       := TAlignLayout.Bottom;
-    FSecondsDelimLayout.Align  := TAlignLayout.Bottom;
-    FMinutesLayout.Align       := TAlignLayout.Bottom;
-    FHoursDelimLayout.Align    := TAlignLayout.Bottom;
-    FHoursLayout.Align         := TAlignLayout.Bottom;
-
-    FHoursLayout.Align         := TAlignLayout.Top;
-    FHoursDelimLayout.Align    := TAlignLayout.Top;
-    FMinutesLayout.Align       := TAlignLayout.Top;
-    FSecondsDelimLayout.Align  := TAlignLayout.Top;
-    FSecondsLayout.Align       := TAlignLayout.Top;
-
     FHHControl.Width     := W0;
     FHLControl.Width     := W0;
-    FHDelimControl.Width := FHHControl.Height;
+    FHDelimControl.Width := W0 * 2;
     FMHControl.Width     := W0;
     FMLControl.Width     := W0;
-    FSDelimControl.Width := FHHControl.Height;
+    FSDelimControl.Width := W0 * 2;
     FSHControl.Width     := W0;
     FSLControl.Width     := W0;
+
+    FHHControl.Height := FHoursLayout.Height;
+    FHLControl.Height := FHoursLayout.Height;
+
+    FHDelimControl.Height := FHoursDelimLayout.Height;
+    FMHControl.Height := FMinutesLayout.Height;
+    FMLControl.Height := FMinutesLayout.Height;
+    FSDelimControl.Height := FSecondsDelimLayout.Height;
+    FSHControl.Height := FSecondsLayout.Height;
+    FSLControl.Height := FSecondsLayout.Height;
 
     FHHControl.Position.X := (FHoursLayout.Width / 2) - FHHControl.Width;
     FHLControl.Position.X := (FHoursLayout.Width / 2);
@@ -188,15 +179,6 @@ class procedure TProportion.Resize;
 
     FHDelimControl.Position.X := (FHoursLayout.Width / 2) - (FHDelimControl.Width / 2);
     FSDelimControl.Position.X := (FHoursLayout.Width / 2) - (FSDelimControl.Width / 2);
-
-    H :=
-      FHoursLayout.Height +
-      FHoursDelimLayout.Height +
-      FMinutesLayout.Height +
-      FSecondsDelimLayout.Height +
-      FSecondsLayout.Height;
-
-    FHoursLayout.Margins.Top := (FDigitsLayout.Height - H) / 2;
   end;
 
   procedure ResizeHorizontalBoardFrame(const AParentFrame: TFrame);
@@ -262,8 +244,6 @@ class procedure TProportion.Resize;
 var
   ParentFrame: TFrame;
 begin
-  FDigitsLayout.Align := TAlignLayout.None;
-
   ParentFrame := TControlTools.FindParentFrame(FDigitsLayout);
 
   if FOrientation = okVertical then
@@ -288,7 +268,14 @@ begin
     _SetTextSize(FSLControl);
   end;
 
-  FDigitsLayout.Align  := TAlignLayout.Center;
+  // Либо считаем вручную, либо выставляем заранее в дизайнере на
+  // FDigitsLayout.Align := TAlignLayout.Center
+  // При динамическом выставленнии TAlignLayout.Center
+  // некорректно отрисовывается под Android
+  //  FDigitsLayout.Position.X :=
+  //    (TControl(FDigitsLayout.Parent).Width / 2) - (FDigitsLayout.Width / 2);
+  //  FDigitsLayout.Position.Y :=
+  //    (TControl(FDigitsLayout.Parent).Height / 2) - (FDigitsLayout.Height / 2);
 end;
 
 end.

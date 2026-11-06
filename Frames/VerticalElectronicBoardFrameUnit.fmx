@@ -1,14 +1,13 @@
 inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
-  Size.Width = 81.000000000000000000
-  Size.Height = 257.000000000000000000
+  Size.Width = 95.000000000000000000
+  Size.Height = 279.000000000000000000
   inherited BackgroundLayout: TLayout
-    Size.Width = 81.000000000000000000
-    Size.Height = 257.000000000000000000
+    Size.Width = 95.000000000000000000
+    Size.Height = 279.000000000000000000
     inherited BackgroundRectangle: TRectangle
-      Size.Width = 81.000000000000000000
-      Size.Height = 257.000000000000000000
+      Size.Width = 95.000000000000000000
+      Size.Height = 279.000000000000000000
       inherited DigitsLayout: TLayout
-        Position.Y = 8.994230270385742000
         Size.Width = 60.000000000000000000
         Size.Height = 240.000000000000000000
         inherited HoursLayout: TLayout
@@ -16,10 +15,12 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
           inherited HHImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
           end
           inherited HLImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
           end
         end
         inherited MinutesLayout: TLayout
@@ -28,10 +29,12 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
           inherited MHImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
           end
           inherited MLImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
           end
         end
         inherited SecondsLayout: TLayout
@@ -40,10 +43,12 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
           inherited SHImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
           end
           inherited SLImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
           end
         end
         inherited HoursDelimLayout: TLayout
@@ -54,6 +59,7 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
           inherited HDelimImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
             Size.Width = 60.000000000000000000
             Size.Height = 30.000000000000000000
           end
@@ -66,6 +72,7 @@ inherited VerticalElectronicBoardFrame: TVerticalElectronicBoardFrame
           inherited SDelimImage: TImage
             MultiResBitmap.Height = 415
             MultiResBitmap.Width = 226
+            Align = None
             Size.Width = 60.000000000000000000
             Size.Height = 30.000000000000000000
           end

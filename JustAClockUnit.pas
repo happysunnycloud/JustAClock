@@ -1107,14 +1107,6 @@ begin
 
   FElectronicBoardFrame := SetBoardOrientation(BoardFrameClass);
 
-  FElectronicBoardFrame.Parent := TimeLayout;
-  FElectronicBoardFrame.Align := TAlignLayout.Contents;
-  FElectronicBoardFrame.HitTest := false;
-
-  FElectronicBoardFrame.Width := AMinWidth;
-  FElectronicBoardFrame.Height := AMinHeight;
-  FElectronicBoardFrame.RecalcSize;
-
   TProportion.Init(
     TState.Orientation,
     ContentLayout,
@@ -1148,6 +1140,10 @@ begin
     FElectronicBoardFrame.SHImage,
     FElectronicBoardFrame.SLImage,
     TState.Orientation);
+
+  FElectronicBoardFrame.Parent := TimeLayout;
+  FElectronicBoardFrame.Align := TAlignLayout.Contents;
+  FElectronicBoardFrame.HitTest := false;
 end;
 
 procedure TMainForm.GetImageBoard(
@@ -1605,11 +1601,6 @@ begin
     FHorizontalOrientationMenuItem.IsChecked := true;
 
   OpenBoard(TState.Board, TState.ImageName, TState.Color, AOrientationKind);
-
-  // Запускаем OnChange вручную, иначе цифры не отобразятся на табло,
-  // Так как поток тикера не запущен и изменений в TimeVoidEdit не происходит
-  // И не вызывается TimeVoidEdit.OnChange
-  TimeVoidEditOnChangeHandler(TimeVoidEdit);
 end;
 
 procedure TMainForm.StartTime;

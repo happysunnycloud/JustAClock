@@ -3,8 +3,8 @@ object MainForm: TMainForm
   Top = 0
   BorderStyle = None
   Caption = 'JuckAClock'
-  ClientHeight = 94
-  ClientWidth = 265
+  ClientHeight = 95
+  ClientWidth = 260
   Fill.Color = claBlack
   Fill.Kind = Solid
   Position = ScreenCenter
@@ -22,16 +22,16 @@ object MainForm: TMainForm
   object ContentLayout: TLayout
     Touch.GestureManager = GestureManager
     Align = Contents
-    Size.Width = 265.000000000000000000
-    Size.Height = 94.000000000000000000
+    Size.Width = 260.000000000000000000
+    Size.Height = 95.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object ScreenLockerLayout: TLayout
       Touch.GestureManager = GestureManager
       OnGesture = ScreenLockerLayoutGesture
       Align = Contents
-      Size.Width = 265.000000000000000000
-      Size.Height = 94.000000000000000000
+      Size.Width = 260.000000000000000000
+      Size.Height = 95.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
     end
@@ -50,8 +50,8 @@ object MainForm: TMainForm
       Align = Client
       Fill.Kind = None
       HitTest = False
-      Size.Width = 265.000000000000000000
-      Size.Height = 80.000000000000000000
+      Size.Width = 260.000000000000000000
+      Size.Height = 81.000000000000000000
       Size.PlatformDefault = False
       Stroke.Color = claWhite
       Stroke.Thickness = 4.000000000000000000
@@ -60,8 +60,8 @@ object MainForm: TMainForm
       Align = Client
       Margins.Left = 10.000000000000000000
       Margins.Right = 10.000000000000000000
-      Size.Width = 245.000000000000000000
-      Size.Height = 80.000000000000000000
+      Size.Width = 240.000000000000000000
+      Size.Height = 81.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       object TextTimeLayout: TLayout
@@ -70,21 +70,21 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Size.Width = 225.000000000000000000
-        Size.Height = 60.000000000000000000
+        Size.Width = 220.000000000000000000
+        Size.Height = 61.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object TextHoursLayout: TLayout
           Align = Left
           Size.Width = 60.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Height = 61.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 1
           object HHText: TText
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '0'
@@ -97,7 +97,7 @@ object MainForm: TMainForm
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '1'
@@ -110,14 +110,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 60.000000000000000000
           Size.Width = 15.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Height = 61.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 2
           object HDelimText: TText
             Align = Contents
             HitTest = False
             Size.Width = 15.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = ':'
@@ -130,14 +130,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 75.000000000000000000
           Size.Width = 60.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Height = 61.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 3
           object MHText: TText
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '2'
@@ -150,7 +150,7 @@ object MainForm: TMainForm
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '3'
@@ -163,14 +163,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 135.000000000000000000
           Size.Width = 15.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Height = 61.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 4
           object SDelimText: TText
             Align = Contents
             HitTest = False
             Size.Width = 15.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = ':'
@@ -183,14 +183,14 @@ object MainForm: TMainForm
           Align = Left
           Position.X = 150.000000000000000000
           Size.Width = 60.000000000000000000
-          Size.Height = 60.000000000000000000
+          Size.Height = 61.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 5
           object SHText: TText
             Align = Left
             HitTest = False
             Size.Width = 30.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '4'
@@ -203,7 +203,7 @@ object MainForm: TMainForm
             HitTest = False
             Position.X = 30.000000000000000000
             Size.Width = 30.000000000000000000
-            Size.Height = 60.000000000000000000
+            Size.Height = 61.000000000000000000
             Size.PlatformDefault = False
             Stretch = True
             Text = '5'
@@ -250,19 +250,19 @@ object MainForm: TMainForm
       Margins.Bottom = 2.000000000000000000
       Position.X = 2.000000000000000000
       Position.Y = 2.000000000000000000
-      Size.Width = 261.000000000000000000
+      Size.Width = 256.000000000000000000
       Size.Height = 10.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 4
       object CurrentDateText: TText
         Align = Right
         Margins.Right = 10.000000000000000000
-        Position.X = 151.000000000000000000
+        Position.X = 146.000000000000000000
         Size.Width = 100.000000000000000000
         Size.Height = 10.000000000000000000
         Size.PlatformDefault = False
         Text = '00.00.0000'
-        TextSettings.FontColor = xFFFF8D8D
+        TextSettings.FontColor = claWhite
         TextSettings.HorzAlign = Trailing
       end
       object AlarmRectangle: TRectangle
@@ -289,7 +289,7 @@ object MainForm: TMainForm
           Size.Height = 10.000000000000000000
           Size.PlatformDefault = False
           Text = '00:00:00'
-          TextSettings.FontColor = xFF92FF58
+          TextSettings.FontColor = claWhite
           TextSettings.HorzAlign = Leading
         end
       end
@@ -331,6 +331,10 @@ object MainForm: TMainForm
           end>
       end
       item
+        Control = ContentLayout
+        Collection = <>
+      end
+      item
         Control = ToolsLayout
         Collection = <
           item
@@ -345,10 +349,6 @@ object MainForm: TMainForm
           item
             GestureID = sgiDown
           end>
-      end
-      item
-        Control = ContentLayout
-        Collection = <>
       end>
   end
 end

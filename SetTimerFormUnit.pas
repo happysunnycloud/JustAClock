@@ -27,7 +27,6 @@ type
     ButtonsLine: TLine;
     CenterLayout: TLayout;
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormResize(Sender: TObject);
   private
@@ -107,12 +106,6 @@ begin
 
   CancelButtonRectangle.OnMouseEnter := OnRectangleMouseEnterHandler;
   CancelButtonRectangle.OnMouseLeave := OnRectangleMouseLeaveHandler;
-end;
-
-procedure TSetTimerForm.FormDestroy(Sender: TObject);
-begin
-  //asd нужно ли нилить?
-//  SetTimerForm := nil;
 end;
 
 procedure TSetTimerForm.FormResize(Sender: TObject);

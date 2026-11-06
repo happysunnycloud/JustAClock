@@ -257,15 +257,11 @@ type
 
   TGetCurrentDateThread = class(TSafeQueueThread)
   strict private
-    FDone: TEvent;
     FTextControl: TText;
   protected
-    procedure Execute; override;
+    procedure InnerExecute; override;
   public
     constructor Create(const ATextControl: TText); reintroduce;
-    destructor Destroy; override;
-
-    procedure Terminate;
   end;
 
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
@@ -302,25 +298,14 @@ uses
   , Winapi.Windows
   {$ENDIF}
   , ParamsExtUnit
-  //asd debug
-  , JustAClockUnit
-  //asd debug
   ;
 
 procedure DisplayTime(const AOutputControl: TControl; const ATimeString: String);
-//asd debug
-var
-  OnChange: TNotifyEvent;
-//asd debug
 begin
   if not Assigned(AOutputControl) then
     raise Exception.Create('DisplayTime -> Control is nil');
 
   TControlTools.SetTextProperty(AOutputControl, ATimeString);
-  //asd debug
-  OnChange := MainForm.TimeVoidEdit.OnChange;
-  OnChange := OnChange;
-  //asd debug
 end;
 
 function CustomColorByNumber(const AColorNumber: Byte): TAlphaColor;
@@ -855,38 +840,28 @@ end;
 
 constructor TGetCurrentDateThread.Create(const ATextControl: TText);
 begin
-  FDone := TEvent.Create(nil, true, false, '');
   FTextControl := ATextControl;
 
   inherited Create(false);
 end;
 
-destructor TGetCurrentDateThread.Destroy;
-begin
-  FreeAndNil(FDone);
-end;
-
-procedure TGetCurrentDateThread.Terminate;
-begin
-  FDone.SetEvent;
-
-  inherited Terminate;
-end;
-
-procedure TGetCurrentDateThread.Execute;
+procedure TGetCurrentDateThread.InnerExecute;
 var
   i: Integer;
 begin
   while not Terminated do
   begin
-    FDone.ResetEvent;
+    if not Terminated then
+      StartWaitQueueDone;
+
     SafeForceQueue(
       procedure
       begin
         FTextControl.Text := DateToStr(Now);
-        FDone.SetEvent;
+
+        QueueIsDone;
       end);
-    FDone.WaitFor(INFINITE);
+    WaitForQueueDone;
 
     i := 10;
     while (not Terminated) and (i > 0) do
